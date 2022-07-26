@@ -6,6 +6,16 @@ Minever is an open-source .NET library primarily aimed at supporting various ver
 
 Initial state. In developing.
 
+# Projects
+
+
+| Name | Description |
+| ---- | ----------- |
+| Minever.Networking | The core project. It contains an implementation of protocols, packages, writers, and readers. |
+| Minever.Client | It contains Minecraft clients implementation (low-level MinecrafPacketClient and high-level MinecraftClient). |
+| Minever.ConsoleApplication | The console project for testing Minever.Client. |
+
+
 # License
 
 MIT license.
