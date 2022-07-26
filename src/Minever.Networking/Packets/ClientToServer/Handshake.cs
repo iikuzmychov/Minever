@@ -12,11 +12,11 @@ public enum HandshakeNextState
 
 public static class HandshakeNextStateExtensions
 { 
-    public static MinecraftConnectionState ToConnectionState(this HandshakeNextState handhakeNextState) =>
+    public static ConnectionState ToConnectionState(this HandshakeNextState handhakeNextState) =>
         handhakeNextState switch
         {
-            HandshakeNextState.Status => MinecraftConnectionState.Status,
-            HandshakeNextState.Login  => MinecraftConnectionState.Login,
+            HandshakeNextState.Status => ConnectionState.Status,
+            HandshakeNextState.Login  => ConnectionState.Login,
             _ => throw new NotImplementedException()
         };
 }

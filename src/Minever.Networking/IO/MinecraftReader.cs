@@ -95,7 +95,7 @@ public class MinecraftReader : BinaryReader, IDisposable
         return packet;
     }
 
-    public MinecraftPacket<object> ReadPacket(int packetLength, MinecraftPacketKind packetKind,
+    public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext packetContext,
         MinecraftProtocol protocol, bool isCompressed = false)
     {
         if (packetLength <= 0)
@@ -135,16 +135,16 @@ public class MinecraftReader : BinaryReader, IDisposable
             dataReader = this;
         }
 
-        if (!protocol.IsPacketSupported(packetId, packetKind))
-            throw new NotSupportedPacketException(new(packetId, packetKind, dataReader.ReadBytes(dataLength)));
+        if (!protocol.IsPacketSupported(packetId, packetContext))
+            throw new NotSupportedPacketException(new(packetId, packetContext, dataReader.ReadBytes(dataLength)));
 
-        var packetType = protocol.GetPacketDataType(packetId, packetKind);
+        var packetType = protocol.GetPacketDataType(packetId, packetContext);
         var packetData = dataReader.ReadPacketData(dataLength, packetType);
 
         if (dataReader != this)
             dataReader.Dispose();
 
-        var packet = new MinecraftPacket<object>(packetId, packetKind, packetData);
+        var packet = new MinecraftPacket<object>(packetId, packetContext, packetData);
 
         return packet;
     }

@@ -1,6 +1,6 @@
 ﻿namespace Minever.Networking;
 
-public enum MinecraftConnectionState
+public enum ConnectionState
 {
     Handshake,
     Status,

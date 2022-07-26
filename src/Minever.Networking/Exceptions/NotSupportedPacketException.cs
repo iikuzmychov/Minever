@@ -5,7 +5,7 @@ namespace Minever.Networking.Exceptions;
 public sealed class NotSupportedPacketException : Exception
 {
     public override string Message =>
-        $"Packet 0x{Packet.Id:X2} ({Packet.Kind.ConnectionState} state, {Packet.Kind.Direction}) is not supported by the used protocol.";
+        $"Packet 0x{Packet.Id:X2} ({Packet.Context.ConnectionState} state, {Packet.Context.Direction}) is not supported by the used protocol.";
 
     public MinecraftPacket<byte[]> Packet { get; }
 

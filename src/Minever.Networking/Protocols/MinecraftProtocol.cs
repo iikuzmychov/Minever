@@ -5,11 +5,11 @@ namespace Minever.Networking.Protocols;
 
 public abstract partial class MinecraftProtocol
 {
-    protected Dictionary<MinecraftPacketKind, BiMap<int, Type>> SupportedPackets;
+    protected Dictionary<PacketContext, BiMap<int, Type>> SupportedPackets;
 
     public abstract int Version { get; }
 
-    public MinecraftProtocol(Dictionary<MinecraftPacketKind, BiMap<int, Type>> supportedPackets)
+    public MinecraftProtocol(Dictionary<PacketContext, BiMap<int, Type>> supportedPackets)
     {
         SupportedPackets = supportedPackets ?? throw new ArgumentNullException(nameof(supportedPackets));
     }
@@ -28,22 +28,22 @@ public abstract partial class MinecraftProtocol
             _ => throw new NotSupportedException($"Version '{versionName}' is not supported.")
         };
 
-    public bool IsPacketSupported(int packetId, MinecraftPacketKind packetKind) =>
-        SupportedPackets.TryGetValue(packetKind, out var packets) &&
+    public bool IsPacketSupported(int packetId, PacketContext packetContext) =>
+        SupportedPackets.TryGetValue(packetContext, out var packets) &&
         packets.Forward.ContainsKey(packetId);
 
-    public bool IsPacketSupported(Type packetDataType, MinecraftPacketKind packetKind)
+    public bool IsPacketSupported(Type packetDataType, PacketContext packetContext)
     {
         ArgumentNullException.ThrowIfNull(packetDataType);
 
-        return SupportedPackets.TryGetValue(packetKind, out var packets) &&
+        return SupportedPackets.TryGetValue(packetContext, out var packets) &&
             packets.Reverse.ContainsKey(packetDataType);
     }
 
-    public bool IsPacketSupported<TData>(MinecraftPacketKind packetKind)
+    public bool IsPacketSupported<TData>(PacketContext packetContext)
         where TData : notnull
     {
-        return IsPacketSupported(typeof(TData), packetKind);
+        return IsPacketSupported(typeof(TData), packetContext);
     }
 
     public bool IsPacketSupported<TData>(MinecraftPacket<TData> packet)
@@ -51,43 +51,43 @@ public abstract partial class MinecraftProtocol
     {
         ArgumentNullException.ThrowIfNull(packet);
 
-        return SupportedPackets.TryGetValue(packet.Kind, out var packets) &&
+        return SupportedPackets.TryGetValue(packet.Context, out var packets) &&
             packets.Forward.ContainsKey(packet.Id) &&
             packets.Reverse.ContainsKey(typeof(TData));
     }
 
-    public Type GetPacketDataType(int packetId, MinecraftPacketKind packetKind)
+    public Type GetPacketDataType(int packetId, PacketContext packetContext)
     {
         try
         {
-            return SupportedPackets[packetKind].Forward[packetId];
+            return SupportedPackets[packetContext].Forward[packetId];
         }
         catch (KeyNotFoundException exception)
         {
-            throw new NotSupportedException("The packet is not supported by the protocol version.", exception);
+            throw new NotSupportedException("The packet is not supported by the protocol.", exception);
         }
     }
 
-    public int GetPacketId(Type packetDataType, MinecraftPacketKind packetKind)
+    public int GetPacketId(Type packetDataType, PacketContext packetContext)
     {
-        ArgumentNullException.ThrowIfNull(packetKind);
+        ArgumentNullException.ThrowIfNull(packetContext);
 
         try
         {
-            return SupportedPackets[packetKind].Reverse[packetDataType];
+            return SupportedPackets[packetContext].Reverse[packetDataType];
         }
         catch (KeyNotFoundException exception)
         {
-            throw new NotSupportedException("The packet is not supported by the protocol version.", exception);
+            throw new NotSupportedException("The packet is not supported by the protocol.", exception);
         }
     }
 
-    public int GetPacketId<TData>(MinecraftPacketKind packetKind)
+    public int GetPacketId<TData>(PacketContext packetContext)
         where TData : notnull
     {
-        return GetPacketId(typeof(TData), packetKind);
+        return GetPacketId(typeof(TData), packetContext);
     }
 
-    public abstract MinecraftConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket)
+    public abstract ConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket)
         where TData : notnull;
 }

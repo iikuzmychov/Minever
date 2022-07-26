@@ -22,7 +22,7 @@ public sealed class MinecraftPacketClient : IDisposable
 
     public MinecraftProtocol Protocol { get; }
     public bool IsConnected => _tcpClient.Connected;
-    public MinecraftConnectionState ConnectionState { get; private set; } = MinecraftConnectionState.Handshake;
+    public ConnectionState ConnectionState { get; private set; } = ConnectionState.Handshake;
 
     public MinecraftPacketClient(MinecraftProtocol protocol, ILogger<MinecraftPacketClient>? logger = null)
     {
@@ -61,13 +61,13 @@ public sealed class MinecraftPacketClient : IDisposable
 
                 var packet                = (MinecraftPacket<object>?)null;
                 var startReadedBytesCount = minecraftStream.TotalReadedBytesCount;
-                var packetKind            = new MinecraftPacketKind(MinecraftPacketDirection.ServerToClient, ConnectionState);
+                var packetContext         = new PacketContext(PacketDirection.ServerToClient, ConnectionState);
 
                 try
                 {
-                    packet = reader.ReadPacket(packetLength, packetKind, Protocol);
+                    packet = reader.ReadPacket(packetLength, packetContext, Protocol);
 
-                    _logger?.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {packetKind.ConnectionState} state).");
+                    _logger?.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {packetContext.ConnectionState} state).");
                 }
                 catch (NotSupportedPacketException exception)
                 {
@@ -89,7 +89,7 @@ public sealed class MinecraftPacketClient : IDisposable
 
                 if (readedBytesCount != packetLength)
                 {
-                    var packetInfoString = packet is null ? "packet ???" : $"packet { packet.Data.GetType().Name} (0x{ packet.Id:X2}, {packetKind.ConnectionState} state)";
+                    var packetInfoString = packet is null ? "packet ???" : $"packet { packet.Data.GetType().Name} (0x{ packet.Id:X2}, {packetContext.ConnectionState} state)";
 
                     if (readedBytesCount < packetLength)
                     {
@@ -209,16 +209,16 @@ public sealed class MinecraftPacketClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
-        var packetKind = new MinecraftPacketKind(MinecraftPacketDirection.ClientToServer, ConnectionState);
-        var packetId   = Protocol.GetPacketId(packetData.GetType(), packetKind);
-        var packet     = new MinecraftPacket<object>(packetId, packetKind, packetData);
+        var packetContext = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
+        var packetId      = Protocol.GetPacketId(packetData.GetType(), packetContext);
+        var packet        = new MinecraftPacket<object>(packetId, packetContext, packetData);
 
         _isListeningPaused = true;
 
         try
         {
             _writer!.WritePacket(packet);
-            _logger?.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {packetKind.ConnectionState} state) was sended.");
+            _logger?.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {packetContext.ConnectionState} state) was sended.");
         }
         catch (IOException exception)
         {

@@ -6,7 +6,7 @@ namespace Minever.Networking.Protocols;
 public class Protocol0 : MinecraftProtocol
 {
 
-    private readonly static Dictionary<MinecraftPacketKind, BiMap<int, Type>> s_supportedPackets;
+    private readonly static Dictionary<PacketContext, BiMap<int, Type>> s_supportedPackets;
 
     public override int Version => 0;
 
@@ -16,7 +16,7 @@ public class Protocol0 : MinecraftProtocol
         {
             // Handshake
             {
-                new(MinecraftPacketDirection.ClientToServer, MinecraftConnectionState.Handshake),
+                new(PacketDirection.ClientToServer, ConnectionState.Handshake),
                 new()
                 {
                     { 0x00, typeof(Handshake) },
@@ -25,7 +25,7 @@ public class Protocol0 : MinecraftProtocol
 
             // Status
             {
-                new(MinecraftPacketDirection.ClientToServer, MinecraftConnectionState.Status),
+                new(PacketDirection.ClientToServer, ConnectionState.Status),
                 new()
                 {
                     { 0x00, typeof(ServerStatusRequest) },
@@ -34,7 +34,7 @@ public class Protocol0 : MinecraftProtocol
             },
 
             {
-                new(MinecraftPacketDirection.ServerToClient, MinecraftConnectionState.Status),
+                new(PacketDirection.ServerToClient, ConnectionState.Status),
                 new()
                 {
                     { 0x00, typeof(ServerStatusResponse) },
@@ -44,7 +44,7 @@ public class Protocol0 : MinecraftProtocol
 
             // Login
             {
-                new(MinecraftPacketDirection.ClientToServer, MinecraftConnectionState.Login),
+                new(PacketDirection.ClientToServer, ConnectionState.Login),
                 new()
                 {
                     { 0x00, typeof(LoginStart) },
@@ -53,7 +53,7 @@ public class Protocol0 : MinecraftProtocol
             },
 
             {
-                new(MinecraftPacketDirection.ServerToClient, MinecraftConnectionState.Login),
+                new(PacketDirection.ServerToClient, ConnectionState.Login),
                 new()
                 {
                     { 0x02, typeof(LoginSuccess) },
@@ -63,7 +63,7 @@ public class Protocol0 : MinecraftProtocol
 
             // Play
             {
-                new(MinecraftPacketDirection.ClientToServer, MinecraftConnectionState.Play),
+                new(PacketDirection.ClientToServer, ConnectionState.Play),
                 new()
                 {
                     { 0x00, typeof(KeepAlive) },
@@ -76,7 +76,7 @@ public class Protocol0 : MinecraftProtocol
             },
 
             {
-                new(MinecraftPacketDirection.ServerToClient, MinecraftConnectionState.Play),
+                new(PacketDirection.ServerToClient, ConnectionState.Play),
                 new()
                 {
                     { 0x00, typeof(KeepAlive) },
@@ -100,18 +100,18 @@ public class Protocol0 : MinecraftProtocol
 
     public Protocol0() : base(s_supportedPackets) { }
 
-    public override MinecraftConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket)
+    public override ConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket)
     {
         ArgumentNullException.ThrowIfNull(lastPacket);
         
         if (IsPacketSupported(lastPacket))
-            throw new NotSupportedException();
+            throw new NotSupportedException("The packet is not supported by the protocol.");
 
-        return (lastPacket.Kind.ConnectionState, lastPacket.Data) switch
+        return (lastPacket.Context.ConnectionState, lastPacket.Data) switch
         {
-            (MinecraftConnectionState.Handshake, Handshake handshake) => handshake.NextState.ToConnectionState(),
-            (MinecraftConnectionState.Login, LoginSuccess)            => MinecraftConnectionState.Play,
-            _ => lastPacket.Kind.ConnectionState,
+            (ConnectionState.Handshake, Handshake handshake) => handshake.NextState.ToConnectionState(),
+            (ConnectionState.Login, LoginSuccess)            => ConnectionState.Play,
+            _ => lastPacket.Context.ConnectionState,
         };
     }
 }
