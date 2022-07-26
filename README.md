@@ -4,7 +4,7 @@ Minever is an open-source .NET library primarily aimed at supporting various ver
 
 # Current state
 
-In developing.
+Initial state. In developing.
 
 # License
 
