@@ -115,29 +115,17 @@ public sealed class MinecraftPacketClient : IDisposable
         }
     }
 
-    public async Task ConnectAsync(string serverAddress, ushort serverPort, CancellationToken cancellationToken)
+    public async Task ConnectAsync(string serverAddress, ushort serverPort)
     {
         ArgumentNullException.ThrowIfNull(serverAddress);
 
-        await _tcpClient.ConnectAsync(serverAddress, serverPort, cancellationToken);
+        await _tcpClient.ConnectAsync(serverAddress, serverPort);
         _logger?.LogInformation("Connection established.");
 
         _writer                   = new(_tcpClient.GetStream());
         _listenCancellationSource = new();
         _isListeningPaused        = false;
         _listenTask               = Task.Run(ListenStream, _listenCancellationSource.Token);
-    }
-
-    public async Task ConnectAsync(string serverAddress, ushort serverPort, TimeSpan timeout)
-    {
-        using (var cancellationTokenSource = new CancellationTokenSource(timeout))
-            await ConnectAsync(serverAddress, serverPort, cancellationTokenSource.Token);
-    }
-
-    public async Task ConnectAsync(string serverAddress, ushort serverPort = 25565)
-    {
-        using (var cancellationTokenSource = new CancellationTokenSource())
-            await ConnectAsync(serverAddress, serverPort, cancellationTokenSource.Token);
     }
 
     public void Disconnect()
@@ -236,8 +224,7 @@ public sealed class MinecraftPacketClient : IDisposable
         _isListeningPaused = false;
     }
 
-    public async Task<MinecraftPacket<TResponseData>> SendRequestAsync<TResponseData>(
-        object requestPacketData, TimeSpan timeout)
+    public async Task<MinecraftPacket<TResponseData>> SendRequestAsync<TResponseData>(object requestPacketData)
         where TResponseData : notnull
     {
         ArgumentNullException.ThrowIfNull(requestPacketData);
@@ -251,7 +238,7 @@ public sealed class MinecraftPacketClient : IDisposable
         
         _isListeningPaused = false;
 
-        var responsePacket = await taskCompletionSource.Task.WaitAsync(timeout);
+        var responsePacket = await taskCompletionSource.Task;
 
         return responsePacket;
     }

@@ -15,23 +15,21 @@ public class MinecraftClient : IDisposable
         PacketClient.OnPacket<KeepAlive>(packet => PacketClient.SendPacket(new KeepAlive(packet.Data.Id)));
     }
 
-    // need to fix timeout
-    public static async Task<(ServerStatus ServerStatus, TimeSpan Delay)> CheckServerAsync(
-        string serverAddress, ushort serverPort, TimeSpan timeout)
+    public static async Task<(ServerStatus ServerStatus, TimeSpan Delay)> CheckServerAsync(string serverAddress, ushort serverPort)
     {
         ArgumentNullException.ThrowIfNull(serverAddress);
 
-        using var client = new MinecraftPacketClient(MinecraftProtocol.FromVersion(0));
-        await client.ConnectAsync(serverAddress, serverPort, timeout);
+        using var client = new MinecraftPacketClient(new Protocol0());
+        await client.ConnectAsync(serverAddress, serverPort);
 
         var handshake = new Handshake(client.Protocol.Version, serverAddress, serverPort, HandshakeNextState.Status);
         client.SendPacket(handshake);
 
-        var serverStatus = (await client.SendRequestAsync<ServerStatusResponse>(new ServerStatusRequest(), timeout))
+        var serverStatus = (await client.SendRequestAsync<ServerStatusResponse>(new ServerStatusRequest()))
             .Data
             .Status;
         
-        var delay = (await client.SendRequestAsync<Ping>(new Ping(DateTime.UtcNow), timeout))
+        var delay = (await client.SendRequestAsync<Ping>(new Ping(DateTime.UtcNow)))
             .Data
             .CalculateDelay(DateTime.UtcNow);
 

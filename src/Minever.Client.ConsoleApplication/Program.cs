@@ -9,8 +9,6 @@ const ushort ServerPort    = 63524;
 
 ThreadSafeConsole.ForegroundColor = ConsoleColor.Magenta;
 
-//Console.WriteLine("Ping: {0}ms", (int)(await MinecraftClient.CheckServerAsync(ServerAddress, ServerPort, requestTimeout)).Delay.TotalMilliseconds);
-
 using var loggerFactory = LoggerFactory.Create(builder =>
 {
     builder
@@ -50,7 +48,7 @@ await client.ConnectAsync(ServerAddress, ServerPort);
 var handshake = new Handshake(client.Protocol.Version, ServerAddress, ServerPort, HandshakeNextState.Login);
 client.SendPacket(handshake);
 
-var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23"), requestTimeout)).Data;
+var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(requestTimeout)).Data;
 ThreadSafeConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
 //client.SendPacket(new ClientStatus(ClientStatusAction.PerformRespawn));
 
