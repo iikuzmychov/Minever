@@ -2,7 +2,7 @@
 
 namespace Minever.Networking.Packets.Serialization.Converters;
 
-public class Int16PrefixedByteArrayPacketConverter : MinecraftPacketConverter<byte[]>
+public class Int16PrefixedByteArrayPacketConverter : PacketConverter<byte[]>
 {
     public override byte[] Read(MinecraftReader reader)
     {

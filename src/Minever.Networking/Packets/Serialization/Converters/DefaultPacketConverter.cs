@@ -3,7 +3,7 @@ using Minever.Networking.IO;
 
 namespace Minever.Networking.Packets.Serialization.Converters;
 
-public class DefaultPacketConverter : MinecraftPacketConverter
+public class DefaultPacketConverter : PacketConverter
 {
     private static Type[] s_supportedTypes;
 

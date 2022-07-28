@@ -2,7 +2,7 @@
 
 namespace Minever.Networking.Packets.Serialization.Converters;
 
-public abstract class MinecraftPacketConverter
+public abstract class PacketConverter
 {
     public abstract object Read(MinecraftReader reader, Type targetType);
 
@@ -11,7 +11,7 @@ public abstract class MinecraftPacketConverter
     public abstract bool CanConvert(Type type);
 }
 
-public abstract class MinecraftPacketConverter<T> : MinecraftPacketConverter
+public abstract class PacketConverter<T> : PacketConverter
     where T : notnull
 {
     public abstract T Read(MinecraftReader reader);

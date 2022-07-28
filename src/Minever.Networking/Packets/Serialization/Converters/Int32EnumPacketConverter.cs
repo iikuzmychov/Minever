@@ -2,7 +2,7 @@
 
 namespace Minever.Networking.Packets.Serialization.Converters;
 
-public class Int32EnumPacketConverter<TEnum> : MinecraftPacketConverter<TEnum>
+public class Int32EnumPacketConverter<TEnum> : PacketConverter<TEnum>
     where TEnum : Enum
 {
     public override TEnum Read(MinecraftReader reader)

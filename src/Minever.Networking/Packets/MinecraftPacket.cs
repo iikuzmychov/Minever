@@ -1,18 +1,17 @@
 ﻿namespace Minever.Networking.Packets;
 
-public class MinecraftPacket<TData>
+public record MinecraftPacket<TData>
+    where TData : notnull
 {
     public int Id { get; }
-    public PacketContext Context { get; }
     public TData Data { get; }
 
-    public MinecraftPacket(int id, PacketContext context, TData data)
+    public MinecraftPacket(int id, TData data)
     {
-        Id      = id;
-        Context = context;
-        Data    = data ?? throw new ArgumentNullException(nameof(data));
+        Id   = id;
+        Data = data ?? throw new ArgumentNullException(nameof(data));
     }
 
     public static explicit operator MinecraftPacket<TData>(MinecraftPacket<object> packet) =>
-        new(packet.Id, packet.Context, (TData)packet.Data);
+        new(packet.Id, (TData)packet.Data);
 }

@@ -2,9 +2,9 @@
 
 namespace Minever.Networking.Packets.Serialization.Converters;
 
-public class Int16PrefixedArrayPacketConverter<TElement, TElementConverter> : MinecraftPacketConverter<TElement[]>
+public class Int16PrefixedArrayPacketConverter<TElement, TElementConverter> : PacketConverter<TElement[]>
     where TElement : notnull
-    where TElementConverter : MinecraftPacketConverter, new()
+    where TElementConverter : PacketConverter, new()
 {
     private TElementConverter _elementConverter = new();
 

@@ -1,13 +1,8 @@
-﻿using Minever.Networking;
-using Minever.Networking.DataTypes;
-using Minever.Networking.Exceptions;
+﻿using Minever.Networking.DataTypes;
 using Minever.Networking.Packets;
+using Minever.Networking.Packets.Serialization;
 using Minever.Networking.Protocols;
-using Minever.Networking.Packets.Serialization.Converters;
 using System.Buffers.Binary;
-using System.IO.Compression;
-using System.Reflection;
-using Minever.Networking.Packets.Serialization.Attributes;
 
 namespace Minever.Networking.IO;
 
@@ -53,7 +48,7 @@ public class MinecraftReader : BinaryReader, IDisposable
         return new(x, y, z);
     }
 
-    private object ReadPacketData(int dataLength, Type targetType)
+    /*private object ReadPacketData(int dataLength, Type targetType)
     {
         var packet = Activator.CreateInstance(targetType)!;
 
@@ -71,20 +66,20 @@ public class MinecraftReader : BinaryReader, IDisposable
 
         foreach (var property in packetProperties)
         {
-            MinecraftPacketConverter converter;
+            PacketConverter converter;
 
             if (property.ConverterType is null)
             {
                 var propertyTypeConverterType = property.Info.PropertyType.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType;
 
                 if (propertyTypeConverterType is not null)
-                    converter = (MinecraftPacketConverter)Activator.CreateInstance(propertyTypeConverterType)!;
+                    converter = (PacketConverter)Activator.CreateInstance(propertyTypeConverterType)!;
                 else
                     converter = DefaultPacketConverter.Shared;
             }
             else
             {
-                converter = (MinecraftPacketConverter)Activator.CreateInstance(property.ConverterType)!;
+                converter = (PacketConverter)Activator.CreateInstance(property.ConverterType)!;
             }
 
             var value = converter.Read(this, property.Info.PropertyType);
@@ -93,9 +88,9 @@ public class MinecraftReader : BinaryReader, IDisposable
         }
 
         return packet;
-    }
+    }*/
 
-    public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext packetContext,
+    /*public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext packetContext,
         MinecraftProtocol protocol, bool isCompressed = false)
     {
         if (packetLength <= 0)
@@ -136,7 +131,7 @@ public class MinecraftReader : BinaryReader, IDisposable
         }
 
         if (!protocol.IsPacketSupported(packetId, packetContext))
-            throw new NotSupportedPacketException(new(packetId, packetContext, dataReader.ReadBytes(dataLength)));
+            throw new NotSupportedPacketException(new(packetId, dataReader.ReadBytes(dataLength)), packetContext);
 
         var packetType = protocol.GetPacketDataType(packetId, packetContext);
         var packetData = dataReader.ReadPacketData(dataLength, packetType);
@@ -144,8 +139,20 @@ public class MinecraftReader : BinaryReader, IDisposable
         if (dataReader != this)
             dataReader.Dispose();
 
-        var packet = new MinecraftPacket<object>(packetId, packetContext, packetData);
+        var packet = new MinecraftPacket<object>(packetId, packetData);
 
         return packet;
+    }*/
+
+    public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext context, MinecraftProtocol protocol)
+    {
+        if (packetLength <= 0)
+            throw new ArgumentOutOfRangeException(nameof(packetLength));
+
+        ArgumentNullException.ThrowIfNull(protocol);
+
+        var packetBytes = ReadBytes(packetLength);
+
+        return PacketSerializer.Deserialize(packetBytes, context, protocol);
     }
 }

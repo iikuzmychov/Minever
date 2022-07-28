@@ -28,39 +28,39 @@ public abstract partial class MinecraftProtocol
             _ => throw new NotSupportedException($"Version '{versionName}' is not supported.")
         };
 
-    public bool IsPacketSupported(int packetId, PacketContext packetContext) =>
-        SupportedPackets.TryGetValue(packetContext, out var packets) &&
+    public bool IsPacketSupported(int packetId, PacketContext context) =>
+        SupportedPackets.TryGetValue(context, out var packets) &&
         packets.Forward.ContainsKey(packetId);
 
-    public bool IsPacketSupported(Type packetDataType, PacketContext packetContext)
+    public bool IsPacketSupported(Type packetDataType, PacketContext context)
     {
         ArgumentNullException.ThrowIfNull(packetDataType);
 
-        return SupportedPackets.TryGetValue(packetContext, out var packets) &&
+        return SupportedPackets.TryGetValue(context, out var packets) &&
             packets.Reverse.ContainsKey(packetDataType);
     }
 
-    public bool IsPacketSupported<TData>(PacketContext packetContext)
+    public bool IsPacketSupported<TData>(PacketContext context)
         where TData : notnull
     {
-        return IsPacketSupported(typeof(TData), packetContext);
+        return IsPacketSupported(typeof(TData), context);
     }
 
-    public bool IsPacketSupported<TData>(MinecraftPacket<TData> packet)
+    public bool IsPacketSupported<TData>(MinecraftPacket<TData> packet, PacketContext context)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(packet);
 
-        return SupportedPackets.TryGetValue(packet.Context, out var packets) &&
+        return SupportedPackets.TryGetValue(context, out var packets) &&
             packets.Forward.ContainsKey(packet.Id) &&
             packets.Reverse.ContainsKey(typeof(TData));
     }
 
-    public Type GetPacketDataType(int packetId, PacketContext packetContext)
+    public Type GetPacketDataType(int packetId, PacketContext context)
     {
         try
         {
-            return SupportedPackets[packetContext].Forward[packetId];
+            return SupportedPackets[context].Forward[packetId];
         }
         catch (KeyNotFoundException exception)
         {
@@ -68,13 +68,13 @@ public abstract partial class MinecraftProtocol
         }
     }
 
-    public int GetPacketId(Type packetDataType, PacketContext packetContext)
+    public int GetPacketId(Type packetDataType, PacketContext context)
     {
-        ArgumentNullException.ThrowIfNull(packetContext);
+        ArgumentNullException.ThrowIfNull(context);
 
         try
         {
-            return SupportedPackets[packetContext].Reverse[packetDataType];
+            return SupportedPackets[context].Reverse[packetDataType];
         }
         catch (KeyNotFoundException exception)
         {
@@ -82,12 +82,12 @@ public abstract partial class MinecraftProtocol
         }
     }
 
-    public int GetPacketId<TData>(PacketContext packetContext)
+    public int GetPacketId<TData>(PacketContext context)
         where TData : notnull
     {
-        return GetPacketId(typeof(TData), packetContext);
+        return GetPacketId(typeof(TData), context);
     }
 
-    public abstract ConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket)
+    public abstract ConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket, PacketContext context)
         where TData : notnull;
 }

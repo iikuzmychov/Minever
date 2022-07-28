@@ -11,8 +11,8 @@ public class PacketConverterAttribute : Attribute
     {
         ArgumentNullException.ThrowIfNull(converterType);
 
-        if (!converterType.IsSubclassOf(typeof(MinecraftPacketConverter)))
-            throw new ArgumentException($"{converterType} must be inthered from {nameof(MinecraftPacketConverter)}.", nameof(converterType));
+        if (!converterType.IsSubclassOf(typeof(PacketConverter)))
+            throw new ArgumentException($"{converterType} must be inthered from {nameof(PacketConverter)}.", nameof(converterType));
 
         ConverterType = converterType;
     }

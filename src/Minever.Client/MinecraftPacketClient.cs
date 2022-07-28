@@ -8,6 +8,9 @@ using System.Net.Sockets;
 
 namespace Minever.Client;
 
+public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet, PacketContext context)
+    where TData : notnull;
+
 public sealed class MinecraftPacketClient : IDisposable
 {
     private readonly TcpClient _tcpClient = new();
@@ -17,8 +20,8 @@ public sealed class MinecraftPacketClient : IDisposable
     private MinecraftWriter? _writer;
     private ILogger<MinecraftPacketClient>? _logger;
 
-    public event Action<MinecraftPacket<object>>? PacketReceived;
-    public event Action? OnDisconnected;
+    public event PacketReceivedHandler<object>? PacketReceived;
+    public event Action? Disconnected;
 
     public MinecraftProtocol Protocol { get; }
     public bool IsConnected => _tcpClient.Connected;
@@ -34,16 +37,15 @@ public sealed class MinecraftPacketClient : IDisposable
 
     private void ListenStream()
     {
-        using var newtworkStream  = _tcpClient.GetStream();
-        using var minecraftStream = new MinecraftStream(newtworkStream, false);
-        using var reader          = new MinecraftReader(minecraftStream);
+        using var stream = _tcpClient.GetStream();
+        using var reader = new MinecraftReader(stream);
         
         while (true)
         {
             if (_listenCancellationSource!.IsCancellationRequested)
                 break;
 
-            if (!_isListeningPaused && newtworkStream.DataAvailable)
+            if (!_isListeningPaused && stream.DataAvailable)
             {
                 int packetLength;
 
@@ -59,57 +61,35 @@ public sealed class MinecraftPacketClient : IDisposable
                     return;
                 }
 
-                var packet                = (MinecraftPacket<object>?)null;
-                var startReadedBytesCount = minecraftStream.TotalReadedBytesCount;
-                var packetContext         = new PacketContext(PacketDirection.ServerToClient, ConnectionState);
+                var context = new PacketContext(PacketDirection.ServerToClient, ConnectionState);
+                var packet  = (MinecraftPacket<object>?)null;
 
                 try
                 {
-                    packet = reader.ReadPacket(packetLength, packetContext, Protocol);
+                    packet = reader.ReadPacket(packetLength, context, Protocol);
 
-                    _logger?.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {packetContext.ConnectionState} state).");
+                    _logger?.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
                 }
                 catch (NotSupportedPacketException exception)
                 {
                     _logger?.LogWarning(exception.Message);
                 }
-                catch (IOException exception)
+                catch (PacketDeserializationException exception)
                 {
-                    _logger?.LogCritical(exception, $"An 'IOException' occured.");
+                    _logger?.LogWarning(exception.Message);
+                }
+                catch (Exception exception)
+                {
+                    _logger?.LogCritical(exception, $"Error while reading packet.");
                     Task.Run(Disconnect);
 
                     return;
                 }
-                catch (Exception exception)
-                {
-                    _logger?.LogError(exception, $"Error while reading packet.");
-                }
-
-                var readedBytesCount = minecraftStream.TotalReadedBytesCount - startReadedBytesCount;
-
-                if (readedBytesCount != packetLength)
-                {
-                    var packetInfoString = packet is null ? "packet ???" : $"packet { packet.Data.GetType().Name} (0x{ packet.Id:X2}, {packetContext.ConnectionState} state)";
-
-                    if (readedBytesCount < packetLength)
-                    {
-                        _logger?.LogError($"Count of bytes read less than the packet length: {packetInfoString}. Remaining packet bytes will be skipped.");
-                        reader.ReadBytes(packetLength - readedBytesCount);
-                    }
-                    else
-                    {
-                        _logger?.LogCritical($"Count of bytes read more than the packet length: {packetInfoString}.");
-                        Task.Run(Disconnect);
-
-                        return;
-                    }
-                }
 
                 if (packet is not null)
                 {
-                    Task.Run(() => PacketReceived?.Invoke(packet));
-
-                    ConnectionState = Protocol.GetNewState(packet);
+                    Task.Run(() => PacketReceived?.Invoke(packet, context));
+                    ConnectionState = Protocol.GetNewState(packet, context);
                 }
             }
         }
@@ -136,27 +116,27 @@ public sealed class MinecraftPacketClient : IDisposable
 
             if (PacketReceived is not null)
                 foreach (var handler in PacketReceived.GetInvocationList())
-                    PacketReceived -= (handler as Action<MinecraftPacket<object>>);
+                    PacketReceived -= (handler as PacketReceivedHandler<object>);
 
             _listenCancellationSource?.Cancel();
             _listenTask?.Wait();
             _tcpClient.Close();
             _logger?.LogInformation("Disconnected.");
-            OnDisconnected?.Invoke();
+            Disconnected?.Invoke();
         }
     }
 
     void IDisposable.Dispose() => Disconnect();
 
-    public Action<MinecraftPacket<object>> OnPacket<TData>(Action<MinecraftPacket<TData>> action)
+    public PacketReceivedHandler<object> OnPacket<TData>(PacketReceivedHandler<TData> action)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        Action<MinecraftPacket<object>> handler = packet =>
+        PacketReceivedHandler<object> handler = (packet, context) =>
         {
             if (packet.Data is TData)
-                action((MinecraftPacket<TData>)packet);
+                action((MinecraftPacket<TData>)packet, context);
         };
 
         PacketReceived += handler;
@@ -164,18 +144,34 @@ public sealed class MinecraftPacketClient : IDisposable
         return handler;
     }
 
+    public PacketReceivedHandler<object> OnPacket<TData>(Action<MinecraftPacket<TData>> action)
+        where TData : notnull
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return OnPacket<TData>((packet, _) => action(packet));
+    }
+
+    public void OnceOnPacket<TData>(PacketReceivedHandler<TData> action)
+        where TData : notnull
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        PacketReceivedHandler<object>? handler = null;
+
+        handler = OnPacket<TData>((packet, context) =>
+        {
+            PacketReceived -= handler;
+            action(packet, context);
+        });
+    }
+
     public void OnceOnPacket<TData>(Action<MinecraftPacket<TData>> action)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        Action<MinecraftPacket<object>>? handler = null;
-
-        handler = OnPacket<TData>(packet =>
-        {
-            PacketReceived -= handler;
-            action(packet);
-        });
+        OnceOnPacket<TData>((packet, _) => action(packet));
     }
 
     /*public void SendCustomPacket(int packetId, object packetData)
@@ -197,16 +193,14 @@ public sealed class MinecraftPacketClient : IDisposable
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
-        var packetContext = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
-        var packetId      = Protocol.GetPacketId(packetData.GetType(), packetContext);
-        var packet        = new MinecraftPacket<object>(packetId, packetContext, packetData);
-
-        _isListeningPaused = true;
+        var context  = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
+        var packetId = Protocol.GetPacketId(packetData.GetType(), context);
+        var packet   = new MinecraftPacket<object>(packetId, packetData);
 
         try
         {
             _writer!.WritePacket(packet);
-            _logger?.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {packetContext.ConnectionState} state) was sended.");
+            _logger?.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
         }
         catch (IOException exception)
         {
@@ -220,8 +214,7 @@ public sealed class MinecraftPacketClient : IDisposable
             throw;
         }
 
-        ConnectionState    = Protocol.GetNewState(packet);
-        _isListeningPaused = false;
+        ConnectionState = Protocol.GetNewState(packet, context);
     }
 
     public async Task<MinecraftPacket<TResponseData>> SendRequestAsync<TResponseData>(object requestPacketData)

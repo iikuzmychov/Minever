@@ -1,10 +1,7 @@
 ﻿using Minever.Networking.DataTypes;
 using Minever.Networking.Packets;
-using Minever.Networking.Packets.Serialization.Converters;
-using System.IO.Compression;
+using Minever.Networking.Packets.Serialization;
 using System.Net;
-using System.Reflection;
-using Minever.Networking.Packets.Serialization.Attributes;
 
 namespace Minever.Networking.IO;
 
@@ -82,7 +79,7 @@ public class MinecraftWriter : BinaryWriter, IAsyncDisposable, IDisposable
         Write(position.Z);
     }
 
-    private static byte[] GetPacketDataBytes<TData>(TData packetData)
+    /*private static byte[] GetPacketDataBytes<TData>(TData packetData)
     {
         var packetProperties = packetData!
             .GetType()
@@ -101,20 +98,20 @@ public class MinecraftWriter : BinaryWriter, IAsyncDisposable, IDisposable
 
         foreach (var property in packetProperties)
         {
-            MinecraftPacketConverter converter;
+            PacketConverter converter;
 
             if (property.ConverterType is null)
             {
                 var propertyTypeConverterType = property.Info.PropertyType.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType;
 
                 if (propertyTypeConverterType is not null)
-                    converter = (MinecraftPacketConverter)Activator.CreateInstance(propertyTypeConverterType)!;
+                    converter = (PacketConverter)Activator.CreateInstance(propertyTypeConverterType)!;
                 else
                     converter = DefaultPacketConverter.Shared;
             }
             else
             {
-                converter = (MinecraftPacketConverter)Activator.CreateInstance(property.ConverterType)!;
+                converter = (PacketConverter)Activator.CreateInstance(property.ConverterType)!;
             }
 
             var propertyValue = property.Info.GetValue(packetData)!;
@@ -123,9 +120,9 @@ public class MinecraftWriter : BinaryWriter, IAsyncDisposable, IDisposable
         }
 
         return memoryStream.ToArray();
-    }
+    }*/
 
-    public void WritePacket(int packetId, object packetData)
+    /*public void WritePacket(int packetId, object packetData)
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
@@ -136,9 +133,9 @@ public class MinecraftWriter : BinaryWriter, IAsyncDisposable, IDisposable
         Write7BitEncodedInt(packetLength);
         Write(idBytes);
         Write(dataBytes);
-    }
+    }*/
 
-    public void WritePacket(int packetId, object packetData, int compressingThreshold)
+    /*public void WritePacket(int packetId, object packetData, int compressingThreshold)
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
@@ -178,13 +175,16 @@ public class MinecraftWriter : BinaryWriter, IAsyncDisposable, IDisposable
         {
             Write(compressedBytes);
         }
-    }
+    }*/
 
     public void WritePacket<TData>(MinecraftPacket<TData> packet)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(packet);
 
-        WritePacket(packet.Id, packet.Data);
+        var packetBytes = PacketSerializer.Serialize(packet);
+
+        Write7BitEncodedInt(packetBytes.Length);
+        Write(packetBytes);
     }
 }

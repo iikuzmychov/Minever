@@ -6,10 +6,10 @@ public enum PacketDirection
     ServerToClient
 }
 
-public struct PacketContext
+public readonly struct PacketContext
 {
-    public PacketDirection Direction { readonly get; set; }
-    public ConnectionState ConnectionState { readonly get; set; }
+    public PacketDirection Direction { get; }
+    public ConnectionState ConnectionState { get; }
 
     public PacketContext(PacketDirection direction, ConnectionState connectionState)
     {
