@@ -40,22 +40,6 @@ public abstract partial class MinecraftProtocol
             packets.Reverse.ContainsKey(packetDataType);
     }
 
-    public bool IsPacketSupported<TData>(PacketContext context)
-        where TData : notnull
-    {
-        return IsPacketSupported(typeof(TData), context);
-    }
-
-    public bool IsPacketSupported<TData>(MinecraftPacket<TData> packet, PacketContext context)
-        where TData : notnull
-    {
-        ArgumentNullException.ThrowIfNull(packet);
-
-        return SupportedPackets.TryGetValue(context, out var packets) &&
-            packets.Forward.ContainsKey(packet.Id) &&
-            packets.Reverse.ContainsKey(typeof(TData));
-    }
-
     public Type GetPacketDataType(int packetId, PacketContext context)
     {
         try
@@ -82,12 +66,5 @@ public abstract partial class MinecraftProtocol
         }
     }
 
-    public int GetPacketId<TData>(PacketContext context)
-        where TData : notnull
-    {
-        return GetPacketId(typeof(TData), context);
-    }
-
-    public abstract ConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket, PacketContext context)
-        where TData : notnull;
+    public abstract ConnectionState GetNewState(object lastPacketData, PacketContext context);
 }

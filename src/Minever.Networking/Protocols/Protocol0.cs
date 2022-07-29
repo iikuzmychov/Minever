@@ -100,14 +100,14 @@ public class Protocol0 : MinecraftProtocol
 
     public Protocol0() : base(s_supportedPackets) { }
 
-    public override ConnectionState GetNewState<TData>(MinecraftPacket<TData> lastPacket, PacketContext context)
+    public override ConnectionState GetNewState(object lastPacketData, PacketContext context)
     {
-        ArgumentNullException.ThrowIfNull(lastPacket);
+        ArgumentNullException.ThrowIfNull(lastPacketData);
         
-        if (IsPacketSupported(lastPacket, context))
+        if (IsPacketSupported(lastPacketData.GetType(), context))
             throw new NotSupportedException("The packet is not supported by the protocol.");
 
-        return (context.ConnectionState, lastPacket.Data) switch
+        return (context.ConnectionState, lastPacketData) switch
         {
             (ConnectionState.Handshake, Handshake handshake) => handshake.NextState.ToConnectionState(),
             (ConnectionState.Login, LoginSuccess)            => ConnectionState.Play,

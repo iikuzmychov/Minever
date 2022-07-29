@@ -89,7 +89,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
                 if (packet is not null)
                 {
                     Task.Run(() => PacketReceived?.Invoke(packet, context));
-                    ConnectionState = Protocol.GetNewState(packet, context);
+                    ConnectionState = Protocol.GetNewState(packet.Data, context);
                 }
             }
         }
@@ -219,7 +219,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
             throw;
         }
 
-        ConnectionState = Protocol.GetNewState(packet, context);
+        ConnectionState = Protocol.GetNewState(packet.Data, context);
     }
 
     public async Task<MinecraftPacket<TResponseData>> SendRequestAsync<TResponseData>(object requestPacketData)
