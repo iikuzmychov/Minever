@@ -8,7 +8,7 @@ Initial state. In developing.
 
 # Solution structure
 
-## Libraries
+## Class libraries
 
 | Project | Description |
 | ------- | ----------- |
