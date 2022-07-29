@@ -45,7 +45,7 @@ public class MinecraftClient : IDisposable
         throw new NotImplementedException();
     }
 
-    public void Disconnect() => PacketClient.Disconnect();
+    public void Disconnect() => PacketClient.DisconnectAsync();
 
     void IDisposable.Dispose() => Disconnect();
 }

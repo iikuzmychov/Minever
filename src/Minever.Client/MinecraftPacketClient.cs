@@ -11,7 +11,7 @@ namespace Minever.Client;
 public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet, PacketContext context)
     where TData : notnull;
 
-public sealed class MinecraftPacketClient : IDisposable
+public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
 {
     private readonly TcpClient _tcpClient = new();
     private bool _isListeningPaused = true;
@@ -56,7 +56,7 @@ public sealed class MinecraftPacketClient : IDisposable
                 catch (Exception exception)
                 {
                     _logger?.LogCritical(exception, $"Error while reading packet length.");
-                    Task.Run(Disconnect);
+                    Task.Run(DisconnectAsync);
                     
                     return;
                 }
@@ -81,7 +81,7 @@ public sealed class MinecraftPacketClient : IDisposable
                 catch (Exception exception)
                 {
                     _logger?.LogCritical(exception, $"Error while reading packet.");
-                    Task.Run(Disconnect);
+                    Task.Run(DisconnectAsync);
 
                     return;
                 }
@@ -108,7 +108,7 @@ public sealed class MinecraftPacketClient : IDisposable
         _listenTask               = Task.Run(ListenStream, _listenCancellationSource.Token);
     }
 
-    public void Disconnect()
+    public async Task DisconnectAsync()
     {
         if (IsConnected)
         {
@@ -119,14 +119,19 @@ public sealed class MinecraftPacketClient : IDisposable
                     PacketReceived -= (handler as PacketReceivedHandler<object>);
 
             _listenCancellationSource?.Cancel();
-            _listenTask?.Wait();
+            
+            if (_listenTask is not null)
+                await _listenTask;
+
             _tcpClient.Close();
             _logger?.LogInformation("Disconnected.");
             Disconnected?.Invoke();
         }
     }
 
-    void IDisposable.Dispose() => Disconnect();
+    async ValueTask IAsyncDisposable.DisposeAsync() => await DisconnectAsync();
+
+    void IDisposable.Dispose() => DisconnectAsync().GetAwaiter().GetResult();
 
     public PacketReceivedHandler<object> OnPacket<TData>(PacketReceivedHandler<TData> action)
         where TData : notnull
@@ -205,7 +210,7 @@ public sealed class MinecraftPacketClient : IDisposable
         catch (IOException exception)
         {
             _logger?.LogCritical(exception, $"An 'IOException' occured.");
-            Disconnect();
+            DisconnectAsync();
 
             return;
         }

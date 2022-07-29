@@ -5,7 +5,7 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 50158;
+const ushort ServerPort    = 50641;
 
 ThreadSafeConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -20,7 +20,7 @@ var logger         = loggerFactory.CreateLogger<MinecraftPacketClient>();
 var protocol       = MinecraftProtocol.FromVersion(0);
 var requestTimeout = TimeSpan.FromSeconds(15);
 
-using var client = new MinecraftPacketClient(protocol, logger);
+await using var client = new MinecraftPacketClient(protocol, logger);
 client.OnPacket<KeepAlive>(packet => client.SendPacket(new KeepAlive(packet.Data.Id)));
 client.OnPacket<JoinGame>(packet => ThreadSafeConsole.WriteLine($"Max players count: {packet.Data.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(packet => ThreadSafeConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
@@ -29,6 +29,7 @@ client.OnPacket<PlayerAbilities>(packet => ThreadSafeConsole.WriteLine($"Flying 
 client.OnPacket<PlayerPositionAndLook>(packet =>
 {
     client.SendPacket(new PlayerPositionAndLookWithStance(packet.Data, 1d));
+    client.SendPacket(new ClientStatus(ClientStatusAction.PerformRespawn));
     ThreadSafeConsole.WriteLine($"Player position: {packet.Data.Position}");
 });
 client.OnPacket<HeldItemChange>(packet => ThreadSafeConsole.WriteLine("HeldItemChange."));
@@ -50,6 +51,5 @@ client.SendPacket(handshake);
 
 var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(requestTimeout)).Data;
 ThreadSafeConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
-//client.SendPacket(new ClientStatus(ClientStatusAction.PerformRespawn));
 
 Console.ReadKey();
