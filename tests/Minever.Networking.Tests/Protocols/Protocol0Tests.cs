@@ -1,5 +1,6 @@
-﻿using Minever.Networking.Packets;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Minever.Networking.Packets;
+using System;
 using System.Collections.Generic;
 
 namespace Minever.Networking.Protocols.Tests;
@@ -136,8 +137,9 @@ public class Protocol0Tests
     [DynamicData(nameof(SupportedPacketsTestSetup))]
     public void IsPackaetSupported_SupportedPacketInfo_True(int packetId, PacketContext packetKind, string packetName)
     {
-        var actual = new Protocol0().IsPacketSupported(packetId, packetKind);
+        var isPacketSupported = new Protocol0().IsPacketSupported(packetId, packetKind);
 
-        Assert.IsTrue(actual, @$"Packet ""{packetName}"" 0x({packetId:X2}) is not supported.");
+        Console.Write(@$"Packet ""{packetName}"" 0x({packetId:X2}).");
+        Assert.IsTrue(isPacketSupported, "The packet is not supported.");
     }
 }
