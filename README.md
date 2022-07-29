@@ -11,7 +11,7 @@ Initial state. In developing.
 
 | Project | Description |
 | ------- | ----------- |
-| Minever.Networking | The core project. It contains an implementation of protocols, packages, writers, and readers. |
+| Minever.Networking | The core project. It contains an implementation of packages, protocols, serializer, writers, readers etc. |
 | Minever.Client | It contains Minecraft clients implementation (low-level MinecrafPacketClient and high-level MinecraftClient). |
 | Minever.ConsoleApplication | The console project for testing Minever.Client. |
 
