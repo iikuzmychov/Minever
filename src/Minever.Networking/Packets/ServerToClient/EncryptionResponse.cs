@@ -9,7 +9,7 @@ public sealed record EncryptionResponse
     private byte[] _verifyToken = Array.Empty<byte>();
 
     [PacketPropertyOrder(1)]
-    [PacketConverter(typeof(Int16PrefixedByteArrayPacketConverter))]
+    [PacketConverter(typeof(PrefixedArrayPacketConverter<short, byte>))]
     public byte[] PublicKey
     {
         get => _publicKey;
@@ -17,7 +17,7 @@ public sealed record EncryptionResponse
     }
 
     [PacketPropertyOrder(2)]
-    [PacketConverter(typeof(Int16PrefixedByteArrayPacketConverter))]
+    [PacketConverter(typeof(PrefixedArrayPacketConverter<short, byte>))]
     public byte[] VerifyToken
     {
         get => _verifyToken;

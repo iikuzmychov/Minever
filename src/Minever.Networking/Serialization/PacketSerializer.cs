@@ -10,19 +10,26 @@ namespace Minever.Networking.Serialization;
 
 public static class PacketSerializer
 {
+    public static PacketConverter GetTypeConverter(Type type)
+    {
+        ArgumentNullException.ThrowIfNull(type);
+
+        var typeConverterAttribute = type.GetCustomAttribute<PacketConverterAttribute>();
+
+        if (typeConverterAttribute is not null)
+            return (PacketConverter)Activator.CreateInstance(typeConverterAttribute.ConverterType)!;
+        else
+            return DefaultPacketConverter.Shared;
+    }
+
     private static PacketConverter GetPropertyConverter(PropertyInfo property)
     {
         var propertyConverterAttribute = property.GetCustomAttribute<PacketConverterAttribute>();
 
         if (propertyConverterAttribute is not null)
             return (PacketConverter)Activator.CreateInstance(propertyConverterAttribute.ConverterType)!;
-
-        var propertyTypeConverterAttribute = property.PropertyType.GetCustomAttribute<PacketConverterAttribute>();
-
-        if (propertyTypeConverterAttribute is not null)
-            return (PacketConverter)Activator.CreateInstance(propertyTypeConverterAttribute.ConverterType)!;
-
-        return DefaultPacketConverter.Shared;
+        else
+            return GetTypeConverter(property.PropertyType);
     }
 
     private static IOrderedEnumerable<PropertyInfo> GetSerializableProperties(Type packetDataType) =>
@@ -30,6 +37,33 @@ public static class PacketSerializer
             .GetProperties()
             .Where(property => property.GetCustomAttribute<PacketIgnoreAttribute>() is null)
             .OrderBy(property => property.GetCustomAttribute<PacketPropertyOrderAttribute>()?.Order ?? int.MaxValue);
+
+    public static void SerializeData(object packetData, MinecraftWriter writer)
+    {
+        ArgumentNullException.ThrowIfNull(packetData);
+        ArgumentNullException.ThrowIfNull(writer);
+
+        var packetDataType          = packetData.GetType();
+        var packetDataConverterType = packetDataType.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType;
+
+        if (packetDataConverterType is not null)
+        {
+            var converter = (PacketConverter)Activator.CreateInstance(packetDataConverterType)!;
+            converter.Write(packetData, writer);
+        }
+        else
+        {
+            var packetDataProperties = GetSerializableProperties(packetDataType);
+
+            foreach (var property in packetDataProperties)
+            {
+                var converter     = GetPropertyConverter(property);
+                var propertyValue = property.GetValue(packetData)!;
+
+                converter.Write(propertyValue, writer);
+            }
+        }
+    }
 
     public static byte[] Serialize<TData>(MinecraftPacket<TData> packet)
         where TData : notnull
@@ -40,53 +74,16 @@ public static class PacketSerializer
         using var writer       = new MinecraftWriter(memoryStream);
 
         writer.Write7BitEncodedInt(packet.Id);
-
-        var packetIdLength          = memoryStream.Length;
-        var packetDataType          = packet.Data.GetType();
-        var packetDataConverterType = packetDataType.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType;
-
-        if (packetDataConverterType is not null)
-        {
-            var converter = (PacketConverter)Activator.CreateInstance(packetDataConverterType)!;
-            converter.Write(packet.Data, writer);
-        }
-        else
-        {
-            var packetDataProperties = GetSerializableProperties(packetDataType);
-
-            foreach (var property in packetDataProperties)
-            {
-                var converter     = GetPropertyConverter(property);
-                var propertyValue = property.GetValue(packet.Data)!;
-
-                converter.Write(propertyValue, writer);
-            }
-        }
-
-        var dataLength  = memoryStream.Length - packetIdLength;
-        var packetBytes = memoryStream.ToArray();
-
-        return packetBytes;
+        SerializeData(packet.Data, writer);
+        
+        return memoryStream.ToArray();
     }
 
-    public static MinecraftPacket<object> Deserialize(byte[] packetBytes, PacketContext context, MinecraftProtocol protocol)
+    public static object DeserializeData(MinecraftReader reader, Type packetDataType)
     {
-        ArgumentNullException.ThrowIfNull(packetBytes);
-        ArgumentNullException.ThrowIfNull(protocol);
+        ArgumentNullException.ThrowIfNull(reader);
+        ArgumentNullException.ThrowIfNull(packetDataType);
 
-        using var memoryStream = new MemoryStream(packetBytes);
-        using var reader       = new MinecraftReader(memoryStream);
-        var packetId           = reader.Read7BitEncodedInt();
-        var packetIdLength     = (int)memoryStream.Position;
-        var packetDataLength   = packetBytes.Length - packetIdLength;
-
-        if (!protocol.IsPacketSupported(packetId, context))
-        {
-            var packetDataBytes = reader.ReadBytes(packetDataLength);
-            throw new NotSupportedPacketException(new(packetId, packetDataBytes), context);
-        }
-
-        var packetDataType          = protocol.GetPacketDataType(packetId, context);
         var packetDataConverterType = packetDataType.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType;
         object packetData;
 
@@ -109,7 +106,29 @@ public static class PacketSerializer
             }
         }
 
-        var packet = new MinecraftPacket<object>(packetId, packetData);
+        return packetData;
+    }
+
+    public static MinecraftPacket<object> Deserialize(byte[] packetBytes, PacketContext context, MinecraftProtocol protocol)
+    {
+        ArgumentNullException.ThrowIfNull(packetBytes);
+        ArgumentNullException.ThrowIfNull(protocol);
+
+        using var memoryStream = new MemoryStream(packetBytes);
+        using var reader       = new MinecraftReader(memoryStream);
+        var packetId           = reader.Read7BitEncodedInt();
+        var packetIdLength     = (int)memoryStream.Position;
+        var packetDataLength   = packetBytes.Length - packetIdLength;
+
+        if (!protocol.IsPacketSupported(packetId, context))
+        {
+            var packetDataBytes = reader.ReadBytes(packetDataLength);
+            throw new NotSupportedPacketException(new(packetId, packetDataBytes), context);
+        }
+
+        var packetDataType = protocol.GetPacketDataType(packetId, context);
+        var packetData     = DeserializeData(reader, packetDataType);
+        var packet         = new MinecraftPacket<object>(packetId, packetData);
 
         if (memoryStream.Position != memoryStream.Length)
             throw new PacketDeserializationException(packet, context, packetDataType, packetBytes.Length, (int)memoryStream.Position);

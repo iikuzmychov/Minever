@@ -5,41 +5,12 @@ namespace Minever.Networking.Serialization.Converters;
 
 public class DefaultPacketConverter : PacketConverter
 {
-    private static Type[] s_supportedTypes;
-
-    static DefaultPacketConverter()
-    {
-        s_supportedTypes = new Type[]
-        {
-            typeof(bool),
-            typeof(byte),
-            typeof(decimal),
-            typeof(double),
-            typeof(Half),
-            typeof(short),
-            typeof(int),
-            typeof(long),
-            typeof(sbyte),
-            typeof(float),
-            typeof(string),
-            typeof(ushort),
-            typeof(uint),
-            typeof(ulong),
-            typeof(Guid),
-            typeof(BlockPosition),
-            typeof(Position),
-        };
-    }
-
     public static DefaultPacketConverter Shared { get; } = new();
-
-    public DefaultPacketConverter() { }
 
     public override bool CanConvert(Type type)
     {
         ArgumentNullException.ThrowIfNull(type);
-
-        return s_supportedTypes.Contains(type);
+        return true;
     }
 
     public override object Read(MinecraftReader reader, Type targetType)
@@ -85,19 +56,13 @@ public class DefaultPacketConverter : PacketConverter
         else if (targetType == typeof(Position))
             return reader.ReadPosition();
         else
-            throw new NotImplementedException();
+            return PacketSerializer.DeserializeData(reader, targetType);
     }
 
     public override void Write(object value, MinecraftWriter writer)
     {
-        if (value is null)
-            throw new ArgumentNullException(nameof(value));
-
-        if (writer is null)
-            throw new ArgumentNullException(nameof(writer));
-
-        if (!CanConvert(value.GetType()))
-            throw new NotSupportedException("Converter does not support current value type.");
+        ArgumentNullException.ThrowIfNull(value);
+        ArgumentNullException.ThrowIfNull(writer);
 
         switch (value)
         {
@@ -119,7 +84,7 @@ public class DefaultPacketConverter : PacketConverter
             case BlockPosition blockPosition:   writer.Write(blockPosition); break;
             case Position position:             writer.Write(position); break;
 
-            default: throw new NotImplementedException();
+            default: PacketSerializer.SerializeData(value, writer); break;
         };
     }
 }

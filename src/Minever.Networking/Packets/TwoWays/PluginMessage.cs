@@ -16,7 +16,7 @@ public sealed record PluginMessage
     }
 
     [PacketPropertyOrder(2)]
-    [PacketConverter(typeof(Int16PrefixedArrayPacketConverter<byte, DefaultPacketConverter>))]
+    [PacketConverter(typeof(PrefixedArrayPacketConverter<short, byte>))]
     public byte[] Data
     {
         get => _data;
