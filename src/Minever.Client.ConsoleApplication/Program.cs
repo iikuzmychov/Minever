@@ -5,7 +5,7 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 64874;
+const ushort ServerPort = 64455;
 
 ThreadSafeConsole.ForegroundColor = ConsoleColor.Magenta;
 
