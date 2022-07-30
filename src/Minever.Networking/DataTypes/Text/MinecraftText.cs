@@ -1,4 +1,4 @@
-﻿using Minever.Networking.Packets.Serialization.Converters.Json;
+﻿using Minever.Networking.Serialization.Converters.Json;
 using System.Drawing;
 using System.Text.Json.Serialization;
 

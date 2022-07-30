@@ -1,6 +1,6 @@
 ﻿using Minever.Networking.DataTypes;
 using Minever.Networking.Packets;
-using Minever.Networking.Packets.Serialization;
+using Minever.Networking.Serialization;
 using System.Net;
 
 namespace Minever.Networking.IO;

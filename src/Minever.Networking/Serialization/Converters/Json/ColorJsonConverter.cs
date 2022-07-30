@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Minever.Networking.Packets.Serialization.Converters.Json;
+namespace Minever.Networking.Serialization.Converters.Json;
 
 internal class ColorJsonConverter : JsonConverter<Color?>
 {

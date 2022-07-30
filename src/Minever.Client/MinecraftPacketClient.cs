@@ -110,28 +110,32 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
 
     public async Task DisconnectAsync()
     {
-        if (IsConnected)
+        if (!IsConnected)
+            return;
+                
+        _isListeningPaused = true;
+
+        if (PacketReceived is not null)
         {
-            _isListeningPaused = true;
-
-            if (PacketReceived is not null)
-                foreach (var handler in PacketReceived.GetInvocationList())
-                    PacketReceived -= (handler as PacketReceivedHandler<object>);
-
-            _listenCancellationSource?.Cancel();
-            
-            if (_listenTask is not null)
-                await _listenTask;
-
-            _tcpClient.Close();
-            _logger?.LogInformation("Disconnected.");
-            Disconnected?.Invoke();
+            foreach (var handler in PacketReceived.GetInvocationList())
+                PacketReceived -= (handler as PacketReceivedHandler<object>);
         }
+
+        _listenCancellationSource?.Cancel();
+            
+        if (_listenTask is not null)
+            await _listenTask;
+
+        _tcpClient.Close();
+        _logger?.LogInformation("Disconnected.");
+        Disconnected?.Invoke();
     }
+
+    public void Disconnect() => DisconnectAsync().GetAwaiter().GetResult();
 
     async ValueTask IAsyncDisposable.DisposeAsync() => await DisconnectAsync();
 
-    void IDisposable.Dispose() => DisconnectAsync().GetAwaiter().GetResult();
+    void IDisposable.Dispose() => Disconnect();
 
     public PacketReceivedHandler<object> OnPacket<TData>(PacketReceivedHandler<TData> action)
         where TData : notnull
@@ -202,24 +206,20 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
         var packetId = Protocol.GetPacketId(packetData.GetType(), context);
         var packet   = new MinecraftPacket<object>(packetId, packetData);
 
-        try
-        {
-            _writer!.WritePacket(packet);
-            _logger?.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
-        }
-        catch (IOException exception)
-        {
-            _logger?.LogCritical(exception, $"An 'IOException' occured.");
-            DisconnectAsync();
-
-            return;
-        }
-        catch
-        {
-            throw;
-        }
+        _writer!.WritePacket(packet);
+        _logger?.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
 
         ConnectionState = Protocol.GetNewState(packet.Data, context);
+    }
+
+    public async Task<MinecraftPacket<TResponseData>> WaitPacketAsync<TResponseData>()
+        where TResponseData : notnull
+    {
+        var taskCompletionSource = new TaskCompletionSource<MinecraftPacket<TResponseData>>();
+
+        OnceOnPacket<TResponseData>(packet => taskCompletionSource.SetResult(packet));
+
+        return await taskCompletionSource.Task;
     }
 
     public async Task<MinecraftPacket<TResponseData>> SendRequestAsync<TResponseData>(object requestPacketData)

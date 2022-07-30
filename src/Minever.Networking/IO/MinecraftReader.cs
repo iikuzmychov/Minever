@@ -1,6 +1,6 @@
 ﻿using Minever.Networking.DataTypes;
 using Minever.Networking.Packets;
-using Minever.Networking.Packets.Serialization;
+using Minever.Networking.Serialization;
 using Minever.Networking.Protocols;
 using System.Buffers.Binary;
 

@@ -1,6 +1,6 @@
 ﻿using Minever.Networking.IO;
 
-namespace Minever.Networking.Packets.Serialization.Converters;
+namespace Minever.Networking.Serialization.Converters;
 
 public class Int16PrefixedArrayPacketConverter<TElement, TElementConverter> : PacketConverter<TElement[]>
     where TElement : notnull

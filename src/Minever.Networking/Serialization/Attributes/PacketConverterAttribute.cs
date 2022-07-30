@@ -1,6 +1,6 @@
-﻿using Minever.Networking.Packets.Serialization.Converters;
+﻿using Minever.Networking.Serialization.Converters;
 
-namespace Minever.Networking.Packets.Serialization.Attributes;
+namespace Minever.Networking.Serialization.Attributes;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Enum)]
 public class PacketConverterAttribute : Attribute

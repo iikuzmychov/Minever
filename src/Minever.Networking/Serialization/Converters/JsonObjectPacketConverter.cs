@@ -1,7 +1,7 @@
 ﻿using Minever.Networking.IO;
 using System.Text.Json;
 
-namespace Minever.Networking.Packets.Serialization.Converters;
+namespace Minever.Networking.Serialization.Converters;
 
 public class JsonObjectPacketConverter : PacketConverter
 {

@@ -1,11 +1,12 @@
 ﻿using Minever.Networking.Exceptions;
 using Minever.Networking.IO;
-using Minever.Networking.Packets.Serialization.Attributes;
-using Minever.Networking.Packets.Serialization.Converters;
+using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
+using Minever.Networking.Serialization.Attributes;
+using Minever.Networking.Serialization.Converters;
 using System.Reflection;
 
-namespace Minever.Networking.Packets.Serialization;
+namespace Minever.Networking.Serialization;
 
 public static class PacketSerializer
 {

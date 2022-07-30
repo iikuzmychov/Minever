@@ -1,5 +1,5 @@
 ﻿using Minever.Networking.DataTypes;
-using Minever.Networking.Packets.Serialization.Attributes;
+using Minever.Networking.Serialization.Attributes;
 
 namespace Minever.Networking.Packets;
 

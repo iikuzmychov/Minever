@@ -1,7 +1,7 @@
 ﻿using Minever.Networking.DataTypes;
 using Minever.Networking.IO;
 
-namespace Minever.Networking.Packets.Serialization.Converters;
+namespace Minever.Networking.Serialization.Converters;
 
 public class DefaultPacketConverter : PacketConverter
 {

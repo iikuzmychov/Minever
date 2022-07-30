@@ -1,5 +1,5 @@
 ﻿using Minever.Networking.DataTypes.Text;
-using Minever.Networking.Packets.Serialization.Converters.Json;
+using Minever.Networking.Serialization.Converters.Json;
 using System.Text.Json.Serialization;
 
 namespace Minever.Networking.DataTypes;

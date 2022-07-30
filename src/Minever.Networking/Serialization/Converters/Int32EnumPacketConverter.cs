@@ -1,21 +1,21 @@
 ﻿using Minever.Networking.IO;
 
-namespace Minever.Networking.Packets.Serialization.Converters;
+namespace Minever.Networking.Serialization.Converters;
 
-public class SByteEnumPacketConverter<TEnum> : PacketConverter<TEnum>
+public class Int32EnumPacketConverter<TEnum> : PacketConverter<TEnum>
     where TEnum : Enum
 {
     public override TEnum Read(MinecraftReader reader)
     {
         ArgumentNullException.ThrowIfNull(reader);
 
-        return (TEnum)(object)(int)reader.ReadSByte();
+        return (TEnum)(object)reader.ReadInt32();
     }
 
     public override void Write(TEnum value, MinecraftWriter writer)
     {
         ArgumentNullException.ThrowIfNull(writer);
 
-        writer.Write((sbyte)(int)(object)value);
+        writer.Write((int)(object)value);
     }
 }

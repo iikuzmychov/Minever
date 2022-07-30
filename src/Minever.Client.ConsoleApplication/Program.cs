@@ -5,7 +5,7 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 50641;
+const ushort ServerPort    = 64874;
 
 ThreadSafeConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -17,7 +17,7 @@ using var loggerFactory = LoggerFactory.Create(builder =>
 });
 
 var logger         = loggerFactory.CreateLogger<MinecraftPacketClient>();
-var protocol       = MinecraftProtocol.FromVersion(0);
+var protocol       = new Protocol0();
 var requestTimeout = TimeSpan.FromSeconds(15);
 
 await using var client = new MinecraftPacketClient(protocol, logger);

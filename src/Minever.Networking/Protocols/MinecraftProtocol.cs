@@ -66,5 +66,5 @@ public abstract partial class MinecraftProtocol
         }
     }
 
-    public abstract ConnectionState GetNewState(object lastPacketData, PacketContext context);
+    public abstract ConnectionState GetNewState<TData>(TData lastPacketData, PacketContext context);
 }
