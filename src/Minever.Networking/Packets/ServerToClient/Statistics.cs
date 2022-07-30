@@ -1,7 +1,7 @@
 ﻿using Minever.Networking.Serialization.Attributes;
 using Minever.Networking.Serialization.Converters;
 
-namespace Minever.Networking.Packets.ServerToClient;
+namespace Minever.Networking.Packets;
 
 public sealed record Statistics
 {

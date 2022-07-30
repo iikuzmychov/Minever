@@ -3,8 +3,8 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.DataTypes;
 
-[PacketConverter(typeof(ByteEnumPacketConverter<Gamemode>))]
-public enum Gamemode
+[PacketConverter(typeof(EnumPacketConverter<Gamemode, byte>))]
+public enum Gamemode : byte
 {
     Survival  = 0,
     Creative  = 1,

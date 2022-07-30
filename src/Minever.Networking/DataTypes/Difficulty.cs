@@ -3,8 +3,8 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.DataTypes;
 
-[PacketConverter(typeof(ByteEnumPacketConverter<Difficulty>))]
-public enum Difficulty
+[PacketConverter(typeof(EnumPacketConverter<Difficulty, byte>))]
+public enum Difficulty : byte
 {
     Peaceful = 0,
     Easy     = 1,

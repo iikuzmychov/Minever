@@ -24,7 +24,11 @@ await using var client = new MinecraftPacketClient(protocol, logger);
 client.OnPacket<KeepAlive>(packet => client.SendPacket(new KeepAlive(packet.Data.Id)));
 client.OnPacket<JoinGame>(packet => ThreadSafeConsole.WriteLine($"Max players count: {packet.Data.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(packet => ThreadSafeConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
-client.OnPacket<Respawn>(packet => ThreadSafeConsole.WriteLine("Respawn."));
+client.OnPacket<Respawn>(packet =>
+{
+    client.SendPacket(new ClientStatus(ClientStatusAction.PerformRespawn));
+    ThreadSafeConsole.WriteLine("Respawn.");
+});
 client.OnPacket<PlayerAbilities>(packet => ThreadSafeConsole.WriteLine($"Flying speed: {packet.Data.FlyingSpeed}, walking speed: {packet.Data.WalkingSpeed}."));
 client.OnPacket<PlayerPositionAndLook>(packet =>
 {
@@ -43,6 +47,7 @@ client.OnPacket<UpdateHealth>(packet =>
     ThreadSafeConsole.WriteLine($"Health: {packet.Data.Health}, food: {packet.Data.Food}, food saturation: {packet.Data.FoodSaturation}.");
 });
 client.OnPacket<PluginMessage>(packet => ThreadSafeConsole.WriteLine($"Plugin message from channel '{packet.Data.ChannelName}'"));
+client.OnPacket<Statistics>(packet => ThreadSafeConsole.WriteLine($"Statistics ({packet.Data.Entries.Length} entries)."));
 
 await client.ConnectAsync(ServerAddress, ServerPort);
 

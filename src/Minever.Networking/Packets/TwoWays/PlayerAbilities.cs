@@ -1,12 +1,11 @@
 ﻿using Minever.Networking.Serialization.Attributes;
 using Minever.Networking.Serialization.Converters;
-using System.Buffers.Binary;
 
 namespace Minever.Networking.Packets;
 
 [Flags]
-[PacketConverter(typeof(ByteEnumPacketConverter<PlayerAbilitiesFlags>))]
-public enum PlayerAbilitiesFlags
+[PacketConverter(typeof(EnumPacketConverter<PlayerAbilitiesFlags, byte>))]
+public enum PlayerAbilitiesFlags : byte
 {
     None         = 0,
     Invulnerable = 1,

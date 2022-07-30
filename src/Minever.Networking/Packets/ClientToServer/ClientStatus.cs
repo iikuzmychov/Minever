@@ -3,8 +3,8 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.Packets;
 
-[PacketConverter(typeof(ByteEnumPacketConverter<ClientStatusAction>))]
-public enum ClientStatusAction
+[PacketConverter(typeof(EnumPacketConverter<ClientStatusAction, byte>))]
+public enum ClientStatusAction : byte
 { 
     PerformRespawn           = 0,
     RequestStats             = 1,

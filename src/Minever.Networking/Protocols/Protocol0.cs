@@ -89,6 +89,7 @@ public class Protocol0 : MinecraftProtocol
                     { 0x08, typeof(PlayerPositionAndLook) },
                     { 0x09, typeof(HeldItemChange) },
 
+                    { 0x37, typeof(Statistics) },
                     { 0x38, typeof(PlayerListItem) },
                     { 0x39, typeof(PlayerAbilities) },
 

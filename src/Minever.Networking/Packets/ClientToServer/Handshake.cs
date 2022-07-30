@@ -3,7 +3,7 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.Packets;
 
-[PacketConverter(typeof(VarIntEnumPacketConverter<HandshakeNextState>))]
+[PacketConverter(typeof(EnumPacketConverter<HandshakeNextState, int, VarIntPacketConverter>))]
 public enum HandshakeNextState
 { 
     Status = 1,

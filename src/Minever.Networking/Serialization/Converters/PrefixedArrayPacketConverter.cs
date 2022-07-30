@@ -15,7 +15,8 @@ public class PrefixedArrayPacketConverter<TPrefix, TElement> : PacketConverter<T
         _elementConverter = elementConverter ?? throw new ArgumentNullException(nameof(elementConverter));
     }
 
-    public PrefixedArrayPacketConverter() : this(DefaultPacketConverter.Shared, DefaultPacketConverter.Shared) { }
+    public PrefixedArrayPacketConverter()
+        : this(PacketSerializer.GetTypeConverter(typeof(TPrefix)), PacketSerializer.GetTypeConverter(typeof(TElement))) { }
 
     public override TElement[] Read(MinecraftReader reader)
     {

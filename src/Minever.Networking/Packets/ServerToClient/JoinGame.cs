@@ -13,7 +13,7 @@ public sealed record JoinGame
     public Gamemode Gamemode { get; init; }
 
     [PacketPropertyOrder(3)]
-    [PacketConverter(typeof(SByteEnumPacketConverter<Dimension>))]
+    [PacketConverter(typeof(EnumPacketConverter<Dimension, sbyte>))]
     public Dimension Dimension { get; init; }
 
     [PacketPropertyOrder(4)]
