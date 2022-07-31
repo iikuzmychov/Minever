@@ -5,7 +5,7 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort = 64455;
+const ushort ServerPort    = 50673;
 
 ThreadSafeConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -26,14 +26,14 @@ client.OnPacket<JoinGame>(packet => ThreadSafeConsole.WriteLine($"Max players co
 client.OnPacket<SpawnPosition>(packet => ThreadSafeConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
 client.OnPacket<Respawn>(packet =>
 {
-    client.SendPacket(new ClientStatus(ClientStatusAction.PerformRespawn));
+    client.SendPacket(ClientStatus.PerformRespawn);
     ThreadSafeConsole.WriteLine("Respawn.");
 });
 client.OnPacket<PlayerAbilities>(packet => ThreadSafeConsole.WriteLine($"Flying speed: {packet.Data.FlyingSpeed}, walking speed: {packet.Data.WalkingSpeed}."));
 client.OnPacket<PlayerPositionAndLook>(packet =>
 {
     client.SendPacket(new PlayerPositionAndLookWithStance(packet.Data, 1d));
-    client.SendPacket(new ClientStatus(ClientStatusAction.PerformRespawn));
+    client.SendPacket(ClientStatus.PerformRespawn);
     ThreadSafeConsole.WriteLine($"Player position: {packet.Data.Position}");
 });
 client.OnPacket<HeldItemChange>(packet => ThreadSafeConsole.WriteLine("HeldItemChange."));
@@ -42,7 +42,7 @@ client.OnPacket<PlayerListItem>(packet => ThreadSafeConsole.WriteLine($"Player: 
 client.OnPacket<UpdateHealth>(packet =>
 {
     if (packet.Data.Health < 0)
-        client.SendPacket(new ClientStatus(ClientStatusAction.PerformRespawn));
+        client.SendPacket(ClientStatus.PerformRespawn);
 
     ThreadSafeConsole.WriteLine($"Health: {packet.Data.Health}, food: {packet.Data.Food}, food saturation: {packet.Data.FoodSaturation}.");
 });
