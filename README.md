@@ -25,7 +25,7 @@ Initial state. Many things need to be done.
 
 | Project | Description |
 | ------- | ----------- |
-| Minever.ConsoleApplication | The console project for testing Minever.Client. |
+| Minever.ConsoleApplication | The console project for debuging Minever.Client. |
 
 ## License
 
