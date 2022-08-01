@@ -4,16 +4,24 @@ namespace Minever.Networking.Serialization.Converters;
 
 public abstract class PacketConverter
 {
+    public abstract bool CanConvert(Type type);
+
     public abstract object Read(MinecraftReader reader, Type targetType);
 
     public abstract void Write(object value, MinecraftWriter writer);
-
-    public abstract bool CanConvert(Type type);
 }
 
 public abstract class PacketConverter<T> : PacketConverter
     where T : notnull
 {
+    public override bool CanConvert(Type type)
+    {
+        if (type is null)
+            throw new ArgumentNullException(nameof(type));
+
+        return typeof(T) == type;
+    }
+
     public abstract T Read(MinecraftReader reader);
 
     public abstract void Write(T value, MinecraftWriter writer);
@@ -40,11 +48,4 @@ public abstract class PacketConverter<T> : PacketConverter
         Write((T)value, writer);
     }
 
-    public override bool CanConvert(Type type)
-    {
-        if (type is null)
-            throw new ArgumentNullException(nameof(type));
-
-        return typeof(T) == type;
-    }
 }

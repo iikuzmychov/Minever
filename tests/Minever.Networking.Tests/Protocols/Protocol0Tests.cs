@@ -135,11 +135,11 @@ public class Protocol0Tests
 
     [TestMethod]
     [DynamicData(nameof(SupportedPacketsTestSetup))]
-    public void IsPackaetSupported_SupportedPacketInfo_True(int packetId, PacketContext packetKind, string packetName)
+    public void IsPackaetSupported_SupportedPacketInfo_True(int packetId, PacketContext context, string packetName)
     {
-        var isPacketSupported = new Protocol0().IsPacketSupported(packetId, packetKind);
+        var isPacketSupported = new Protocol0().IsPacketSupported(packetId, context);
 
-        Console.Write(@$"Packet ""{packetName}"" 0x({packetId:X2}).");
+        Console.Write(@$"Packet ""{packetName}"" (0x{packetId:X2}, {context.ConnectionState} state, {context.Direction}).");
         Assert.IsTrue(isPacketSupported, "The packet is not supported.");
     }
 }

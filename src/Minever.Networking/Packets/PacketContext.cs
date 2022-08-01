@@ -8,8 +8,8 @@ public enum PacketDirection
 
 public readonly struct PacketContext
 {
-    public PacketDirection Direction { get; }
-    public ConnectionState ConnectionState { get; }
+    public PacketDirection Direction { get; init; }
+    public ConnectionState ConnectionState { get; init; }
 
     public PacketContext(PacketDirection direction, ConnectionState connectionState)
     {
@@ -18,9 +18,9 @@ public readonly struct PacketContext
     }
 
     public override bool Equals(object? obj) =>
-        obj is PacketContext info &&
-        Direction == info.Direction &&
-        ConnectionState == info.ConnectionState;
+        obj is PacketContext context &&
+        Direction == context.Direction &&
+        ConnectionState == context.ConnectionState;
 
     public override int GetHashCode() => HashCode.Combine(Direction, ConnectionState);
 
