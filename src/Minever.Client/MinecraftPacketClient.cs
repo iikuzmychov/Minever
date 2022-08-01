@@ -183,21 +183,6 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
         OnceOnPacket<TData>((packet, _) => action(packet));
     }
 
-    /*public void SendCustomPacket(int packetId, object packetData)
-    {
-        ArgumentNullException.ThrowIfNull(packetData);
-
-        var packetKind
-        var packet = new MinecraftPacket<object(packetId, );
-
-        _isListeningPaused = true;
-
-        _writer!.WritePacket(packetId, packetData);
-
-        ConnectionState    = Protocol.GetNewState(ConnectionState, packetData);
-        _isListeningPaused = false;
-    }*/
-
     public void SendPacket(object packetData)
     {
         ArgumentNullException.ThrowIfNull(packetData);

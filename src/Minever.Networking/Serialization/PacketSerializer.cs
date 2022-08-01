@@ -130,7 +130,7 @@ public static class PacketSerializer
         var packetData     = DeserializeData(reader, packetDataType);
         var packet         = new MinecraftPacket<object>(packetId, packetData);
 
-        if (memoryStream.Position != memoryStream.Length)
+        if (memoryStream.Position != packetBytes.Length)
             throw new PacketDeserializationException(packet, context, packetDataType, packetBytes.Length, (int)memoryStream.Position);
 
         return packet;

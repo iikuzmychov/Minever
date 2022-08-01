@@ -5,7 +5,6 @@ namespace Minever.Networking.Protocols;
 
 public class Protocol0 : MinecraftProtocol
 {
-
     private readonly static Dictionary<PacketContext, BiMap<int, Type>> s_supportedPackets;
 
     public override int Version => 0;
@@ -88,6 +87,11 @@ public class Protocol0 : MinecraftProtocol
                     { 0x07, typeof(Respawn) },
                     { 0x08, typeof(PlayerPositionAndLook) },
                     { 0x09, typeof(HeldItemChange) },
+                    
+                    { 0x13, typeof(DestroyEntities) },
+                    { 0x14, typeof(Entity) },
+                    
+                    { 0x0D, typeof(CollectItem) },
 
                     { 0x37, typeof(Statistics) },
                     { 0x38, typeof(PlayerListItem) },

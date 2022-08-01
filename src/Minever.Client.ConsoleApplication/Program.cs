@@ -5,7 +5,7 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 50673;
+const ushort ServerPort    = 51488;
 
 ThreadSafeConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -20,7 +20,7 @@ var logger         = loggerFactory.CreateLogger<MinecraftPacketClient>();
 var protocol       = new Protocol0();
 var requestTimeout = TimeSpan.FromSeconds(15);
 
-await using var client = new MinecraftPacketClient(protocol, logger);
+await using var client = new MinecraftPacketClient(protocol, null);
 client.OnPacket<KeepAlive>(packet => client.SendPacket(new KeepAlive(packet.Data.Id)));
 client.OnPacket<JoinGame>(packet => ThreadSafeConsole.WriteLine($"Max players count: {packet.Data.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(packet => ThreadSafeConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
@@ -48,6 +48,9 @@ client.OnPacket<UpdateHealth>(packet =>
 });
 client.OnPacket<PluginMessage>(packet => ThreadSafeConsole.WriteLine($"Plugin message from channel '{packet.Data.ChannelName}'"));
 client.OnPacket<Statistics>(packet => ThreadSafeConsole.WriteLine($"Statistics ({packet.Data.Entries.Length} entries)."));
+client.OnPacket<CollectItem>(packet => ThreadSafeConsole.WriteLine($"{packet.Data.CollectorEntityId} collects {packet.Data.CollectedEntityId}."));
+client.OnPacket<DestroyEntities>(packet => ThreadSafeConsole.WriteLine($"{packet.Data.EntityIds.Length} entities destroyed."));
+client.OnPacket<Entity>(packet => ThreadSafeConsole.WriteLine($"Entity {packet.Data.EntityId}."));
 
 await client.ConnectAsync(ServerAddress, ServerPort);
 
