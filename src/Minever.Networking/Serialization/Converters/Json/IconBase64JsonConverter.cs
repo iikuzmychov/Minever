@@ -1,9 +1,9 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Minever.Networking.Serialization.Converters.Json;
 
-internal class IconBase64JsonConverter : JsonConverter<string?>
+public class IconBase64JsonConverter : JsonConverter<string?>
 {
     private const string Prefix = "data:image/png;base64,";
 
