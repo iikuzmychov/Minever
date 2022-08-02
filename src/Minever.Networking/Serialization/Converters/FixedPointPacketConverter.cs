@@ -5,28 +5,28 @@ namespace Minever.Networking.Serialization.Converters;
 /// <summary>
 /// <see href="https://wiki.vg/Data_types#Fixed-point_numbers"/>
 /// </summary>
-public class FixedPointPacketConverter : PacketConverter
+public class FixedPointPacketConverter<T> : PacketConverter<double>
+    where T : notnull
 {
-    public override bool CanConvert(Type type) => true;
+    private readonly PacketConverter _typeConverter = PacketSerializer.GetTypeConverter(typeof(T));
 
-    public override object Read(MinecraftReader reader, Type targetType)
+    public override double Read(MinecraftReader reader)
     {
         ArgumentNullException.ThrowIfNull(reader);
-        ArgumentNullException.ThrowIfNull(targetType);
 
-        var fixedPointValue = reader.ReadDouble();
-        var value           = Convert.ChangeType(fixedPointValue * 32d, targetType);
+        var encodedValue = (T)_typeConverter.Read(reader, typeof(T));
+        var value        = Convert.ToDouble(encodedValue) / 32d;
 
         return value;
     }
 
-    public override void Write(object value, MinecraftWriter writer)
+    public override void Write(double value, MinecraftWriter writer)
     {
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(writer);
 
-        var fixedPointValue = Convert.ToDouble(value) / 32d;
+        var encodedValue = (T)Convert.ChangeType(value * 32d, typeof(T));
 
-        writer.Write(fixedPointValue);
+        _typeConverter.Write(encodedValue, writer);
     }
 }

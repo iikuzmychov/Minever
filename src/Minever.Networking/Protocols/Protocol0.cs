@@ -83,13 +83,15 @@ public class Protocol0 : MinecraftProtocol
                     { 0x03, typeof(TimeUpdate) },
 
                     { 0x05, typeof(SpawnPosition) },
-                    { 0x06, typeof(UpdateHealth) },                    
+                    { 0x06, typeof(UpdateHealth) },
                     { 0x07, typeof(Respawn) },
                     { 0x08, typeof(PlayerPositionAndLook) },
                     { 0x09, typeof(HeldItemChange) },
                     
                     { 0x13, typeof(DestroyEntities) },
                     { 0x14, typeof(Entity) },
+                    { 0x15, typeof(EntityRelativeMove) },
+                    { 0x16, typeof(EntityLook) },
                     
                     { 0x0D, typeof(CollectItem) },
 

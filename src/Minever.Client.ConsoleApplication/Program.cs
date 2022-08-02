@@ -5,7 +5,7 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 51488;
+const ushort ServerPort    = 50577;
 
 ThreadSafeConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -51,6 +51,8 @@ client.OnPacket<Statistics>(packet => ThreadSafeConsole.WriteLine($"Statistics (
 client.OnPacket<CollectItem>(packet => ThreadSafeConsole.WriteLine($"{packet.Data.CollectorEntityId} collects {packet.Data.CollectedEntityId}."));
 client.OnPacket<DestroyEntities>(packet => ThreadSafeConsole.WriteLine($"{packet.Data.EntityIds.Length} entities destroyed."));
 client.OnPacket<Entity>(packet => ThreadSafeConsole.WriteLine($"Entity {packet.Data.EntityId}."));
+client.OnPacket<EntityRelativeMove>(packet => ThreadSafeConsole.WriteLine($"Entity {packet.Data.EntityId} moves ({packet.Data.DeltaX:+#;-#;0}; {packet.Data.DeltaY:+#;-#;0}; {packet.Data.DeltaZ:+#;-#;0})."));
+client.OnPacket<EntityLook>(packet => ThreadSafeConsole.WriteLine($"Entity {packet.Data.EntityId} look changed ({packet.Data.Pitch}; {packet.Data.Yaw})."));
 
 await client.ConnectAsync(ServerAddress, ServerPort);
 

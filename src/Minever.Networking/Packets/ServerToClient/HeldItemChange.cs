@@ -4,12 +4,18 @@ namespace Minever.Networking.Packets;
 
 public sealed record HeldItemChange
 {
+    private sbyte _slotNumber;
+
     [PacketPropertyOrder(1)]
-    public byte SlotNumber { get; init; }
+    public sbyte SlotNumber
+    {
+        get => _slotNumber;
+        init => _slotNumber = (value is >= 0 and <= 8) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+    }
 
     public HeldItemChange() { }
 
-    public HeldItemChange(byte slotNumber)
+    public HeldItemChange(sbyte slotNumber)
     {
         SlotNumber = slotNumber;
     }

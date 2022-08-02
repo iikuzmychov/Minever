@@ -8,7 +8,7 @@ public sealed record DestroyEntities
     private int[] _entityIds = Array.Empty<int>();
 
     [PacketPropertyOrder(1)]
-    [PacketConverter(typeof(PrefixedArrayPacketConverter<byte, int>))]
+    [PacketConverter(typeof(PrefixedArrayPacketConverter<sbyte, int>))]
     public int[] EntityIds
     {
         get => _entityIds;
