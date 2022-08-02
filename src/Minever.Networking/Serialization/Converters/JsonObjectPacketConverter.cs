@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace Minever.Networking.Serialization.Converters;
 
-public class JsonObjectPacketConverter : PacketConverter
+public class JsonDataPacketConverter : PacketConverter
 {
     public override bool CanConvert(Type type) => true;
 

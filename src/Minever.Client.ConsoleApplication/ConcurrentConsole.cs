@@ -1,6 +1,6 @@
 ﻿namespace Minever.Client.ConsoleApplication;
 
-internal static class ThreadSafeConsole
+internal static class ConcurrentConsole
 {
     internal static ConsoleColor ForegroundColor = ConsoleColor.White;
     internal static ConsoleColor BackgroundColor = ConsoleColor.Black;

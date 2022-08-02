@@ -7,7 +7,7 @@ namespace Minever.Networking.Packets;
 public sealed record ServerStatusResponse
 {
     [PacketPropertyOrder(1)]
-    [PacketConverter(typeof(JsonObjectPacketConverter))]
+    [PacketConverter(typeof(JsonDataPacketConverter))]
     public ServerStatus Status { get; init; } = new();
 
     public ServerStatusResponse() { }

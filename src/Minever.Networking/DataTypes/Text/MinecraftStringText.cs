@@ -1,7 +1,9 @@
 ﻿using System.Text.Json.Serialization;
+using Minever.Networking.Serialization.Converters.Json;
 
 namespace Minever.Networking.DataTypes.Text;
 
+[JsonConverter(typeof(MinecraftTextJsonConverter))]
 public class MinecraftStringText : MinecraftText
 {
     private string _text = string.Empty;

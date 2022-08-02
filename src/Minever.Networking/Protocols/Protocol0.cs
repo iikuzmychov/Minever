@@ -47,7 +47,7 @@ public class Protocol0 : MinecraftProtocol
                 new()
                 {
                     { 0x00, typeof(LoginStart) },
-                    //{ 0x01, typeof(EncryptionRequest) },
+                    { 0x01, typeof(EncryptionRequest) },
                 }
             },
 
@@ -55,8 +55,9 @@ public class Protocol0 : MinecraftProtocol
                 new(PacketDirection.ServerToClient, ConnectionState.Login),
                 new()
                 {
+                    { 0x00, typeof(Disconnect) },
+                    { 0x01, typeof(EncryptionResponse) },
                     { 0x02, typeof(LoginSuccess) },
-                    //{ 0x01, typeof(EncryptionResponse) },
                 }
             },
 
@@ -66,6 +67,7 @@ public class Protocol0 : MinecraftProtocol
                 new()
                 {
                     { 0x00, typeof(KeepAlive) },
+                    { 0x01, typeof(ChatMessage) },
                     
                     { 0x06, typeof(PlayerPositionAndLookWithStance) },
                     
@@ -80,6 +82,7 @@ public class Protocol0 : MinecraftProtocol
                 {
                     { 0x00, typeof(KeepAlive) },
                     { 0x01, typeof(JoinGame) },
+                    { 0x02, typeof(ChatMessage) },
                     { 0x03, typeof(TimeUpdate) },
 
                     { 0x05, typeof(SpawnPosition) },
@@ -100,6 +103,7 @@ public class Protocol0 : MinecraftProtocol
                     { 0x39, typeof(PlayerAbilities) },
 
                     { 0x3F, typeof(PluginMessage) },
+                    { 0x40, typeof(Disconnect) },
                 }
             },
         };
