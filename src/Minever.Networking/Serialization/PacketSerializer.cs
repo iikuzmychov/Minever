@@ -90,7 +90,7 @@ public static class PacketSerializer
         if (packetDataConverterType is not null)
         {
             var converter = (PacketConverter)Activator.CreateInstance(packetDataConverterType)!;
-            packetData = converter.Read(reader, packetDataType);
+            packetData    = converter.Read(reader, packetDataType);
         }
         else
         { 
