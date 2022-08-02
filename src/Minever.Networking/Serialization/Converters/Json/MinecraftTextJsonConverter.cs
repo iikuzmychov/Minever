@@ -1,10 +1,10 @@
-﻿using Minever.Networking.DataTypes.Text;
+using Minever.Networking.DataTypes.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Minever.Networking.Serialization.Converters.Json;
 
-internal class MinecraftTextJsonConverter : JsonConverter<MinecraftText>
+public class MinecraftTextJsonConverter : JsonConverter<MinecraftText>
 {
     public override bool CanConvert(Type typeToConvert)
     {
