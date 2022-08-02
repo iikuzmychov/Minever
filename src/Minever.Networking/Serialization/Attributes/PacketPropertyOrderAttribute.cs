@@ -5,8 +5,8 @@ public class PacketPropertyOrderAttribute : Attribute
 {
     public int Order { get; }
 
-    public PacketPropertyOrderAttribute(int priority)
+    public PacketPropertyOrderAttribute(int order)
     {
-        Order = priority;
+        Order = order;
     }
 }
