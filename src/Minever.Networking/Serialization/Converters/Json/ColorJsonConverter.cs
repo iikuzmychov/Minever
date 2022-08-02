@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 
 namespace Minever.Networking.Serialization.Converters.Json;
 
-internal class ColorJsonConverter : JsonConverter<Color?>
+public class ColorJsonConverter : JsonConverter<Color?>
 {
     private const string DefaultColorName = "reset";
 
