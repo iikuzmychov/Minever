@@ -1,10 +1,13 @@
-﻿using System.Text.RegularExpressions;
+﻿using Minever.Networking.Serialization.Converters.Json;
+using System.Text.Json.Serialization;
+using System.Text.RegularExpressions;
 
 namespace Minever.Networking.DataTypes;
 
 /// <summary>
 /// Provides information about Minecraft namespaced location.
 /// </summary>
+[JsonConverter(typeof(JsonIdentifierConverter))]
 public record Identifier
 {
     private string _namespace = string.Empty;
@@ -22,14 +25,14 @@ public record Identifier
                 throw new ArgumentNullException(nameof(value));
 
             if (!Regex.IsMatch(value, @"^[0-9a-z_-]*$"))
-                throw new FormatException("Namespace should only use the characters '01​​234​5​6​78​9abcdefghijklmnopqrstuvwxyz-_'.");
+                throw new FormatException("Namespace should only use 01​​234​5​6​78​9abcdefghijklmnopqrstuvwxyz-_ characters.");
 
             _namespace = value;
         }
     }
 
     /// <summary>
-    /// Gets or sets the name. Only characters 01​​234​5​6​78​9abcdefghijklmnopqrstuvwxyz-_.\ shoud be used.
+    /// Gets or sets the name. Only characters 01​​234​5​6​78​9abcdefghijklmnopqrstuvwxyz-_./ shoud be used.
     /// </summary>
     public string Name
     {
@@ -40,7 +43,7 @@ public record Identifier
                 throw new ArgumentNullException(nameof(value));
 
             if (!Regex.IsMatch(value, @"^[0-9a-z_\-./]*$"))
-                throw new FormatException("Namespace should only use the characters '01​​234​5​6​78​9abcdefghijklmnopqrstuvwxyz-_./'.");
+                throw new FormatException("Namespace should only use 01​​234​5​6​78​9abcdefghijklmnopqrstuvwxyz-_./ characters.");
 
             _name = value;
         }

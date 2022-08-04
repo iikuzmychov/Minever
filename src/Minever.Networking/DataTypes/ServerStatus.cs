@@ -7,7 +7,7 @@ public record ServerStatus
 {
     private MinecraftVersion _version = new();
     private ServerPlayersInfo _playersInfo = new();
-    private MinecraftStringText _description = new MinecraftStringText();
+    private StringText _description = new StringText();
 
     [JsonPropertyName("favicon")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
@@ -30,7 +30,7 @@ public record ServerStatus
 
     [JsonPropertyName("description")]
     [JsonConverter(typeof(MinecraftTextJsonConverter))]
-    public MinecraftStringText Description
+    public StringText Description
     {
         get => _description;
         set => _description = value ?? throw new ArgumentNullException(nameof(value));

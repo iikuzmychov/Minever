@@ -6,11 +6,11 @@ namespace Minever.Networking.Packets;
 
 public sealed record Disconnect
 {
-    private MinecraftStringText _reason = new();
+    private StringText _reason = new();
 
     [PacketPropertyOrder(1)]
     [PacketConverter(typeof(JsonDataPacketConverter))]
-    public MinecraftStringText Reason
+    public StringText Reason
     {
         get => _reason;
         init => _reason = value ?? throw new ArgumentNullException(nameof(value));
@@ -18,7 +18,7 @@ public sealed record Disconnect
 
     public Disconnect() { }
 
-    public Disconnect(MinecraftStringText reason)
+    public Disconnect(StringText reason)
     {
         Reason = reason;
     }

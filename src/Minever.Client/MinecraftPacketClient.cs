@@ -5,6 +5,7 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 using Microsoft.Extensions.Logging;
 using System.Net.Sockets;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Minever.Client;
 
@@ -18,7 +19,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
     private CancellationTokenSource? _listenCancellationSource;
     private Task? _listenTask;
     private MinecraftWriter? _writer;
-    private ILogger<MinecraftPacketClient>? _logger;
+    private ILogger<MinecraftPacketClient> _logger;
 
     public event PacketReceivedHandler<object>? PacketReceived;
     public event Action? Disconnected;
@@ -27,13 +28,15 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
     public bool IsConnected => _tcpClient.Connected;
     public ConnectionState ConnectionState { get; private set; } = ConnectionState.Handshake;
 
-    public MinecraftPacketClient(MinecraftProtocol protocol, ILogger<MinecraftPacketClient>? logger = null)
+    public MinecraftPacketClient(MinecraftProtocol protocol, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(protocol);
 
         Protocol = protocol;
-        _logger  = logger;
+        _logger  = loggerFactory.CreateLogger<MinecraftPacketClient>();
     }
+
+    public MinecraftPacketClient(MinecraftProtocol protocol) : this(protocol, NullLoggerFactory.Instance) { }
 
     private void ListenStream()
     {
@@ -55,7 +58,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
                 }
                 catch (Exception exception)
                 {
-                    _logger?.LogCritical(exception, $"Error while reading packet length.");
+                    _logger.LogCritical(exception, $"Error while reading packet length.");
                     Task.Run(DisconnectAsync);
                     
                     return;
@@ -68,19 +71,19 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
                 {
                     packet = reader.ReadPacket(packetLength, context, Protocol);
 
-                    _logger?.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
+                    _logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
                 }
                 catch (NotSupportedPacketException exception)
                 {
-                    _logger?.LogWarning(exception.Message);
+                    _logger.LogWarning(exception.Message);
                 }
                 catch (PacketDeserializationException exception)
                 {
-                    _logger?.LogWarning(exception.Message);
+                    _logger.LogWarning(exception.Message);
                 }
                 catch (Exception exception)
                 {
-                    _logger?.LogCritical(exception, $"Error while reading packet.");
+                    _logger.LogCritical(exception, $"Error while reading packet.");
                     Task.Run(DisconnectAsync);
 
                     return;
@@ -100,7 +103,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(serverAddress);
 
         await _tcpClient.ConnectAsync(serverAddress, serverPort);
-        _logger?.LogInformation("Connection established.");
+        _logger.LogInformation("Connection established.");
 
         _writer                   = new(_tcpClient.GetStream());
         _listenCancellationSource = new();
@@ -127,7 +130,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
             await _listenTask;
 
         _tcpClient.Close();
-        _logger?.LogInformation("Disconnected.");
+        _logger.LogInformation("Disconnected.");
         Disconnected?.Invoke();
     }
 
@@ -192,7 +195,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
         var packet   = new MinecraftPacket<object>(packetId, packetData);
 
         _writer!.WritePacket(packet);
-        _logger?.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
+        _logger.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
 
         ConnectionState = Protocol.GetNewState(packet.Data, context);
     }

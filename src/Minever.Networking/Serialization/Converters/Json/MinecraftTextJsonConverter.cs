@@ -11,15 +11,20 @@ public class MinecraftTextJsonConverter : JsonConverter<MinecraftText>
         ArgumentNullException.ThrowIfNull(typeToConvert);
         ArgumentNullException.ThrowIfNull(options);
 
-        if (!CanConvert(typeToConvert))
-            throw new NotSupportedException("The type not supported by the converter.");
-
         var jsonElement = JsonElement.ParseValue(ref reader);
 
         if (jsonElement.ValueKind == JsonValueKind.String)
-            return new MinecraftStringText(jsonElement.GetString()!);
+            return new StringText(jsonElement.GetString()!);
+        
+        if (jsonElement.ValueKind != JsonValueKind.Object)
+            throw new InvalidDataException("JSON data is invalid to convert.");
 
-        return jsonElement.Deserialize<MinecraftStringText>()!; // временная заглушка
+        if (jsonElement.TryGetProperty("text", out _))
+            return jsonElement.Deserialize<StringText>()!;
+        else if (jsonElement.TryGetProperty("translate", out _))
+            return jsonElement.Deserialize<TranslationText>()!;
+        else
+            throw new NotImplementedException();
 
         /*if (jsonDocument.RootElement.TryGetProperty("extra", out JsonElement siblings))
         {
@@ -36,6 +41,8 @@ public class MinecraftTextJsonConverter : JsonConverter<MinecraftText>
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(options);
 
-        writer.WriteStringValue(JsonSerializer.Serialize(value, options)); // временная заглушка
+        throw new NotImplementedException();
+
+        //writer.WriteStringValue(JsonSerializer.Serialize(value, options));
     }
 }

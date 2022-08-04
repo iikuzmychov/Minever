@@ -1,11 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using Minever.Client;
 using Minever.Client.ConsoleApplication;
+using Minever.Networking.DataTypes.Text;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 56301;
+const ushort ServerPort    = 50107;
 
 ConcurrentConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -16,11 +17,10 @@ using var loggerFactory = LoggerFactory.Create(builder =>
         .AddConsole();
 });
 
-var logger         = loggerFactory.CreateLogger<MinecraftPacketClient>();
 var protocol       = new Protocol0();
 var requestTimeout = TimeSpan.FromSeconds(15);
 
-await using var client = new MinecraftPacketClient(protocol, null);
+await using var client = new MinecraftPacketClient(protocol);
 client.OnPacket<KeepAlive>(packet => client.SendPacket(new KeepAlive(packet.Data.Id)));
 client.OnPacket<JoinGame>(packet => ConcurrentConsole.WriteLine($"Max players count: {packet.Data.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(packet => ConcurrentConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
@@ -54,9 +54,9 @@ client.OnPacket<Entity>(packet => ConcurrentConsole.WriteLine($"Entity {packet.D
 //client.OnPacket<EntityRelativeMove>(packet => ThreadSafeConsole.WriteLine($"Entity {packet.Data.EntityId} moves ({packet.Data.DeltaX:+#;-#;0}; {packet.Data.DeltaY:+#;-#;0}; {packet.Data.DeltaZ:+#;-#;0})."));
 //client.OnPacket<EntityLook>(packet => ThreadSafeConsole.WriteLine($"Entity {packet.Data.EntityId} look changed ({packet.Data.Pitch}; {packet.Data.Yaw})."));
 client.OnPacket<Disconnect>(packet => ConcurrentConsole.WriteLine($"Disconneted. Reason: {packet.Data.Reason}."));
-client.OnPacket<ChatMessage>(packet => ConcurrentConsole.WriteLine($"Chat: {packet.Data.Text}.", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
+client.OnPacket<ChatMessageFromServer>(packet => ConcurrentConsole.WriteLine($"Chat: {packet.Data.Text}", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
 
-await client.ConnectAsync(ServerAddress, ServerPort);
+await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(requestTimeout);
 
 var handshake = new Handshake(client.Protocol.Version, ServerAddress, ServerPort, HandshakeNextState.Login);
 client.SendPacket(handshake);
@@ -64,4 +64,7 @@ client.SendPacket(handshake);
 var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(requestTimeout)).Data;
 ConcurrentConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
 
-Console.ReadKey();
+await Task.Delay(TimeSpan.FromSeconds(2));
+client.SendPacket(new ChatMessageFromClient(@"/help"));
+
+Console.ReadKey(true);
