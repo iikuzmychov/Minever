@@ -2,20 +2,20 @@
 
 namespace Minever.Networking.Serialization.Converters;
 
-public class PrefixedArrayPacketConverter<TPrefix, TElement> : PacketConverter<TElement[]>
+public class PacketPrefixedArrayConverter<TPrefix, TElement> : PacketConverter<TElement[]>
     where TPrefix : notnull
     where TElement : notnull
 {
     private readonly PacketConverter _prefixConverter;
     private readonly PacketConverter _elementConverter;
 
-    public PrefixedArrayPacketConverter(PacketConverter prefixConverter, PacketConverter elementConverter)
+    public PacketPrefixedArrayConverter(PacketConverter prefixConverter, PacketConverter elementConverter)
     {
         _prefixConverter  = prefixConverter ?? throw new ArgumentNullException(nameof(prefixConverter));
         _elementConverter = elementConverter ?? throw new ArgumentNullException(nameof(elementConverter));
     }
 
-    public PrefixedArrayPacketConverter()
+    public PacketPrefixedArrayConverter()
         : this(PacketSerializer.GetTypeConverter(typeof(TPrefix)), PacketSerializer.GetTypeConverter(typeof(TElement))) { }
 
     public override TElement[] Read(MinecraftReader reader)
@@ -44,7 +44,7 @@ public class PrefixedArrayPacketConverter<TPrefix, TElement> : PacketConverter<T
 }
 
 public sealed class PrefixedArrayPacketConverter<TPrefix, TElement, TPrefixConverter, TElementConverter>
-    : PrefixedArrayPacketConverter<TPrefix, TElement>
+    : PacketPrefixedArrayConverter<TPrefix, TElement>
     where TPrefix : notnull
     where TElement : notnull
     where TPrefixConverter : PacketConverter, new()

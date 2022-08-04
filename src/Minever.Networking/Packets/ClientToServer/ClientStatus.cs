@@ -3,7 +3,7 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.Packets;
 
-[PacketConverter(typeof(EnumPacketConverter<ClientStatus, sbyte>))]
+[PacketConverter(typeof(PacketEnumConverter<ClientStatus, sbyte>))]
 public enum ClientStatus : sbyte
 { 
     PerformRespawn           = 0,

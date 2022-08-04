@@ -17,7 +17,7 @@ public sealed record EncryptionRequest
     }
 
     [PacketPropertyOrder(2)]
-    [PacketConverter(typeof(PrefixedArrayPacketConverter<short, byte>))]
+    [PacketConverter(typeof(PacketPrefixedArrayConverter<short, byte>))]
     public byte[] PublicKey
     {
         get => _publicKey;
@@ -25,7 +25,7 @@ public sealed record EncryptionRequest
     }
 
     [PacketPropertyOrder(3)]
-    [PacketConverter(typeof(PrefixedArrayPacketConverter<short, byte>))]
+    [PacketConverter(typeof(PacketPrefixedArrayConverter<short, byte>))]
     public byte[] VerifyToken
     {
         get => _verifyToken;

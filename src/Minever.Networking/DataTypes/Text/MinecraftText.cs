@@ -5,7 +5,7 @@ using System.Text.Json.Serialization;
 
 namespace Minever.Networking.DataTypes.Text;
 
-[JsonConverter(typeof(MinecraftTextJsonConverter))]
+[JsonConverter(typeof(JsonMinecraftTextConverter))]
 public abstract class MinecraftText
 {    
     private Identifier _font = new("default");
@@ -34,7 +34,7 @@ public abstract class MinecraftText
     }
 
     [JsonPropertyName("color")]
-    [JsonConverter(typeof(ColorJsonConverter))]
+    [JsonConverter(typeof(JsonColorConverter))]
     public Color? Color { get; set; }
 
     [JsonPropertyName("insertion")]

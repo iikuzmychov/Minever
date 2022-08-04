@@ -19,7 +19,7 @@ public static class PacketSerializer
         if (typeConverterAttribute is not null)
             return (PacketConverter)Activator.CreateInstance(typeConverterAttribute.ConverterType)!;
         else
-            return DefaultPacketConverter.Shared;
+            return PacketDefaultConverter.Shared;
     }
 
     private static PacketConverter GetPropertyConverter(PropertyInfo property)

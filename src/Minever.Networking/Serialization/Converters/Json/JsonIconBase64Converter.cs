@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Minever.Networking.Serialization.Converters.Json;
 
-public class IconBase64JsonConverter : JsonConverter<string?>
+public class JsonIconBase64Converter : JsonConverter<string?>
 {
     private const string Prefix = "data:image/png;base64,";
 

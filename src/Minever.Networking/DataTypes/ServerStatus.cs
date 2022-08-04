@@ -11,7 +11,7 @@ public record ServerStatus
 
     [JsonPropertyName("favicon")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonConverter(typeof(IconBase64JsonConverter))]
+    [JsonConverter(typeof(JsonIconBase64Converter))]
     public string? IconBase64 { get; set; }
 
     [JsonPropertyName("version")]
@@ -29,7 +29,7 @@ public record ServerStatus
     }
 
     [JsonPropertyName("description")]
-    [JsonConverter(typeof(MinecraftTextJsonConverter))]
+    [JsonConverter(typeof(JsonMinecraftTextConverter))]
     public StringText Description
     {
         get => _description;

@@ -2,7 +2,7 @@
 
 namespace Minever.Networking.Serialization.Converters;
 
-public class VarIntPacketConverter : PacketConverter<int>
+public class PacketVarIntConverter : PacketConverter<int>
 {
     public override int Read(MinecraftReader reader)
     {

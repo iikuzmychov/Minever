@@ -7,7 +7,7 @@ namespace Minever.Networking.Packets;
 public sealed record Respawn
 {
     [PacketPropertyOrder(1)]
-    [PacketConverter(typeof(EnumPacketConverter<Dimension, int>))]
+    [PacketConverter(typeof(PacketEnumConverter<Dimension, int>))]
     public Dimension Dimension { get; init; }
 
     [PacketPropertyOrder(2)]

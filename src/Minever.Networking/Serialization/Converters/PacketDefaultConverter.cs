@@ -3,9 +3,9 @@ using Minever.Networking.IO;
 
 namespace Minever.Networking.Serialization.Converters;
 
-public class DefaultPacketConverter : PacketConverter
+public class PacketDefaultConverter : PacketConverter
 {
-    public static DefaultPacketConverter Shared { get; } = new();
+    public static PacketDefaultConverter Shared { get; } = new();
 
     public override bool CanConvert(Type type)
     {

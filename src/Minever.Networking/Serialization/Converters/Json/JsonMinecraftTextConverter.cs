@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace Minever.Networking.Serialization.Converters.Json;
 
-public class MinecraftTextJsonConverter : JsonConverter<MinecraftText>
+public class JsonMinecraftTextConverter : JsonConverter<MinecraftText>
 {
     public override MinecraftText Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

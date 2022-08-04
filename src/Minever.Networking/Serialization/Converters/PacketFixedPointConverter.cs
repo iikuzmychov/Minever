@@ -5,7 +5,7 @@ namespace Minever.Networking.Serialization.Converters;
 /// <summary>
 /// <see href="https://wiki.vg/Data_types#Fixed-point_numbers"/>
 /// </summary>
-public class FixedPointPacketConverter<T> : PacketConverter<double>
+public class PacketFixedPointConverter<T> : PacketConverter<double>
     where T : notnull
 {
     private readonly PacketConverter _typeConverter = PacketSerializer.GetTypeConverter(typeof(T));

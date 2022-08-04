@@ -8,7 +8,7 @@ public sealed record Statistics
     private Entry[] _entries = Array.Empty<Entry>();
 
     [PacketPropertyOrder(1)]
-    [PacketConverter(typeof(PrefixedArrayPacketConverter<int, Entry, VarIntPacketConverter, DefaultPacketConverter>))]
+    [PacketConverter(typeof(PrefixedArrayPacketConverter<int, Entry, PacketVarIntConverter, PacketDefaultConverter>))]
     public Entry[] Entries
     {
         get => _entries;
@@ -34,7 +34,7 @@ public sealed record Statistics
         }
         
         [PacketPropertyOrder(2)]
-        [PacketConverter(typeof(VarIntPacketConverter))]
+        [PacketConverter(typeof(PacketVarIntConverter))]
         public int Amount { get; set; }
 
         public Entry() { }

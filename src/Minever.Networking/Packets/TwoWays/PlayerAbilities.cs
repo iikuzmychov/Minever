@@ -4,7 +4,7 @@ using Minever.Networking.Serialization.Converters;
 namespace Minever.Networking.Packets;
 
 [Flags]
-[PacketConverter(typeof(EnumPacketConverter<PlayerAbilitiesFlags, sbyte>))]
+[PacketConverter(typeof(PacketEnumConverter<PlayerAbilitiesFlags, sbyte>))]
 public enum PlayerAbilitiesFlags : sbyte
 {
     None         = 0,

@@ -3,7 +3,7 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.Packets;
 
-[PacketConverter(typeof(EnumPacketConverter<HandshakeNextState, int, VarIntPacketConverter>))]
+[PacketConverter(typeof(EnumPacketConverter<HandshakeNextState, int, PacketVarIntConverter>))]
 public enum HandshakeNextState
 { 
     Status = 1,
@@ -26,7 +26,7 @@ public sealed record Handshake
     private string _serverAddress = string.Empty;
 
     [PacketPropertyOrder(1)]
-    [PacketConverter(typeof(VarIntPacketConverter))]
+    [PacketConverter(typeof(PacketVarIntConverter))]
     public int ProtocolVersion { get; init; }
 
     [PacketPropertyOrder(2)]

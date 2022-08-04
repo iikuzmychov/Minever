@@ -13,7 +13,7 @@ public sealed record EntityRelativeMove
     public int EntityId { get; init; }
 
     [PacketPropertyOrder(2)]
-    [PacketConverter(typeof(FixedPointPacketConverter<sbyte>))]
+    [PacketConverter(typeof(PacketFixedPointConverter<sbyte>))]
     public double DeltaX
     {
         get => _deltaX;
@@ -21,7 +21,7 @@ public sealed record EntityRelativeMove
     }
 
     [PacketPropertyOrder(3)]
-    [PacketConverter(typeof(FixedPointPacketConverter<sbyte>))]
+    [PacketConverter(typeof(PacketFixedPointConverter<sbyte>))]
     public double DeltaY
     {
         get => _deltaY;
@@ -29,7 +29,7 @@ public sealed record EntityRelativeMove
     }
 
     [PacketPropertyOrder(4)]
-    [PacketConverter(typeof(FixedPointPacketConverter<sbyte>))]
+    [PacketConverter(typeof(PacketFixedPointConverter<sbyte>))]
     public double DeltaZ
     {
         get => _deltaZ;

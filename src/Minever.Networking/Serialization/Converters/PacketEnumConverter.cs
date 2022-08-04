@@ -3,18 +3,18 @@ using System;
 
 namespace Minever.Networking.Serialization.Converters;
 
-public class EnumPacketConverter<TEnum, TValue> : PacketConverter<TEnum>
+public class PacketEnumConverter<TEnum, TValue> : PacketConverter<TEnum>
     where TEnum : Enum
     where TValue : notnull
 {
     private PacketConverter _valueConverter;
 
-    public EnumPacketConverter(PacketConverter valueConverter)
+    public PacketEnumConverter(PacketConverter valueConverter)
     {
         _valueConverter = valueConverter ?? throw new ArgumentNullException(nameof(valueConverter));
     }
 
-    public EnumPacketConverter() : this(PacketSerializer.GetTypeConverter(typeof(TValue))) { }
+    public PacketEnumConverter() : this(PacketSerializer.GetTypeConverter(typeof(TValue))) { }
 
     public override TEnum Read(MinecraftReader reader)
     {
@@ -29,7 +29,7 @@ public class EnumPacketConverter<TEnum, TValue> : PacketConverter<TEnum>
     }
 }
 
-public sealed class EnumPacketConverter<TEnum, TValue, TValueConverter> : EnumPacketConverter<TEnum, TValue>
+public sealed class EnumPacketConverter<TEnum, TValue, TValueConverter> : PacketEnumConverter<TEnum, TValue>
     where TEnum : Enum
     where TValue : notnull
     where TValueConverter : PacketConverter, new()

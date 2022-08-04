@@ -2,7 +2,7 @@
 
 namespace Minever.Networking.Serialization.Converters;
 
-public class VarLongPacketConverter : PacketConverter<long>
+public class PacketVarLongConverter : PacketConverter<long>
 {
     public override long Read(MinecraftReader reader)
     {
