@@ -11,7 +11,7 @@ public class PacketVarIntConverter : PacketConverter<int>
         return reader.Read7BitEncodedInt();
     }
 
-    public override void Write(int value, MinecraftWriter writer)
+    public override void Write(MinecraftWriter writer, int value)
     {
         ArgumentNullException.ThrowIfNull(writer);
 

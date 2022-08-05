@@ -11,7 +11,7 @@ public class PacketVarLongConverter : PacketConverter<long>
         return reader.Read7BitEncodedInt64();
     }
 
-    public override void Write(long value, MinecraftWriter writer)
+    public override void Write(MinecraftWriter writer, long value)
     {
         ArgumentNullException.ThrowIfNull(writer);
 

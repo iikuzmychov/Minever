@@ -22,10 +22,10 @@ public class PacketEnumConverter<TEnum, TValue> : PacketConverter<TEnum>
         return (TEnum)Enum.ToObject(typeof(TEnum), value)!;
     }
 
-    public override void Write(TEnum value, MinecraftWriter writer)
+    public override void Write(MinecraftWriter writer, TEnum value)
     {
         var convertedValue = (TValue)Convert.ChangeType(value, typeof(TValue));
-        _valueConverter.Write(convertedValue, writer);
+        _valueConverter.Write(writer, convertedValue);
     }
 }
 

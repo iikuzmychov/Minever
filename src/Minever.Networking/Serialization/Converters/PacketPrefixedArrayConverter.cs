@@ -31,15 +31,15 @@ public class PacketPrefixedArrayConverter<TPrefix, TElement> : PacketConverter<T
         return array;
     }
 
-    public override void Write(TElement[] value, MinecraftWriter writer)
+    public override void Write(MinecraftWriter writer, TElement[] value)
     {
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(writer);
 
-        _prefixConverter.Write(Convert.ChangeType(value.Length, typeof(TPrefix)), writer);
+        _prefixConverter.Write(writer, Convert.ChangeType(value.Length, typeof(TPrefix)));
 
         foreach (var element in value)
-            _elementConverter.Write(element, writer);
+            _elementConverter.Write(writer, element);
     }
 }
 

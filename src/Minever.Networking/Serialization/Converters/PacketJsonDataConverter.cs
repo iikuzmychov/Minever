@@ -17,7 +17,7 @@ public class JsonDataPacketConverter : PacketConverter
         return JsonSerializer.Deserialize(json, targetType)!;
     }
 
-    public override void Write(object value, MinecraftWriter writer)
+    public override void Write(MinecraftWriter writer, object value)
     {
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(writer);

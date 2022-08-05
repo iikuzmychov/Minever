@@ -59,7 +59,7 @@ public class PacketDefaultConverter : PacketConverter
             return PacketSerializer.DeserializeData(reader, targetType);
     }
 
-    public override void Write(object value, MinecraftWriter writer)
+    public override void Write(MinecraftWriter writer, object value)
     {
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(writer);

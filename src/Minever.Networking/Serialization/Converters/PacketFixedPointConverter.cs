@@ -20,13 +20,13 @@ public class PacketFixedPointConverter<T> : PacketConverter<double>
         return value;
     }
 
-    public override void Write(double value, MinecraftWriter writer)
+    public override void Write(MinecraftWriter writer, double value)
     {
         ArgumentNullException.ThrowIfNull(value);
         ArgumentNullException.ThrowIfNull(writer);
 
         var encodedValue = (T)Convert.ChangeType(value * 32d, typeof(T));
 
-        _typeConverter.Write(encodedValue, writer);
+        _typeConverter.Write(writer, encodedValue);
     }
 }

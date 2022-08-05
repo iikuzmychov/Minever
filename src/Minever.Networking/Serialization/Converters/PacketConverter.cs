@@ -8,7 +8,7 @@ public abstract class PacketConverter
 
     public abstract object Read(MinecraftReader reader, Type targetType);
 
-    public abstract void Write(object value, MinecraftWriter writer);
+    public abstract void Write(MinecraftWriter writer, object value);
 }
 
 public abstract class PacketConverter<T> : PacketConverter
@@ -24,7 +24,7 @@ public abstract class PacketConverter<T> : PacketConverter
 
     public abstract T Read(MinecraftReader reader);
 
-    public abstract void Write(T value, MinecraftWriter writer);
+    public abstract void Write(MinecraftWriter writer, T value);
 
     public sealed override object Read(MinecraftReader reader, Type targetType)
     {
@@ -37,7 +37,7 @@ public abstract class PacketConverter<T> : PacketConverter
         return Read(reader);
     }
 
-    public sealed override void Write(object value, MinecraftWriter writer)
+    public sealed override void Write(MinecraftWriter writer, object value)
     {
         if (value is null)
             throw new ArgumentNullException(nameof(value));
@@ -45,7 +45,7 @@ public abstract class PacketConverter<T> : PacketConverter
         if (writer is null)
             throw new ArgumentNullException(nameof(writer));
 
-        Write((T)value, writer);
+        Write(writer, (T)value);
     }
 
 }

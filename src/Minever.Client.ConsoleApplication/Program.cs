@@ -20,7 +20,7 @@ using var loggerFactory = LoggerFactory.Create(builder =>
 var protocol       = new Protocol0();
 var requestTimeout = TimeSpan.FromSeconds(15);
 
-await using var client = new MinecraftPacketClient(protocol, loggerFactory);
+await using var client = new MinecraftPacketClient(protocol);
 client.OnPacket<KeepAlive>(packet => client.SendPacket(new KeepAlive(packet.Data.Id)));
 client.OnPacket<JoinGame>(packet => ConcurrentConsole.WriteLine($"Max players count: {packet.Data.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(packet => ConcurrentConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
@@ -55,8 +55,10 @@ client.OnPacket<Entity>(packet => ConcurrentConsole.WriteLine($"Entity {packet.D
 //client.OnPacket<EntityLook>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} look changed ({packet.Data.Pitch}; {packet.Data.Yaw})."));
 //client.OnPacket<EntityLookAndRelativeMove>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} look ({packet.Data.Pitch}; {packet.Data.Yaw}) and position ({packet.Data.DeltaX:+#;-#;0}; {packet.Data.DeltaY:+#;-#;0}; {packet.Data.DeltaZ:+#;-#;0}) changed."));
 //client.OnPacket<EntityTeleport>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} teleported: look ({packet.Data.Pitch}; {packet.Data.Yaw}), position ({packet.Data.X}; {packet.Data.Y}; {packet.Data.Z})."));
-//client.OnPacket<Disconnect>(packet => ConcurrentConsole.WriteLine($"Disconneted. Reason: {packet.Data.Reason}."));
+//client.OnPacket<EntityHeadLook>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} head look changed ({packet.Data.HeadYaw})."));
+client.OnPacket<EntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} for {packet.Data.Duration}."));
 client.OnPacket<ChatMessageFromServer>(packet => ConcurrentConsole.WriteLine($"Chat: {packet.Data.Text}", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
+client.OnPacket<Disconnect>(packet => ConcurrentConsole.WriteLine($"Disconneted. Reason: {packet.Data.Reason}."));
 
 await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(requestTimeout);
 
@@ -66,7 +68,13 @@ client.SendPacket(handshake);
 var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(requestTimeout)).Data;
 ConcurrentConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
 
-await Task.Delay(TimeSpan.FromSeconds(2));
-client.SendPacket(new ChatMessageFromClient(@"/help"));
+await Task.Delay(TimeSpan.FromSeconds(1));
+client.SendPacket(new ChatMessageFromClient(@"раз"));
+await Task.Delay(TimeSpan.FromSeconds(1));
+client.SendPacket(new ChatMessageFromClient(@"два"));
+await Task.Delay(TimeSpan.FromSeconds(1));
+client.SendPacket(new ChatMessageFromClient(@"три"));
+await Task.Delay(TimeSpan.FromSeconds(1));
+client.SendPacket(new ChatMessageFromClient(@"/setblock ~0 ~5 ~0 minecraft:grass"));
 
 Console.ReadKey(true);

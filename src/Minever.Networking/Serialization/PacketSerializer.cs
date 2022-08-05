@@ -49,7 +49,7 @@ public static class PacketSerializer
         if (packetDataConverterType is not null)
         {
             var converter = (PacketConverter)Activator.CreateInstance(packetDataConverterType)!;
-            converter.Write(packetData, writer);
+            converter.Write(writer, packetData);
         }
         else
         {
@@ -60,7 +60,7 @@ public static class PacketSerializer
                 var converter     = GetPropertyConverter(property);
                 var propertyValue = property.GetValue(packetData)!;
 
-                converter.Write(propertyValue, writer);
+                converter.Write(writer, propertyValue);
             }
         }
     }
