@@ -3,7 +3,7 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.Packets;
 
-public sealed record EntityRelativeMove
+public sealed record EntityLookAndRelativeMove
 {
     private double _deltaX;
     private double _deltaY;
@@ -54,13 +54,27 @@ public sealed record EntityRelativeMove
         }
     }
 
-    public EntityRelativeMove() { }
+    [PacketPropertyOrder(5)]
+    public sbyte Yaw { get; init; }
 
-    public EntityRelativeMove(int entityId, double deltaX, double deltaY, double deltaZ)
+    [PacketPropertyOrder(6)]
+    public sbyte Pitch { get; init; }
+
+    public EntityLookAndRelativeMove() { }
+
+    public EntityLookAndRelativeMove(int entityId, double deltaX, double deltaY, double deltaZ, sbyte yaw, sbyte pitch)
     {
         EntityId = entityId;
         DeltaX   = deltaX;
         DeltaY   = deltaY;
         DeltaZ   = deltaZ;
+        Yaw      = yaw;
+        Pitch    = pitch;
     }
+
+    public EntityLookAndRelativeMove(EntityRelativeMove relativeMove, sbyte yaw, sbyte pitch)
+        : this(relativeMove.EntityId, relativeMove.DeltaX, relativeMove.DeltaY, relativeMove.DeltaZ, yaw, pitch) { }
+
+    public EntityLookAndRelativeMove(EntityLook look, double deltaX, double deltaY, double deltaZ)
+        : this(look.EntityId,deltaX, deltaY, deltaZ, look.Yaw, look.Pitch) { }
 }

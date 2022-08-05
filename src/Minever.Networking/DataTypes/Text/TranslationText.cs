@@ -25,6 +25,6 @@ public class TranslationText : MinecraftText
         else if (Name == "chat.type.emote" && Arguments is not null && Arguments.Length >= 2)
             builder.Append($"* {Arguments![0]} {Arguments![1]}");
         else
-            builder.Append(Name);
+            builder.Append($"[{Name}]");
     }
 }

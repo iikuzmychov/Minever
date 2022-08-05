@@ -95,6 +95,8 @@ public class Protocol0 : MinecraftProtocol
                     { 0x14, typeof(Entity) },
                     { 0x15, typeof(EntityRelativeMove) },
                     { 0x16, typeof(EntityLook) },
+                    { 0x17, typeof(EntityLookAndRelativeMove) },
+                    { 0x18, typeof(EntityTeleport) },
                     
                     { 0x0D, typeof(CollectItem) },
 
