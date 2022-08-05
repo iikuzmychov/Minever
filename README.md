@@ -12,7 +12,7 @@ Initial state. Many things need to be done.
 
 | Project | Description |
 | ------- | ----------- |
-| Minever.Networking | The core project. It contains an implementation of packages, protocols, serializer, writers, readers etc. |
+| Minever.Networking | The core project. It contains an implementation of packages, protocols, packet serializer, writer, reader etc. |
 | Minever.Client | It contains Minecraft clients implementation (low-level MinecrafPacketClient and high-level MinecraftClient). |
 
 ### Tests
