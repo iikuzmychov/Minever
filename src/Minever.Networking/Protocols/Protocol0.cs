@@ -93,6 +93,8 @@ public class Protocol0 : MinecraftProtocol
 
                     { 0x0D, typeof(CollectItem) },
 
+                    { 0x11, typeof(SpawnExperienceOrb) },
+
                     { 0x13, typeof(DestroyEntities) },
                     { 0x14, typeof(Entity) },
                     { 0x15, typeof(EntityRelativeMove) },
@@ -102,6 +104,8 @@ public class Protocol0 : MinecraftProtocol
                     { 0x19, typeof(EntityHeadLook) },
                     
                     { 0x1D, typeof(EntityEffect) },
+                    { 0x1E, typeof(RemoveEntityEffect) },
+                    { 0x1F, typeof(SetExperience) },
 
                     { 0x37, typeof(Statistics) },
                     { 0x38, typeof(PlayerListItem) },

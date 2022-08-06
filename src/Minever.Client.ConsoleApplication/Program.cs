@@ -6,21 +6,21 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 50477;
+const ushort ServerPort    = 50488;
 
 ConcurrentConsole.ForegroundColor = ConsoleColor.Magenta;
 
 using var loggerFactory = LoggerFactory.Create(builder =>
 {
     builder
-        .SetMinimumLevel(LogLevel.Debug)
+        .SetMinimumLevel(LogLevel.Error)
         .AddConsole();
 });
 
 var protocol       = new Protocol0();
 var requestTimeout = TimeSpan.FromSeconds(15);
 
-await using var client = new MinecraftPacketClient(protocol);
+await using var client = new MinecraftPacketClient(protocol, loggerFactory);
 client.OnPacket<KeepAlive>(packet => client.SendPacket(new KeepAlive(packet.Data.Id)));
 client.OnPacket<JoinGame>(packet => ConcurrentConsole.WriteLine($"Max players count: {packet.Data.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(packet => ConcurrentConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
@@ -38,7 +38,7 @@ client.OnPacket<PlayerPositionAndLook>(packet =>
 });
 client.OnPacket<HeldItemChange>(packet => ConcurrentConsole.WriteLine("HeldItemChange."));
 //client.OnPacket<TimeUpdate>(packet => ConcurrentConsole.WriteLine($"Age of world: {packet.Data.WorldAge}, time of day: {packet.Data.DayTime}."));
-client.OnPacket<PlayerListItem>(packet => ConcurrentConsole.WriteLine($"Player: {packet.Data.PlayerName}, is connected: {packet.Data.IsConnected}, ping: {packet.Data.Ping}."));
+//client.OnPacket<PlayerListItem>(packet => ConcurrentConsole.WriteLine($"Player: {packet.Data.PlayerName}, is connected: {packet.Data.IsConnected}, ping: {packet.Data.Ping}."));
 client.OnPacket<UpdateHealth>(packet =>
 {
     if (packet.Data.Health < 0)
@@ -56,8 +56,11 @@ client.OnPacket<Entity>(packet => ConcurrentConsole.WriteLine($"Entity {packet.D
 //client.OnPacket<EntityLookAndRelativeMove>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} look ({packet.Data.Pitch}; {packet.Data.Yaw}) and position ({packet.Data.DeltaX:+#;-#;0}; {packet.Data.DeltaY:+#;-#;0}; {packet.Data.DeltaZ:+#;-#;0}) changed."));
 //client.OnPacket<EntityTeleport>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} teleported: look ({packet.Data.Pitch}; {packet.Data.Yaw}), position ({packet.Data.X}; {packet.Data.Y}; {packet.Data.Z})."));
 //client.OnPacket<EntityHeadLook>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} head look changed ({packet.Data.HeadYaw})."));
-client.OnPacket<EntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} for {packet.Data.Duration}."));
+//client.OnPacket<EntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} for {packet.Data.Duration}."));
+//client.OnPacket<RemoveEntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} removed."));
 client.OnPacket<ChatMessageFromServer>(packet => ConcurrentConsole.WriteLine($"Chat: {packet.Data.Text}", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
+client.OnPacket<SetExperience>(packet => ConcurrentConsole.WriteLine($"Experience updated: level: {packet.Data.Level}, total: {packet.Data.TotalAmount}, bar value: {packet.Data.BarValue}."));
+client.OnPacket<SpawnExperienceOrb>(packet => ConcurrentConsole.WriteLine($"Experience orb spawned: id: {packet.Data.EntityId}, experience amount: {packet.Data.ExperienceAmount}."));
 client.OnPacket<Disconnect>(packet => ConcurrentConsole.WriteLine($"Disconneted. Reason: {packet.Data.Reason}."));
 
 await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(requestTimeout);
