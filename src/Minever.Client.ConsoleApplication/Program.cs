@@ -21,58 +21,58 @@ var protocol       = new Protocol0();
 var requestTimeout = TimeSpan.FromSeconds(15);
 
 await using var client = new MinecraftPacketClient(protocol, loggerFactory);
-client.OnPacket<KeepAlive>(packet => client.SendPacket(new KeepAlive(packet.Data.Id)));
-client.OnPacket<JoinGame>(packet => ConcurrentConsole.WriteLine($"Max players count: {packet.Data.MaxPlayersCount}."));
-client.OnPacket<SpawnPosition>(packet => ConcurrentConsole.WriteLine($"Spawn position: {packet.Data.Position}."));
-client.OnPacket<Respawn>(packet =>
+client.OnPacket<KeepAlive>(keepAlive => client.SendPacket(new KeepAlive(keepAlive.Id)));
+client.OnPacket<JoinGame>(joinGame => ConcurrentConsole.WriteLine($"Max players count: {joinGame.MaxPlayersCount}."));
+client.OnPacket<SpawnPosition>(position => ConcurrentConsole.WriteLine($"Spawn position: {position.BlockPosition}."));
+client.OnPacket((Respawn respawnData) =>
 {
-    client.SendPacket(ClientStatus.PerformRespawn);
     ConcurrentConsole.WriteLine("Respawn.");
-});
-client.OnPacket<PlayerAbilities>(packet => ConcurrentConsole.WriteLine($"Flying speed: {packet.Data.FlyingSpeed}, walking speed: {packet.Data.WalkingSpeed}."));
-client.OnPacket<PlayerPositionAndLook>(packet =>
-{
-    client.SendPacket(new PlayerPositionAndLookWithStance(packet.Data, 1d));
     client.SendPacket(ClientStatus.PerformRespawn);
-    ConcurrentConsole.WriteLine($"Player position: {packet.Data.Position}");
 });
-client.OnPacket<HeldItemChange>(packet => ConcurrentConsole.WriteLine("HeldItemChange."));
-//client.OnPacket<TimeUpdate>(packet => ConcurrentConsole.WriteLine($"Age of world: {packet.Data.WorldAge}, time of day: {packet.Data.DayTime}."));
-//client.OnPacket<PlayerListItem>(packet => ConcurrentConsole.WriteLine($"Player: {packet.Data.PlayerName}, is connected: {packet.Data.IsConnected}, ping: {packet.Data.Ping}."));
-client.OnPacket<UpdateHealth>(packet =>
+client.OnPacket<PlayerAbilities>(abilities => ConcurrentConsole.WriteLine($"Flying speed: {abilities.FlyingSpeed}, walking speed: {abilities.WalkingSpeed}."));
+client.OnPacket<PlayerPositionAndLook>(positionAndLook =>
 {
-    if (packet.Data.Health < 0)
+    ConcurrentConsole.WriteLine($"Player position: {positionAndLook.Position}");
+    client.SendPacket(new PlayerPositionAndLookWithStance(positionAndLook, 1.65d));
+    client.SendPacket(ClientStatus.PerformRespawn);
+});
+client.OnPacket<HeldItemChange>(data => ConcurrentConsole.WriteLine("HeldItemChange."));
+//client.OnPacket<TimeUpdate>(data => ConcurrentConsole.WriteLine($"Age of world: {data.WorldAge}, time of day: {data.DayTime}."));
+//client.OnPacket<PlayerListItem>(data => ConcurrentConsole.WriteLine($"Player: {data.PlayerName}, is connected: {data.IsConnected}, ping: {data.Ping}."));
+client.OnPacket<UpdateHealth>(healthAndFood =>
+{
+    if (healthAndFood.Health < 0)
         client.SendPacket(ClientStatus.PerformRespawn);
 
-    ConcurrentConsole.WriteLine($"Health: {packet.Data.Health}, food: {packet.Data.Food}, food saturation: {packet.Data.FoodSaturation}.");
+    ConcurrentConsole.WriteLine($"Health: {healthAndFood.Health}, food: {healthAndFood.Food}, food saturation: {healthAndFood.FoodSaturation}.");
 });
-client.OnPacket<PluginMessage>(packet => ConcurrentConsole.WriteLine($"Plugin message from channel '{packet.Data.ChannelName}'"));
-client.OnPacket<Statistics>(packet => ConcurrentConsole.WriteLine($"Statistics ({packet.Data.Entries.Length} entries)."));
-//client.OnPacket<CollectItem>(packet => ConcurrentConsole.WriteLine($"{packet.Data.CollectorEntityId} collects {packet.Data.CollectedEntityId}."));
-//client.OnPacket<DestroyEntities>(packet => ConcurrentConsole.WriteLine($"{packet.Data.EntityIds.Length} entities destroyed."));
-client.OnPacket<Entity>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId}."));
-//client.OnPacket<EntityRelativeMove>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} moves ({packet.Data.DeltaX:+#;-#;0}; {packet.Data.DeltaY:+#;-#;0}; {packet.Data.DeltaZ:+#;-#;0})."));
-//client.OnPacket<EntityLook>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} look changed ({packet.Data.Pitch}; {packet.Data.Yaw})."));
-//client.OnPacket<EntityLookAndRelativeMove>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} look ({packet.Data.Pitch}; {packet.Data.Yaw}) and position ({packet.Data.DeltaX:+#;-#;0}; {packet.Data.DeltaY:+#;-#;0}; {packet.Data.DeltaZ:+#;-#;0}) changed."));
-//client.OnPacket<EntityTeleport>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} teleported: look ({packet.Data.Pitch}; {packet.Data.Yaw}), position ({packet.Data.X}; {packet.Data.Y}; {packet.Data.Z})."));
-//client.OnPacket<EntityHeadLook>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} head look changed ({packet.Data.HeadYaw})."));
-//client.OnPacket<EntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} for {packet.Data.Duration}."));
-//client.OnPacket<RemoveEntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} removed."));
-client.OnPacket<ServerToClientChatMessage>(packet => ConcurrentConsole.WriteLine($"Chat: {packet.Data.Text}", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
-client.OnPacket<SetExperience>(packet => ConcurrentConsole.WriteLine($"Experience updated: level: {packet.Data.Level}, total: {packet.Data.TotalAmount}, bar value: {packet.Data.BarValue}."));
-client.OnPacket<SpawnExperienceOrb>(packet =>
+client.OnPacket<PluginMessage>(message => ConcurrentConsole.WriteLine($"Plugin message from channel '{message.ChannelName}'"));
+client.OnPacket<Statistics>(statistics => ConcurrentConsole.WriteLine($"Statistics ({statistics.Entries.Length} entries)."));
+//client.OnPacket<CollectItem>(data => ConcurrentConsole.WriteLine($"{data.CollectorEntityId} collects {data.CollectedEntityId}."));
+//client.OnPacket<DestroyEntities>(data => ConcurrentConsole.WriteLine($"{data.EntityIds.Length} entities destroyed."));
+client.OnPacket<Entity>(entity => ConcurrentConsole.WriteLine($"Entity {entity.Id}."));
+//client.OnPacket<EntityRelativeMove>(data => ConcurrentConsole.WriteLine($"Entity {data.EntityId} moves ({data.DeltaX:+#;-#;0}; {data.DeltaY:+#;-#;0}; {data.DeltaZ:+#;-#;0})."));
+//client.OnPacket<EntityLook>(data => ConcurrentConsole.WriteLine($"Entity {data.EntityId} look changed ({data.Pitch}; {data.Yaw})."));
+//client.OnPacket<EntityLookAndRelativeMove>(data => ConcurrentConsole.WriteLine($"Entity {data.EntityId} look ({data.Pitch}; {data.Yaw}) and position ({data.DeltaX:+#;-#;0}; {data.DeltaY:+#;-#;0}; {data.DeltaZ:+#;-#;0}) changed."));
+//client.OnPacket<EntityTeleport>(data => ConcurrentConsole.WriteLine($"Entity {data.EntityId} teleported: look ({data.Pitch}; {data.Yaw}), position ({data.X}; {data.Y}; {data.Z})."));
+//client.OnPacket<EntityHeadLook>(data => ConcurrentConsole.WriteLine($"Entity {data.EntityId} head look changed ({data.HeadYaw})."));
+//client.OnPacket<EntityEffect>(data => ConcurrentConsole.WriteLine($"Effect {data.EffectId} on entity {data.EntityId} for {data.Duration}."));
+//client.OnPacket<RemoveEntityEffect>(data => ConcurrentConsole.WriteLine($"Effect {data.EffectId} on entity {data.EntityId} removed."));
+client.OnPacket<ServerToClientChatMessage>(message => ConcurrentConsole.WriteLine($"Chat: {message.Text}", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
+client.OnPacket<SetExperience>(experience => ConcurrentConsole.WriteLine($"Experience updated: level: {experience.Level}, total: {experience.TotalAmount}, bar value: {experience.BarValue}."));
+client.OnPacket<SpawnExperienceOrb>(orb =>
 {
-    ConcurrentConsole.WriteLine($"Experience orb spawned: id: {packet.Data.EntityId}, experience amount: {packet.Data.ExperienceAmount}.");
-    //client.SendPacket(new UseEntity(packet.Data.EntityId, UseEntityAction.RigthClick));
+    ConcurrentConsole.WriteLine($"Experience orb spawned: id: {orb.EntityId}, experience amount: {orb.ExperienceAmount}.");
+    //client.SendPacket(new UseEntity(data.EntityId, UseEntityAction.RigthClick));
 });
-client.OnPacket<Disconnect>(packet => ConcurrentConsole.WriteLine($"Disconneted. Reason: {packet.Data.Reason}."));
+client.OnPacket<Disconnect>(disconnectInfo => ConcurrentConsole.WriteLine($"Disconneted. Reason: {disconnectInfo.Reason}."));
 
 await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(requestTimeout);
 
 var handshake = new Handshake(client.Protocol.Version, ServerAddress, ServerPort, HandshakeNextState.Login);
 client.SendPacket(handshake);
 
-var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(requestTimeout)).Data;
+var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(requestTimeout)).Packet.Data;
 ConcurrentConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
 
 await Task.Delay(TimeSpan.FromSeconds(1));

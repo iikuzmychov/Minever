@@ -7,7 +7,7 @@ namespace Minever.Client;
 
 public class MinecraftClient : IAsyncDisposable, IDisposable
 {
-    private readonly ILogger? _logger;
+    private readonly ILogger<MinecraftClient> _logger;
     private readonly MinecraftPacketClient _packetClient;
 
     public static async Task<(ServerStatus ServerStatus, TimeSpan Delay)> CheckServerAsync(string serverAddress, ushort serverPort)
@@ -20,25 +20,19 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
         var handshake = new Handshake(client.Protocol.Version, serverAddress, serverPort, HandshakeNextState.Status);
         client.SendPacket(handshake);
 
-        var serverStatus = (await client.SendRequestAsync<ServerStatusResponse>(new ServerStatusRequest()))
-            .Data
-            .Status;
-        
-        var delay = (await client.SendRequestAsync<Ping>(new Ping(DateTime.UtcNow)))
-            .Data
-            .CalculateDelay(DateTime.UtcNow);
+        var serverStatus  = (await client.SendRequestAsync<ServerStatusResponse>(new ServerStatusRequest())).Packet.Data.Status;        
+        var delayResponse = await client.SendRequestAsync<Ping>(new Ping(DateTime.Now));
+        var delay         = delayResponse.Packet.Data.CalculateDelay(delayResponse.ReceivedDateTime);
 
         return (serverStatus, delay);
     }
 
-    public MinecraftClient(MinecraftProtocol protocol, ILogger<MinecraftPacketClient>? logger = null)
+    public MinecraftClient(MinecraftProtocol protocol, ILoggerFactory loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(protocol);
-
-        _logger       = logger;
+        _logger       = loggerFactory?.CreateLogger<MinecraftClient>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         _packetClient = new MinecraftPacketClient(protocol);
 
-        _packetClient.OnPacket<KeepAlive>(packet => _packetClient.SendPacket(new KeepAlive(packet.Data.Id)));
+        _packetClient.OnPacket<KeepAlive>(keepAlive => _packetClient.SendPacket(new KeepAlive(keepAlive.Id)));
     }
 
     public async Task ConnectAsync(string serverAddress, ushort serverPort = 25565)

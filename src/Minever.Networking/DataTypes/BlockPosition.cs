@@ -20,7 +20,7 @@ public readonly struct BlockPosition : IEquatable<BlockPosition>
 
     public static bool operator !=(BlockPosition left, BlockPosition right) => !(left == right);
 
-    public override string ToString() => $"{X}, {Y}, {Z}";
+    public override string ToString() => $"({X}; {Y}; {Z})";
 
     public override bool Equals(object? obj) => obj is BlockPosition position && Equals(position);
 

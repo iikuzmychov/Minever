@@ -20,7 +20,7 @@ public readonly struct Position : IEquatable<Position>
 
     public static bool operator !=(Position left, Position right) => !(left == right);
 
-    public override string ToString() => $"{X}, {Y}, {Z}";
+    public override string ToString() => $"({X}; {Y}; {Z})";
 
     public override bool Equals(object? obj) => obj is Position position && Equals(position);
 

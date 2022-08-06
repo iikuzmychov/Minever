@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Minever.Client;
 
-public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet, PacketContext context)
+public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet, DateTime dateTime, PacketContext context)
     where TData : notnull;
 
 public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
@@ -91,7 +91,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
 
                 if (packet is not null)
                 {
-                    Task.Run(() => PacketReceived?.Invoke(packet, context));
+                    Task.Run(() => PacketReceived?.Invoke(packet, DateTime.Now, context));
                     ConnectionState = Protocol.GetNewState(packet.Data, context);
                 }
             }
@@ -145,10 +145,10 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        PacketReceivedHandler<object> handler = (packet, context) =>
+        PacketReceivedHandler<object> handler = (packet, dateTime, context) =>
         {
             if (packet.Data is TData)
-                action((MinecraftPacket<TData>)packet, context);
+                action((MinecraftPacket<TData>)packet, dateTime, context);
         };
 
         PacketReceived += handler;
@@ -156,12 +156,20 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
         return handler;
     }
 
-    public PacketReceivedHandler<object> OnPacket<TData>(Action<MinecraftPacket<TData>> action)
+    public PacketReceivedHandler<object> OnPacket<TData>(Action<TData> action)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        return OnPacket<TData>((packet, _) => action(packet));
+        return OnPacket<TData>((packet, _, _) => action(packet.Data));
+    }
+
+    public PacketReceivedHandler<object> OnPacket<TData>(Action<TData, DateTime> action)
+        where TData : notnull
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        return OnPacket<TData>((packet, receivedDateTime, _) => action(packet.Data, receivedDateTime));
     }
 
     public void OnceOnPacket<TData>(PacketReceivedHandler<TData> action)
@@ -171,19 +179,27 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
 
         PacketReceivedHandler<object>? handler = null;
 
-        handler = OnPacket<TData>((packet, context) =>
+        handler = OnPacket<TData>((packet, dateTime, context) =>
         {
             PacketReceived -= handler;
-            action(packet, context);
+            action(packet, dateTime, context);
         });
     }
 
-    public void OnceOnPacket<TData>(Action<MinecraftPacket<TData>> action)
+    public void OnceOnPacket<TData>(Action<TData> action)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        OnceOnPacket<TData>((packet, _) => action(packet));
+        OnceOnPacket<TData>((packet, _, _) => action(packet.Data));
+    }
+
+    public void OnceOnPacket<TData>(Action<TData, DateTime> action)
+        where TData : notnull
+    {
+        ArgumentNullException.ThrowIfNull(action);
+
+        OnceOnPacket<TData>((packet, receivedDateTime, _) => action(packet.Data, receivedDateTime));
     }
 
     public void SendPacket(object packetData)
@@ -200,27 +216,30 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
         ConnectionState = Protocol.GetNewState(packet.Data, context);
     }
 
-    public async Task<MinecraftPacket<TResponseData>> WaitPacketAsync<TResponseData>()
+    public async Task<ReceivedPacketInfo<TResponseData>> WaitPacketAsync<TResponseData>()
         where TResponseData : notnull
     {
-        var taskCompletionSource = new TaskCompletionSource<MinecraftPacket<TResponseData>>();
+        var taskCompletionSource = new TaskCompletionSource<ReceivedPacketInfo<TResponseData>>();
 
-        OnceOnPacket<TResponseData>(packet => taskCompletionSource.SetResult(packet));
+        OnceOnPacket<TResponseData>((packet, receivedDateTime, context) =>
+            taskCompletionSource.SetResult(new(packet, receivedDateTime, context)));
 
         return await taskCompletionSource.Task;
     }
 
-    public async Task<MinecraftPacket<TResponseData>> SendRequestAsync<TResponseData>(object requestPacketData)
+    public async Task<ReceivedPacketInfo<TResponseData>> SendRequestAsync<TResponseData>(object requestPacketData)
         where TResponseData : notnull
     {
         ArgumentNullException.ThrowIfNull(requestPacketData);
 
-        var taskCompletionSource = new TaskCompletionSource<MinecraftPacket<TResponseData>>();
+        var taskCompletionSource = new TaskCompletionSource<ReceivedPacketInfo<TResponseData>>();
 
         _isListeningPaused = true;
 
         SendPacket(requestPacketData);
-        OnceOnPacket<TResponseData>(packet => taskCompletionSource.SetResult(packet));
+
+        OnceOnPacket<TResponseData>((packet, receivedDateTime, context) =>
+            taskCompletionSource.SetResult(new(packet, receivedDateTime, context)));
         
         _isListeningPaused = false;
 

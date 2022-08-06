@@ -6,13 +6,13 @@ namespace Minever.Networking.Packets;
 public sealed record SpawnPosition
 {
     [PacketPropertyOrder(1)]
-    public BlockPosition Position { get; init; }
+    public BlockPosition BlockPosition { get; init; }
 
     public SpawnPosition() { }
 
-    public SpawnPosition(BlockPosition position)
+    public SpawnPosition(BlockPosition blockPosition)
     {
-        Position = position;
+        BlockPosition = blockPosition;
     }
 
     public SpawnPosition(int x, int y, int z) : this(new BlockPosition(x, y, z)) { }
