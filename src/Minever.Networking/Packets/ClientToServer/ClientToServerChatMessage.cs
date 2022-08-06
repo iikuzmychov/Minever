@@ -2,7 +2,7 @@
 
 namespace Minever.Networking.Packets;
 
-public sealed record ChatMessageFromClient
+public sealed record ClientToServerChatMessage
 {
     private string _text = string.Empty;
 
@@ -13,9 +13,9 @@ public sealed record ChatMessageFromClient
         init => _text = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public ChatMessageFromClient() { }
+    public ClientToServerChatMessage() { }
 
-    public ChatMessageFromClient(string text)
+    public ClientToServerChatMessage(string text)
     {
         Text = text;
     }

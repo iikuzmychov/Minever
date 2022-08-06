@@ -67,7 +67,8 @@ public class Protocol0 : MinecraftProtocol
                 new()
                 {
                     { 0x00, typeof(KeepAlive) },
-                    { 0x01, typeof(ChatMessageFromClient) },
+                    { 0x01, typeof(ClientToServerChatMessage) },
+                    { 0x02, typeof(UseEntity) },
                     
                     { 0x06, typeof(PlayerPositionAndLookWithStance) },
                     
@@ -82,7 +83,7 @@ public class Protocol0 : MinecraftProtocol
                 {
                     { 0x00, typeof(KeepAlive) },
                     { 0x01, typeof(JoinGame) },
-                    { 0x02, typeof(ChatMessageFromServer) },
+                    { 0x02, typeof(ServerToClientChatMessage) },
                     { 0x03, typeof(TimeUpdate) },
 
                     { 0x05, typeof(SpawnPosition) },

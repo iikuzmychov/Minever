@@ -58,9 +58,13 @@ client.OnPacket<Entity>(packet => ConcurrentConsole.WriteLine($"Entity {packet.D
 //client.OnPacket<EntityHeadLook>(packet => ConcurrentConsole.WriteLine($"Entity {packet.Data.EntityId} head look changed ({packet.Data.HeadYaw})."));
 //client.OnPacket<EntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} for {packet.Data.Duration}."));
 //client.OnPacket<RemoveEntityEffect>(packet => ConcurrentConsole.WriteLine($"Effect {packet.Data.EffectId} on entity {packet.Data.EntityId} removed."));
-client.OnPacket<ChatMessageFromServer>(packet => ConcurrentConsole.WriteLine($"Chat: {packet.Data.Text}", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
+client.OnPacket<ServerToClientChatMessage>(packet => ConcurrentConsole.WriteLine($"Chat: {packet.Data.Text}", ConcurrentConsole.BackgroundColor, ConsoleColor.Cyan));
 client.OnPacket<SetExperience>(packet => ConcurrentConsole.WriteLine($"Experience updated: level: {packet.Data.Level}, total: {packet.Data.TotalAmount}, bar value: {packet.Data.BarValue}."));
-client.OnPacket<SpawnExperienceOrb>(packet => ConcurrentConsole.WriteLine($"Experience orb spawned: id: {packet.Data.EntityId}, experience amount: {packet.Data.ExperienceAmount}."));
+client.OnPacket<SpawnExperienceOrb>(packet =>
+{
+    ConcurrentConsole.WriteLine($"Experience orb spawned: id: {packet.Data.EntityId}, experience amount: {packet.Data.ExperienceAmount}.");
+    //client.SendPacket(new UseEntity(packet.Data.EntityId, UseEntityAction.RigthClick));
+});
 client.OnPacket<Disconnect>(packet => ConcurrentConsole.WriteLine($"Disconneted. Reason: {packet.Data.Reason}."));
 
 await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(requestTimeout);
@@ -72,12 +76,12 @@ var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("
 ConcurrentConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
 
 await Task.Delay(TimeSpan.FromSeconds(1));
-client.SendPacket(new ChatMessageFromClient(@"раз"));
+client.SendPacket(new ClientToServerChatMessage(@"раз"));
 await Task.Delay(TimeSpan.FromSeconds(1));
-client.SendPacket(new ChatMessageFromClient(@"два"));
+client.SendPacket(new ClientToServerChatMessage(@"два"));
 await Task.Delay(TimeSpan.FromSeconds(1));
-client.SendPacket(new ChatMessageFromClient(@"три"));
+client.SendPacket(new ClientToServerChatMessage(@"три"));
 await Task.Delay(TimeSpan.FromSeconds(1));
-client.SendPacket(new ChatMessageFromClient(@"/setblock ~0 ~5 ~0 minecraft:grass"));
+client.SendPacket(new ClientToServerChatMessage(@"/setblock ~0 ~5 ~0 minecraft:grass"));
 
 Console.ReadKey(true);

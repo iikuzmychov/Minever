@@ -4,7 +4,7 @@ using Minever.Networking.Serialization.Converters;
 
 namespace Minever.Networking.Packets;
 
-public sealed record ChatMessageFromServer
+public sealed record ServerToClientChatMessage
 {
     private MinecraftText _text = new StringText();
 
@@ -16,9 +16,9 @@ public sealed record ChatMessageFromServer
         init => _text = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    public ChatMessageFromServer() { }
+    public ServerToClientChatMessage() { }
 
-    public ChatMessageFromServer(MinecraftText text)
+    public ServerToClientChatMessage(MinecraftText text)
     {
         Text = text;
     }
