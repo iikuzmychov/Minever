@@ -1,6 +1,6 @@
 ﻿using Minever.Networking.IO;
 
-namespace Minever.Networking.Serialization.Converters;
+namespace Minever.Networking.Serialization;
 
 public class PacketTimeSpanFromToMinecraftTicksConverter<TSeconds> : PacketConverter<TimeSpan>
 {

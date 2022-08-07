@@ -1,12 +1,11 @@
 ﻿using Microsoft.Extensions.Logging;
 using Minever.Client;
 using Minever.Client.ConsoleApplication;
-using Minever.Networking.DataTypes.Text;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 50488;
+const ushort ServerPort    = 50857;
 
 ConcurrentConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -17,14 +16,14 @@ using var loggerFactory = LoggerFactory.Create(builder =>
         .AddConsole();
 });
 
-var protocol       = new Protocol0();
-var requestTimeout = TimeSpan.FromSeconds(15);
+var protocol = new Protocol0();
+var timeout  = TimeSpan.FromSeconds(15);
 
 await using var client = new MinecraftPacketClient(protocol, loggerFactory);
-client.OnPacket<KeepAlive>(keepAlive => client.SendPacket(new KeepAlive(keepAlive.Id)));
+client.OnPacket<KeepAlive>(keepAlive => client.SendPacket(keepAlive));
 client.OnPacket<JoinGame>(joinGame => ConcurrentConsole.WriteLine($"Max players count: {joinGame.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(position => ConcurrentConsole.WriteLine($"Spawn position: {position.BlockPosition}."));
-client.OnPacket((Respawn respawnData) =>
+client.OnPacket<Respawn>(_ =>
 {
     ConcurrentConsole.WriteLine("Respawn.");
     client.SendPacket(ClientStatus.PerformRespawn);
@@ -36,7 +35,7 @@ client.OnPacket<PlayerPositionAndLook>(positionAndLook =>
     client.SendPacket(new PlayerPositionAndLookWithStance(positionAndLook, 1.65d));
     client.SendPacket(ClientStatus.PerformRespawn);
 });
-client.OnPacket<HeldItemChange>(data => ConcurrentConsole.WriteLine("HeldItemChange."));
+client.OnPacket<HeldItemChange>(_ => ConcurrentConsole.WriteLine("HeldItemChange."));
 //client.OnPacket<TimeUpdate>(data => ConcurrentConsole.WriteLine($"Age of world: {data.WorldAge}, time of day: {data.DayTime}."));
 //client.OnPacket<PlayerListItem>(data => ConcurrentConsole.WriteLine($"Player: {data.PlayerName}, is connected: {data.IsConnected}, ping: {data.Ping}."));
 client.OnPacket<UpdateHealth>(healthAndFood =>
@@ -67,12 +66,12 @@ client.OnPacket<SpawnExperienceOrb>(orb =>
 });
 client.OnPacket<Disconnect>(disconnectInfo => ConcurrentConsole.WriteLine($"Disconneted. Reason: {disconnectInfo.Reason}."));
 
-await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(requestTimeout);
+await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(timeout);
 
 var handshake = new Handshake(client.Protocol.Version, ServerAddress, ServerPort, HandshakeNextState.Login);
 client.SendPacket(handshake);
 
-var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(requestTimeout)).Packet.Data;
+var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(timeout)).Packet.Data;
 ConcurrentConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
 
 await Task.Delay(TimeSpan.FromSeconds(1));
@@ -84,4 +83,4 @@ client.SendPacket(new ClientToServerChatMessage(@"три"));
 await Task.Delay(TimeSpan.FromSeconds(1));
 client.SendPacket(new ClientToServerChatMessage(@"/setblock ~0 ~5 ~0 minecraft:grass"));
 
-Console.ReadKey(true);
+while (Console.ReadKey(true).Key != ConsoleKey.Spacebar);

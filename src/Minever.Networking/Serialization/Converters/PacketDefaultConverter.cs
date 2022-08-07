@@ -1,26 +1,16 @@
 ﻿using Minever.Networking.DataTypes;
 using Minever.Networking.IO;
 
-namespace Minever.Networking.Serialization.Converters;
+namespace Minever.Networking.Serialization;
 
 public class PacketDefaultConverter : PacketConverter
 {
     public static PacketDefaultConverter Shared { get; } = new();
 
-    public override bool CanConvert(Type type)
-    {
-        ArgumentNullException.ThrowIfNull(type);
-        return true;
-    }
+    public override bool CanConvert(Type type) => true;
 
     public override object Read(MinecraftReader reader, Type targetType)
     {
-        ArgumentNullException.ThrowIfNull(reader);
-        ArgumentNullException.ThrowIfNull(targetType);
-
-        if (!CanConvert(targetType))
-            throw new NotSupportedException($"Converter does not support {targetType} type.");
-
         if (targetType == typeof(bool))
             return reader.ReadBoolean();
         else if (targetType == typeof(byte))
@@ -61,9 +51,6 @@ public class PacketDefaultConverter : PacketConverter
 
     public override void Write(MinecraftWriter writer, object value)
     {
-        ArgumentNullException.ThrowIfNull(value);
-        ArgumentNullException.ThrowIfNull(writer);
-
         switch (value)
         {
             case bool boolValue:                writer.Write(boolValue); break;

@@ -1,4 +1,4 @@
-﻿using Minever.Networking.Serialization.Attributes;
+﻿using Minever.Networking.Serialization;
 
 namespace Minever.Networking.Packets;
 

@@ -2,7 +2,7 @@
 
 namespace Minever.Networking.DataTypes;
 
-public record ServerPlayersInfo
+public sealed record ServerPlayersInfo
 {
     private int _maxPlayersCount;
     private int _playersCount;
@@ -11,17 +11,26 @@ public record ServerPlayersInfo
     public int MaxPlayersCount
     {
         get => _maxPlayersCount;
-        set => _maxPlayersCount = (value >= 0) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        init => _maxPlayersCount = (value >= 0) ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     [JsonPropertyName("online")]
     public int PlayersCount
     {
         get => _playersCount;
-        set => _playersCount = (value >= 0) ? value : throw new ArgumentOutOfRangeException(nameof(value));
+        init => _playersCount = (value >= 0) ? value : throw new ArgumentOutOfRangeException(nameof(value));
     }
 
     [JsonPropertyName("sample")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public List<PlayerInfo>? SamplePlayers { get; set; }
+    public List<PlayerInfo>? SamplePlayers { get; init; }
+
+    public ServerPlayersInfo() { }
+
+    public ServerPlayersInfo(int maxPlayersCount, int playersCount, List<PlayerInfo>? samplePlayers)
+    {
+        MaxPlayersCount = maxPlayersCount;
+        PlayersCount    = playersCount;
+        SamplePlayers   = samplePlayers;
+    }
 }

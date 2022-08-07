@@ -36,7 +36,7 @@ public class Protocol0 : MinecraftProtocol
                 new(PacketDirection.ServerToClient, ConnectionState.Status),
                 new()
                 {
-                    { 0x00, typeof(ServerStatusResponse) },
+                    { 0x00, typeof(ServerStatus) },
                     { 0x01, typeof(Ping) },
                 }
             },

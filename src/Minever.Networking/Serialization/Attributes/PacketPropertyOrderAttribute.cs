@@ -1,4 +1,4 @@
-﻿namespace Minever.Networking.Serialization.Attributes;
+﻿namespace Minever.Networking.Serialization;
 
 [AttributeUsage(AttributeTargets.Property)]
 public class PacketPropertyOrderAttribute : Attribute

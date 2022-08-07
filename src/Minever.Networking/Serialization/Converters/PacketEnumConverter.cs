@@ -1,7 +1,7 @@
 ﻿using Minever.Networking.IO;
 using System;
 
-namespace Minever.Networking.Serialization.Converters;
+namespace Minever.Networking.Serialization;
 
 public class PacketEnumConverter<TEnum, TValue> : PacketConverter<TEnum>
     where TEnum : Enum

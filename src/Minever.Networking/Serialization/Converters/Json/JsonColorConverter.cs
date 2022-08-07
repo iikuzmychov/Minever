@@ -4,7 +4,7 @@ using System.Drawing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Minever.Networking.Serialization.Converters.Json;
+namespace Minever.Networking.Serialization.Json;
 
 public class JsonColorConverter : JsonConverter<Color?>
 {
@@ -32,8 +32,6 @@ public class JsonColorConverter : JsonConverter<Color?>
 
     public override Color? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        ArgumentNullException.ThrowIfNull(typeToConvert);
-
         var colorString = reader.GetString();
 
         if (colorString is null)
@@ -46,9 +44,6 @@ public class JsonColorConverter : JsonConverter<Color?>
 
     public override void Write(Utf8JsonWriter writer, Color? value, JsonSerializerOptions options)
     {
-        Debugger.Break();
-        ArgumentNullException.ThrowIfNull(nameof(writer));
-
         if (value is null)
             writer.WriteStringValue(DefaultColorName);
         else if (s_knownMinecraftColors.Reverse.ContainsKey(value.Value))

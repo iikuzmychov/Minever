@@ -1,6 +1,6 @@
 ﻿using Minever.Networking.IO;
 
-namespace Minever.Networking.Serialization.Converters;
+namespace Minever.Networking.Serialization;
 
 /// <summary>
 /// <see href="https://wiki.vg/Data_types#Fixed-point_numbers"/>

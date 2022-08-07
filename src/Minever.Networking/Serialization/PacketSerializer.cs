@@ -2,8 +2,6 @@
 using Minever.Networking.IO;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
-using Minever.Networking.Serialization.Attributes;
-using Minever.Networking.Serialization.Converters;
 using System.Reflection;
 
 namespace Minever.Networking.Serialization;
@@ -57,7 +55,11 @@ public static class PacketSerializer
 
             foreach (var property in packetDataProperties)
             {
-                var converter     = GetPropertyConverter(property);
+                var converter = GetPropertyConverter(property);
+
+                if (!converter.CanConvert(property.PropertyType))
+                    throw new NotSupportedException($"The converter does not support {property.PropertyType} type.");
+
                 var propertyValue = property.GetValue(packetData)!;
 
                 converter.Write(writer, propertyValue);
@@ -99,7 +101,11 @@ public static class PacketSerializer
 
             foreach (var property in packetDataProperties)
             {
-                var converter     = GetPropertyConverter(property);
+                var converter = GetPropertyConverter(property);
+
+                if (!converter.CanConvert(property.PropertyType))
+                    throw new NotSupportedException($"The converter does not support {property.PropertyType} type.");
+
                 var propertyValue = converter.Read(reader, property.PropertyType);
 
                 property.SetValue(packetData, propertyValue);

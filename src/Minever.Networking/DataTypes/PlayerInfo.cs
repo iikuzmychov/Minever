@@ -1,23 +1,28 @@
-﻿using System.Text.Json.Serialization;
+﻿using Minever.Networking.Serialization.Json;
+using System.Text.Json.Serialization;
 
 namespace Minever.Networking.DataTypes;
 
-public record PlayerInfo
+public sealed record PlayerInfo
 {
     private string _name = string.Empty;
-    private string _id = string.Empty;
 
     [JsonPropertyName("name")]
     public string Name
     {
         get => _name;
-        set => _name = value ?? throw new ArgumentNullException(nameof(value));
+        init => _name = value ?? throw new ArgumentNullException(nameof(value));
     }
 
     [JsonPropertyName("id")]
-    public string Id
+    [JsonConverter(typeof(JsonGuidConverter))]
+    public Guid Uuid { get; init; }
+
+    public PlayerInfo() { }
+
+    public PlayerInfo(string name, Guid uuid)
     {
-        get => _id;
-        set => _id = value ?? throw new ArgumentNullException(nameof(value));
+        Name = name;
+        Uuid = uuid;
     }
 }
