@@ -19,12 +19,9 @@ public class JsonIconBase64Converter : JsonConverter<string?>
 
     public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
     {
-        if (value is null)
-            return;
-
-        if (!value.StartsWith(Prefix))
-            value = Prefix + value;
-
-        writer.WriteStringValue(value);
+        if (value is null || value.StartsWith(Prefix))
+            writer.WriteStringValue(value);
+        else
+            writer.WriteStringValue(Prefix + value);
     }
 }
