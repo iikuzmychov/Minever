@@ -34,8 +34,8 @@ public sealed record ServerStatus
     }
 
     [JsonPropertyName("favicon")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [JsonConverter(typeof(JsonIconBase64Converter))]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string? IconBase64 { get; init; }
 
     public ServerStatus() { }
