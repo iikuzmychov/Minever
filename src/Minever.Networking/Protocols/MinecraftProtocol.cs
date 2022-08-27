@@ -1,15 +1,14 @@
-﻿using BidirectionalMap;
-using Minever.Networking.Packets;
+﻿using Minever.Networking.Packets;
 
 namespace Minever.Networking.Protocols;
 
 public abstract partial class MinecraftProtocol
 {
-    protected Dictionary<PacketContext, BiMap<int, Type>> SupportedPackets;
+    protected Dictionary<PacketContext, BidirectionalDictionary<int, Type>> SupportedPackets;
 
     public abstract int Version { get; }
 
-    public MinecraftProtocol(Dictionary<PacketContext, BiMap<int, Type>> supportedPackets)
+    public MinecraftProtocol(Dictionary<PacketContext, BidirectionalDictionary<int, Type>> supportedPackets)
     {
         SupportedPackets = supportedPackets ?? throw new ArgumentNullException(nameof(supportedPackets));
     }
@@ -30,21 +29,21 @@ public abstract partial class MinecraftProtocol
 
     public bool IsPacketSupported(int packetId, PacketContext context) =>
         SupportedPackets.TryGetValue(context, out var packets) &&
-        packets.Forward.ContainsKey(packetId);
+        packets.ContainsKey(packetId);
 
     public bool IsPacketSupported(Type packetDataType, PacketContext context)
     {
         ArgumentNullException.ThrowIfNull(packetDataType);
 
         return SupportedPackets.TryGetValue(context, out var packets) &&
-            packets.Reverse.ContainsKey(packetDataType);
+            packets.ContainsValue(packetDataType);
     }
 
     public Type GetPacketDataType(int packetId, PacketContext context)
     {
         try
         {
-            return SupportedPackets[context].Forward[packetId];
+            return SupportedPackets[context][packetId];
         }
         catch (KeyNotFoundException exception)
         {
@@ -58,7 +57,7 @@ public abstract partial class MinecraftProtocol
 
         try
         {
-            return SupportedPackets[context].Reverse[packetDataType];
+            return SupportedPackets[context].Inverse[packetDataType];
         }
         catch (KeyNotFoundException exception)
         {

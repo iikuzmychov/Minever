@@ -1,11 +1,10 @@
-﻿using BidirectionalMap;
-using Minever.Networking.Packets;
+﻿using Minever.Networking.Packets;
 
 namespace Minever.Networking.Protocols;
 
 public class Protocol0 : MinecraftProtocol
 {
-    private readonly static Dictionary<PacketContext, BiMap<int, Type>> s_supportedPackets;
+    private readonly static Dictionary<PacketContext, BidirectionalDictionary<int, Type>> s_supportedPackets;
 
     public override int Version => 0;
 
