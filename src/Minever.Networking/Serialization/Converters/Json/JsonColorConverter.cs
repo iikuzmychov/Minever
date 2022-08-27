@@ -1,6 +1,4 @@
-﻿using BidirectionalMap;
-using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -10,7 +8,7 @@ public class JsonColorConverter : JsonConverter<Color?>
 {
     private const string DefaultColorName = "reset";
 
-    private static BiMap<string, Color> s_knownMinecraftColors = new()
+    private static BidirectionalDictionary<string, Color> s_knownMinecraftColors = new()
     {
         { "black",         Color.FromArgb(0, 0, 0) },
         { "dark_blue",     Color.FromArgb(0, 0, 170) },
@@ -36,8 +34,8 @@ public class JsonColorConverter : JsonConverter<Color?>
 
         if (colorString is null)
             return null;
-        else if (s_knownMinecraftColors.Forward.ContainsKey(colorString))
-            return s_knownMinecraftColors.Forward[colorString];
+        else if (s_knownMinecraftColors.TryGetValue(colorString, out var color))
+            return color;
         else
             return ColorTranslator.FromHtml(colorString);
     }
@@ -46,8 +44,8 @@ public class JsonColorConverter : JsonConverter<Color?>
     {
         if (value is null)
             writer.WriteStringValue(DefaultColorName);
-        else if (s_knownMinecraftColors.Reverse.ContainsKey(value.Value))
-            writer.WriteStringValue(s_knownMinecraftColors.Reverse[value.Value]);
+        else if (s_knownMinecraftColors.Inverse.TryGetValue(value.Value, out var colorName))
+            writer.WriteStringValue(colorName);
         else
             writer.WriteStringValue(ColorTranslator.ToHtml(value.Value));
     }
