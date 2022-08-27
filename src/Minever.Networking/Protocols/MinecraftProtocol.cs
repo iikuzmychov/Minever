@@ -4,7 +4,7 @@ namespace Minever.Networking.Protocols;
 
 public abstract partial class MinecraftProtocol
 {
-    protected Dictionary<PacketContext, BidirectionalDictionary<int, Type>> SupportedPackets;
+    protected Dictionary<PacketContext, BidirectionalDictionary<int, Type>> SupportedPackets { get; }
 
     public abstract int Version { get; }
 
