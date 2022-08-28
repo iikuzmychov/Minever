@@ -29,4 +29,4 @@ Initial state. Many things need to be done.
 
 ## License
 
-Minever is licensed under the MIT license.
+Minever is licensed under the [MIT](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.txt) license.
