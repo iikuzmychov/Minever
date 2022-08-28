@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/github/license/iiKuzmychov/Minever)](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.txt)
+[![License](https://img.shields.io/github/license/iiKuzmychov/Minever)](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.md)
 
 # Minever
 
@@ -31,4 +31,4 @@ Initial state. Many things need to be done.
 
 ## License
 
-Minever is licensed under the [MIT](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.txt) license.
+Minever is licensed under the [MIT](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.md) license.
