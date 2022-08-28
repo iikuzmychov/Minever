@@ -1,3 +1,5 @@
+[![License](https://img.shields.io/github/license/iiKuzmychov/Minever)](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.md)
+
 # Minever
 
 Minever is an open-source .NET library primarily aimed at supporting various versions of Minecraft (1.6 [13w41b] and upper) and providing them with a general user interface for creating client applications.
