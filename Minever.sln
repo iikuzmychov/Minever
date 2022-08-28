@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.Client.ConsoleAppli
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.Networking", "src\Minever.Networking\Minever.Networking.csproj", "{9DB8715C-E70E-4408-95B7-730A6B4C77DB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.Networking.Tests", "tests\Minever.Networking.Tests\Minever.Networking.Tests.csproj", "{EBECA87C-CBD5-4AAB-BF68-26FF63EACF09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.Networking.Tests", "src\tests\Minever.Networking.Tests\Minever.Networking.Tests.csproj", "{EBECA87C-CBD5-4AAB-BF68-26FF63EACF09}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
