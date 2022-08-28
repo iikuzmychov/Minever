@@ -1,4 +1,4 @@
-[![License](https://img.shields.io/github/license/iiKuzmychov/Minever)](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.md)
+[![License](https://img.shields.io/github/license/iiKuzmychov/Minever)](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.txt)
 
 # Minever
 
