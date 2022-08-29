@@ -2,13 +2,13 @@
 
 namespace Minever.Networking.Protocols;
 
-public class Protocol0 : MinecraftProtocol
+public class JavaProtocol0 : JavaProtocol
 {
     private readonly static Dictionary<PacketContext, BidirectionalDictionary<int, Type>> s_supportedPackets;
 
     public override int Version => 0;
 
-    static Protocol0()
+    static JavaProtocol0()
     {
         s_supportedPackets = new()
         {
@@ -118,7 +118,7 @@ public class Protocol0 : MinecraftProtocol
         };
     }
 
-    public Protocol0() : base(s_supportedPackets) { }
+    public JavaProtocol0() : base(s_supportedPackets) { }
 
     public override ConnectionState GetNewState<TData>(TData lastPacketData, PacketContext context)
     {

@@ -115,7 +115,7 @@ public static class PacketSerializer
         return packetData;
     }
 
-    public static MinecraftPacket<object> Deserialize(byte[] packetBytes, PacketContext context, MinecraftProtocol protocol)
+    public static MinecraftPacket<object> Deserialize(byte[] packetBytes, PacketContext context, JavaProtocol protocol)
     {
         ArgumentNullException.ThrowIfNull(packetBytes);
         ArgumentNullException.ThrowIfNull(protocol);

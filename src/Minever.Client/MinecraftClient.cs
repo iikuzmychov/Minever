@@ -15,7 +15,7 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
     {
         ArgumentNullException.ThrowIfNull(serverAddress);
 
-        await using var client = new MinecraftPacketClient(new Protocol0(), loggerFactory);
+        await using var client = new MinecraftPacketClient(new JavaProtocol0(), loggerFactory);
         await client.ConnectAsync(serverAddress, serverPort);
 
         var handshake = new Handshake(client.Protocol.Version, serverAddress, serverPort, HandshakeNextState.Status);
@@ -32,7 +32,7 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
     public static async Task<(ServerStatus Status, TimeSpan Delay)> PingServerAsync(string serverAddress, ushort serverPort) =>
         await PingServerAsync(serverAddress, serverPort, NullLoggerFactory.Instance);
 
-    public MinecraftClient(MinecraftProtocol protocol, ILoggerFactory loggerFactory)
+    public MinecraftClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
     {
         _logger       = loggerFactory?.CreateLogger<MinecraftClient>() ?? throw new ArgumentNullException(nameof(loggerFactory));
         _packetClient = new MinecraftPacketClient(protocol);

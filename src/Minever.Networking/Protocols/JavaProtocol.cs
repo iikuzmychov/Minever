@@ -2,28 +2,28 @@
 
 namespace Minever.Networking.Protocols;
 
-public abstract partial class MinecraftProtocol
+public abstract partial class JavaProtocol
 {
     protected Dictionary<PacketContext, BidirectionalDictionary<int, Type>> SupportedPackets { get; }
 
     public abstract int Version { get; }
 
-    public MinecraftProtocol(Dictionary<PacketContext, BidirectionalDictionary<int, Type>> supportedPackets)
+    public JavaProtocol(Dictionary<PacketContext, BidirectionalDictionary<int, Type>> supportedPackets)
     {
         SupportedPackets = supportedPackets ?? throw new ArgumentNullException(nameof(supportedPackets));
     }
 
-    public static MinecraftProtocol FromVersion(int protocolVersion)
+    public static JavaProtocol FromVersion(int protocolVersion)
         => protocolVersion switch
         {
-            0 => new Protocol0(),
+            0 => new JavaProtocol0(),
             _ => throw new NotSupportedException($"Protocol version {protocolVersion} is not supported.")
         };
 
-    public static MinecraftProtocol FromVersion(string versionName)
+    public static JavaProtocol FromVersion(string versionName)
         => versionName switch
         {
-            "13w41b" => new Protocol0(),
+            "13w41b" => new JavaProtocol0(),
             _ => throw new NotSupportedException($"Version '{versionName}' is not supported.")
         };
 

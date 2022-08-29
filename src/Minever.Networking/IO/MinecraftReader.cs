@@ -144,7 +144,7 @@ public class MinecraftReader : BinaryReader, IDisposable
         return packet;
     }*/
 
-    public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext context, MinecraftProtocol protocol)
+    public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext context, JavaProtocol protocol)
     {
         if (packetLength <= 0)
             throw new ArgumentOutOfRangeException(nameof(packetLength));

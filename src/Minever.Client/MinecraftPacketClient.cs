@@ -24,11 +24,11 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
     public event PacketReceivedHandler<object>? PacketReceived;
     public event Action? Disconnected;
 
-    public MinecraftProtocol Protocol { get; }
+    public JavaProtocol Protocol { get; }
     public bool IsConnected => _tcpClient.Connected;
     public ConnectionState ConnectionState { get; private set; } = ConnectionState.Handshake;
 
-    public MinecraftPacketClient(MinecraftProtocol protocol, ILoggerFactory loggerFactory)
+    public MinecraftPacketClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(protocol);
 
@@ -36,7 +36,7 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
         _logger  = loggerFactory.CreateLogger<MinecraftPacketClient>();
     }
 
-    public MinecraftPacketClient(MinecraftProtocol protocol) : this(protocol, NullLoggerFactory.Instance) { }
+    public MinecraftPacketClient(JavaProtocol protocol) : this(protocol, NullLoggerFactory.Instance) { }
 
     private void ListenStream()
     {
