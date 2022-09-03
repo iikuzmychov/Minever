@@ -2,11 +2,22 @@
 
 # Minever
 
-Minever is an open-source .NET library primarily aimed at supporting various versions of Minecraft (1.6 [13w41b] and upper) and providing them with a general user interface for creating client applications.
+Miniver is an open-source .NET library primarily aimed at supporting various versions of Minecraft Java Edition & Bedrock Edition and providing tools for creating bots and client applications.
 
 ## Current development state
 
 Initial state. Many things need to be done.
+
+## Supported versions
+### Java Edition
+
+| Minecraft versions | Protocol version | State            |
+| ------------------ | ---------------- | ---------------- |
+| 13w41b             | 0                | *In development* |
+
+### Bedrok Edition
+
+No one version are supported now.
 
 ## Solution structure
 
@@ -15,7 +26,7 @@ Initial state. Many things need to be done.
 | Project | Description |
 | ------- | ----------- |
 | Minever.Networking | The core project. It contains an implementation of packages, protocols, packet serializer, writer, reader etc. |
-| Minever.Client | It contains Minecraft clients implementation (low-level MinecrafPacketClient and high-level MinecraftClient). |
+| Minever.Client | It contains Minecraft clients implementation (low-level packet clients and high-level MinecraftClient). |
 
 ### Tests
 
