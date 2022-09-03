@@ -12,14 +12,14 @@ namespace Minever.Client;
 public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet, DateTime dateTime, PacketContext context)
     where TData : notnull;
 
-public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
+public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 {
     private readonly TcpClient _tcpClient = new();
     private bool _isListeningPaused = true;
     private CancellationTokenSource? _listenCancellationSource;
     private Task? _listenTask;
     private MinecraftWriter? _writer;
-    private ILogger<MinecraftPacketClient> _logger;
+    private ILogger<JavaPacketClient> _logger;
 
     public event PacketReceivedHandler<object>? PacketReceived;
     public event Action? Disconnected;
@@ -28,15 +28,15 @@ public sealed class MinecraftPacketClient : IDisposable, IAsyncDisposable
     public bool IsConnected => _tcpClient.Connected;
     public ConnectionState ConnectionState { get; private set; } = ConnectionState.Handshake;
 
-    public MinecraftPacketClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
+    public JavaPacketClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(protocol);
 
         Protocol = protocol;
-        _logger  = loggerFactory.CreateLogger<MinecraftPacketClient>();
+        _logger  = loggerFactory.CreateLogger<JavaPacketClient>();
     }
 
-    public MinecraftPacketClient(JavaProtocol protocol) : this(protocol, NullLoggerFactory.Instance) { }
+    public JavaPacketClient(JavaProtocol protocol) : this(protocol, NullLoggerFactory.Instance) { }
 
     private void ListenStream()
     {
