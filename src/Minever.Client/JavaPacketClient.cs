@@ -91,6 +91,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 
                 if (packet is not null)
                 {
+                    // TODO: replace this with adding the packet to a packets queue and invoking PacketReceived in the right order in new loop-method
                     Task.Run(() => PacketReceived?.Invoke(packet, DateTime.Now, context));
                     ConnectionState = Protocol.GetNewState(packet.Data, context);
                 }
