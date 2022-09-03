@@ -4,9 +4,9 @@
 
 Miniver is an open-source .NET library primarily aimed at supporting various versions of Minecraft Java Edition & Bedrock Edition and providing tools for creating bots and client applications.
 
-## Current development state
+## Current state
 
-Initial state. Many things need to be done.
+In development. Many things need to be done. Library architecture, aslo, still in development.
 
 ## Supported versions
 ### Java Edition
