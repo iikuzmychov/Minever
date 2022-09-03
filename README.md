@@ -6,7 +6,7 @@ Miniver is an open-source .NET library primarily aimed at supporting various ver
 
 ## Current state
 
-In development. Many things need to be done. Library architecture, aslo, still in development.
+In development. Many things need to be done. Library architecture, also, still in development.
 
 ## Supported versions
 ### Java Edition
