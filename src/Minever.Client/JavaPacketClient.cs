@@ -131,11 +131,9 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         Disconnected?.Invoke();
     }
 
-    public void Disconnect() => DisconnectAsync().GetAwaiter().GetResult();
-
     async ValueTask IAsyncDisposable.DisposeAsync() => await DisconnectAsync();
 
-    void IDisposable.Dispose() => Disconnect();
+    void IDisposable.Dispose() => DisconnectAsync().GetAwaiter().GetResult();
 
     public PacketReceivedHandler<object> OnPacket<TData>(PacketReceivedHandler<TData> action)
         where TData : notnull
