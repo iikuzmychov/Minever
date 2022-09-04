@@ -13,10 +13,10 @@ public sealed class JavaPacketClient : IPacketClient
 {
     private readonly ILogger<JavaPacketClient> _logger;
     private readonly TcpClient _tcpClient = new();
-    private MinecraftWriter? _writer;
 
     private readonly CancellationTokenSource _listenCancellationSource = new();
     private Task? _listenTask;
+    private MinecraftWriter? _writer;
 
     private volatile int _pauseRequestsCount = 0;
 
@@ -97,11 +97,11 @@ public sealed class JavaPacketClient : IPacketClient
         }
     }
 
-    public async ValueTask ConnectAsync(string serverAddress, ushort serverPort = 25565, CancellationToken cancellationToken = default)
+    public async ValueTask ConnectAsync(string host, ushort port = 25565, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(serverAddress);
+        ArgumentNullException.ThrowIfNull(host);
 
-        await _tcpClient.ConnectAsync(serverAddress, serverPort, cancellationToken);
+        await _tcpClient.ConnectAsync(host, port, cancellationToken);
         _logger.LogInformation("Connection established.");
 
         _writer = new(_tcpClient.GetStream());
