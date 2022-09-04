@@ -32,7 +32,7 @@ public sealed class JavaPacketClient : IPacketClient
         ArgumentNullException.ThrowIfNull(protocol);
 
         Protocol = protocol;
-        _logger = loggerFactory.CreateLogger<JavaPacketClient>();
+        _logger  = loggerFactory.CreateLogger<JavaPacketClient>();
     }
 
     public JavaPacketClient(JavaProtocol protocol) : this(protocol, NullLoggerFactory.Instance) { }
@@ -64,7 +64,7 @@ public sealed class JavaPacketClient : IPacketClient
                 }
 
                 var context = new PacketContext(PacketDirection.ServerToClient, ConnectionState);
-                var packet = (MinecraftPacket<object>?)null;
+                var packet  = (MinecraftPacket<object>?)null;
 
                 try
                 {
@@ -167,9 +167,9 @@ public sealed class JavaPacketClient : IPacketClient
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
-        var context = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
+        var context  = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
         var packetId = Protocol.GetPacketId(packetData.GetType(), context);
-        var packet = new MinecraftPacket<object>(packetId, packetData);
+        var packet   = new MinecraftPacket<object>(packetId, packetData);
 
         _writer!.WritePacket(packet);
         _logger.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");

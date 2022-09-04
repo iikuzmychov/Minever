@@ -42,9 +42,9 @@ public sealed record ServerStatus
 
     public ServerStatus(MinecraftVersion version, ServerPlayersInfo playersInfo, string desription, string? iconBase64 = null)
     {
-        Version = version;
+        Version     = version;
         PlayersInfo = playersInfo;
         Description = desription;
-        IconBase64 = iconBase64;
+        IconBase64  = iconBase64;
     }
 }
