@@ -9,7 +9,7 @@ using System.Net.Sockets;
 
 namespace Minever.Client;
 
-public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
+public sealed class JavaPacketClient : IPacketClient
 {
     private readonly ILogger<JavaPacketClient> _logger;
     private readonly TcpClient _tcpClient = new();
