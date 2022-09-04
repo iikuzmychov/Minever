@@ -14,12 +14,14 @@ public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet,
 
 public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 {
-    private readonly TcpClient _tcpClient = new();
     private readonly ILogger<JavaPacketClient> _logger;
-    private volatile int _pauseRequestsCount = 0;
-    private CancellationTokenSource? _listenCancellationSource;
-    private Task? _listenTask;
+    private readonly TcpClient _tcpClient = new();
     private MinecraftWriter? _writer;
+
+    private readonly CancellationTokenSource _listenCancellationSource = new();
+    private Task? _listenTask;
+
+    private volatile int _pauseRequestsCount = 0;
 
     public event PacketReceivedHandler<object>? PacketReceived;
     public event Action? Disconnected;
@@ -33,7 +35,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         ArgumentNullException.ThrowIfNull(protocol);
 
         Protocol = protocol;
-        _logger  = loggerFactory.CreateLogger<JavaPacketClient>();
+        _logger = loggerFactory.CreateLogger<JavaPacketClient>();
     }
 
     public JavaPacketClient(JavaProtocol protocol) : this(protocol, NullLoggerFactory.Instance) { }
@@ -42,7 +44,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
     {
         using var stream = _tcpClient.GetStream();
         using var reader = new MinecraftReader(stream);
-        
+
         while (true)
         {
             if (_listenCancellationSource!.IsCancellationRequested)
@@ -60,12 +62,12 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
                 {
                     _logger.LogCritical(exception, $"Error while reading packet length.");
                     Task.Run(DisconnectAsync);
-                    
+
                     return;
                 }
 
                 var context = new PacketContext(PacketDirection.ServerToClient, ConnectionState);
-                var packet  = (MinecraftPacket<object>?)null;
+                var packet = (MinecraftPacket<object>?)null;
 
                 try
                 {
@@ -105,9 +107,8 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         await _tcpClient.ConnectAsync(serverAddress, serverPort, cancellationToken);
         _logger.LogInformation("Connection established.");
 
-        _writer                   = new(_tcpClient.GetStream());
-        _listenCancellationSource = new();
-        _listenTask               = Task.Run(ListenStream, _listenCancellationSource.Token);
+        _writer = new(_tcpClient.GetStream());
+        _listenTask = Task.Run(ListenStream, _listenCancellationSource.Token);
     }
 
     public async ValueTask DisconnectAsync()
@@ -122,7 +123,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         }
 
         _listenCancellationSource?.Cancel();
-            
+
         if (_listenTask is not null)
             await _listenTask;
 
@@ -201,9 +202,9 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
-        var context  = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
+        var context = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
         var packetId = Protocol.GetPacketId(packetData.GetType(), context);
-        var packet   = new MinecraftPacket<object>(packetId, packetData);
+        var packet = new MinecraftPacket<object>(packetId, packetData);
 
         _writer!.WritePacket(packet);
         _logger.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
@@ -222,7 +223,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
 
         _pauseRequestsCount--;
-        
+
         return await taskCompletionSource.Task;
     }
 
