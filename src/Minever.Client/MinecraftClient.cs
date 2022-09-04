@@ -11,14 +11,14 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
     private readonly JavaPacketClient _packetClient;
 
     public static async Task<(ServerStatus Status, TimeSpan Ping)> PingServerAsync(
-        string hostname, ushort port, ILoggerFactory loggerFactory, CancellationToken cancellationToken = default)
+        string host, ushort port, ILoggerFactory loggerFactory, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(hostname);
+        ArgumentNullException.ThrowIfNull(host);
 
         await using var client = new JavaPacketClient(new JavaProtocol0(), loggerFactory);
-        await client.ConnectAsync(hostname, port, cancellationToken);
+        await client.ConnectAsync(host, port, cancellationToken);
 
-        var handshake = new Handshake(client.Protocol.Version, hostname, port, HandshakeNextState.Status);
+        var handshake = new Handshake(client.Protocol.Version, host, port, HandshakeNextState.Status);
         client.SendPacket(handshake);
 
         var status       = await client.SendRequestAsync<ServerStatus>(new ServerStatusRequest(), cancellationToken);
@@ -30,8 +30,8 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
     }
 
     public static async Task<(ServerStatus Status, TimeSpan Ping)> PingServerAsync
-        (string hostname, ushort port = 25565, CancellationToken cancellationToken = default) =>
-        await PingServerAsync(hostname, port, NullLoggerFactory.Instance, cancellationToken);
+        (string host, ushort port = 25565, CancellationToken cancellationToken = default) =>
+        await PingServerAsync(host, port, NullLoggerFactory.Instance, cancellationToken);
 
     public MinecraftClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
     {
