@@ -98,7 +98,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         }
     }
 
-    public async Task ConnectAsync(string serverAddress, ushort serverPort, CancellationToken cancellationToken = default)
+    public async ValueTask ConnectAsync(string serverAddress, ushort serverPort, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(serverAddress);
 
@@ -110,7 +110,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         _listenTask               = Task.Run(ListenStream, _listenCancellationSource.Token);
     }
 
-    public async Task DisconnectAsync()
+    public async ValueTask DisconnectAsync()
     {
         if (!IsConnected)
             return;
@@ -213,16 +213,14 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         ConnectionState = Protocol.GetNewState(packet.Data, context);
     }
 
-    public async Task<ReceivedPacketInfo<TResponseData>> WaitPacketAsync<TResponseData>(CancellationToken cancellationToken = default)
+    public async Task<TResponseData> WaitPacketAsync<TResponseData>(CancellationToken cancellationToken = default)
         where TResponseData : notnull
     {
         _pauseRequestsCount++;
 
-        var taskCompletionSource = new TaskCompletionSource<ReceivedPacketInfo<TResponseData>>();
+        var taskCompletionSource = new TaskCompletionSource<TResponseData>();
 
-        OnceOnPacket<TResponseData>((packet, receivedDateTime, context) =>
-            taskCompletionSource.SetResult(new(packet, receivedDateTime, context)));
-
+        OnceOnPacket<TResponseData>(data => taskCompletionSource.SetResult(data));
         cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
 
         _pauseRequestsCount--;
@@ -230,7 +228,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         return await taskCompletionSource.Task;
     }
 
-    public async Task<ReceivedPacketInfo<TResponseData>> SendRequestAsync<TResponseData>(
+    public async Task<TResponseData> SendRequestAsync<TResponseData>(
         object requestPacketData, CancellationToken cancellationToken = default)
         where TResponseData : notnull
     {
@@ -238,13 +236,10 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 
         _pauseRequestsCount++;
 
-        var taskCompletionSource = new TaskCompletionSource<ReceivedPacketInfo<TResponseData>>();
+        var taskCompletionSource = new TaskCompletionSource<TResponseData>();
 
         SendPacket(requestPacketData);
-
-        OnceOnPacket<TResponseData>((packet, receivedDateTime, context) =>
-            taskCompletionSource.SetResult(new(packet, receivedDateTime, context)));
-
+        OnceOnPacket<TResponseData>(data => taskCompletionSource.SetResult(data));
         cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
 
         _pauseRequestsCount--;
