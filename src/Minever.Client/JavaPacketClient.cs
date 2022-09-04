@@ -14,14 +14,12 @@ public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet,
 
 public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 {
-    private readonly ILogger<JavaPacketClient> _logger;
     private readonly TcpClient _tcpClient = new();
-    private MinecraftWriter? _writer;
-    
-    private readonly CancellationTokenSource _listenCancellationSource = new();
-    private Task? _listenTask;
-    
+    private readonly ILogger<JavaPacketClient> _logger;
     private volatile int _pauseRequestsCount = 0;
+    private CancellationTokenSource? _listenCancellationSource;
+    private Task? _listenTask;
+    private MinecraftWriter? _writer;
 
     public event PacketReceivedHandler<object>? PacketReceived;
     public event Action? Disconnected;
@@ -107,8 +105,9 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         await _tcpClient.ConnectAsync(serverAddress, serverPort, cancellationToken);
         _logger.LogInformation("Connection established.");
 
-        _writer      = new(_tcpClient.GetStream());
-        _listenTask  = Task.Run(ListenStream, _listenCancellationSource.Token);
+        _writer                   = new(_tcpClient.GetStream());
+        _listenCancellationSource = new();
+        _listenTask               = Task.Run(ListenStream, _listenCancellationSource.Token);
     }
 
     public async ValueTask DisconnectAsync()

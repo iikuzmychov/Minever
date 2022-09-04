@@ -3,10 +3,9 @@ using Minever.Client;
 using Minever.Client.ConsoleApplication;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
-using System.Diagnostics;
 
 const string ServerAddress = "localhost";
-const ushort ServerPort    = 52812;
+const ushort ServerPort    = 57344;
 
 ConcurrentConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -17,13 +16,10 @@ using var loggerFactory = LoggerFactory.Create(builder =>
         .AddConsole();
 });
 
-//var (status, ping) = await MinecraftClient.PingServerAsync("play.paradise-city.ir", 25565, loggerFactory);//.WaitAsync(TimeSpan.FromSeconds(5));
-//Debugger.Break();
-
 var protocol = new JavaProtocol0();
 var timeout  = TimeSpan.FromSeconds(15);
 
-await using var client = new JavaPacketClient(protocol, loggerFactory);
+await using var client = new MinecraftPacketClient(protocol, loggerFactory);
 client.OnPacket<KeepAlive>(keepAlive => client.SendPacket(keepAlive));
 client.OnPacket<JoinGame>(joinGame => ConcurrentConsole.WriteLine($"Max players count: {joinGame.MaxPlayersCount}."));
 client.OnPacket<SpawnPosition>(position => ConcurrentConsole.WriteLine($"Spawn position: {position.BlockPosition}."));
@@ -70,13 +66,13 @@ client.OnPacket<SpawnExperienceOrb>(orb =>
 });
 client.OnPacket<Disconnect>(disconnectInfo => ConcurrentConsole.WriteLine($"Disconneted. Reason: {disconnectInfo.Reason}."));
 
-await client.ConnectAsync(ServerAddress, ServerPort, new CancellationTokenSource(timeout).Token);
+await client.ConnectAsync(ServerAddress, ServerPort).WaitAsync(timeout);
 
 var handshake = new Handshake(client.Protocol.Version, ServerAddress, ServerPort, HandshakeNextState.Login);
 client.SendPacket(handshake);
 
-var loginRequest = await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23"), new CancellationTokenSource(timeout).Token);
-ConcurrentConsole.WriteLine($"Login success! {loginRequest.Name} ({loginRequest.Uuid}).");
+var loginSuccess = (await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23")).WaitAsync(timeout)).Packet.Data;
+ConcurrentConsole.WriteLine($"Login success! {loginSuccess.Name} ({loginSuccess.Uuid}).");
 
 await Task.Delay(TimeSpan.FromSeconds(1));
 client.SendPacket(new ClientToServerChatMessage(@"раз"));
