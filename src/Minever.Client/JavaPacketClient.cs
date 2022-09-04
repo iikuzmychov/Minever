@@ -13,10 +13,10 @@ public sealed class JavaPacketClient : IPacketClient
 {
     private readonly ILogger<JavaPacketClient> _logger;
     private readonly TcpClient _tcpClient = new();
-    private MinecraftWriter? _writer;
 
     private readonly CancellationTokenSource _listenCancellationSource = new();
     private Task? _listenTask;
+    private MinecraftWriter? _writer;
 
     private volatile int _pauseRequestsCount = 0;
 

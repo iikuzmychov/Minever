@@ -36,7 +36,7 @@ public sealed record ServerStatus
     [JsonPropertyName("favicon")]
     [JsonConverter(typeof(JsonIconBase64Converter))]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? IconBase64 { get; init; }
+    public string? IconBase64 { get; init; } // TODO: change to System.Net.Mime.ContentType
 
     public ServerStatus() { }
 
