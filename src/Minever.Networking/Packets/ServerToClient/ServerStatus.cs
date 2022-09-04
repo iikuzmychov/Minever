@@ -36,15 +36,15 @@ public sealed record ServerStatus
     [JsonPropertyName("favicon")]
     [JsonConverter(typeof(JsonIconBase64Converter))]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string? IconBase64 { get; init; }
+    public byte[]? IconBytes { get; init; }
 
     public ServerStatus() { }
 
-    public ServerStatus(MinecraftVersion version, ServerPlayersInfo playersInfo, string desription, string? iconBase64 = null)
+    public ServerStatus(MinecraftVersion version, ServerPlayersInfo playersInfo, string desription, byte[]? iconBytes = null)
     {
         Version     = version;
         PlayersInfo = playersInfo;
         Description = desription;
-        IconBase64  = iconBase64;
+        IconBytes   = iconBytes;
     }
 }

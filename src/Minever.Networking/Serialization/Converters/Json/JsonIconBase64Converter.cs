@@ -3,25 +3,23 @@ using System.Text.Json.Serialization;
 
 namespace Minever.Networking.Serialization.Json;
 
-public class JsonIconBase64Converter : JsonConverter<string?>
+public class JsonIconBase64Converter : JsonConverter<byte[]>
 {
     private const string Prefix = "data:image/png;base64,";
 
-    public override string? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override byte[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        var iconBase64 = reader.GetString();
+        var iconBase64 = reader.GetString()!;
 
-        if (iconBase64 is not null && iconBase64.StartsWith(Prefix))
+        if (iconBase64.StartsWith(Prefix))
             iconBase64 = iconBase64[Prefix.Length..];
 
-        return iconBase64;
+        return Convert.FromBase64String(iconBase64);
     }
 
-    public override void Write(Utf8JsonWriter writer, string? value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, byte[] value, JsonSerializerOptions options)
     {
-        if (value is null || value.StartsWith(Prefix))
-            writer.WriteStringValue(value);
-        else
-            writer.WriteStringValue(Prefix + value);
+        var base64String = Convert.ToBase64String(value);
+        writer.WriteStringValue(Prefix + base64String);
     }
 }
