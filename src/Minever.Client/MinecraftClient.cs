@@ -11,27 +11,26 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
     private readonly JavaPacketClient _packetClient;
 
     public static async Task<(ServerStatus Status, TimeSpan Ping)> PingServerAsync(
-        string hostname, ushort port, ILoggerFactory loggerFactory, CancellationToken cancellationToken = default)
+        string serverAddress, ushort serverPort, ILoggerFactory loggerFactory)
     {
-        ArgumentNullException.ThrowIfNull(hostname);
+        ArgumentNullException.ThrowIfNull(serverAddress);
 
         await using var client = new JavaPacketClient(new JavaProtocol0(), loggerFactory);
-        await client.ConnectAsync(hostname, port, cancellationToken);
+        await client.ConnectAsync(serverAddress, serverPort);
 
-        var handshake = new Handshake(client.Protocol.Version, hostname, port, HandshakeNextState.Status);
+        var handshake = new Handshake(client.Protocol.Version, serverAddress, serverPort, HandshakeNextState.Status);
         client.SendPacket(handshake);
 
-        var status       = await client.SendRequestAsync<ServerStatus>(new ServerStatusRequest(), cancellationToken);
+        var status       = await client.SendRequestAsync<ServerStatus>(new ServerStatusRequest());
         var pingRequest  = new Ping(DateTime.Now);
-        var pingResponse = await client.SendRequestAsync<Ping>(pingRequest, cancellationToken);
+        var pingResponse = await client.SendRequestAsync<Ping>(pingRequest);
         var ping         = pingResponse.CalculateDelay(DateTime.Now);
 
         return (status, ping);
     }
 
-    public static async Task<(ServerStatus Status, TimeSpan Ping)> PingServerAsync
-        (string hostname, ushort port = 25565, CancellationToken cancellationToken = default) =>
-        await PingServerAsync(hostname, port, NullLoggerFactory.Instance, cancellationToken);
+    public static async Task<(ServerStatus Status, TimeSpan Ping)> PingServerAsync(string serverAddress, ushort serverPort) =>
+        await PingServerAsync(serverAddress, serverPort, NullLoggerFactory.Instance);
 
     public MinecraftClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
     {

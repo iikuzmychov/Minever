@@ -90,14 +90,14 @@ public sealed class JavaPacketClient : IPacketClient
 
                 if (packet is not null)
                 {
-                    Task.Run(() => PacketReceived?.Invoke(packet.Data));
+                    Task.Run(() => PacketReceived?.Invoke(packet));
                     ConnectionState = Protocol.GetNewState(packet.Data, context);
                 }
             }
         }
     }
 
-    public async ValueTask ConnectAsync(string serverAddress, ushort serverPort = 25565, CancellationToken cancellationToken = default)
+    public async ValueTask ConnectAsync(string serverAddress, ushort serverPort, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(serverAddress);
 
@@ -202,9 +202,9 @@ public sealed class JavaPacketClient : IPacketClient
 
         var taskCompletionSource = new TaskCompletionSource<TResponseData>();
 
-        cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
         SendPacket(requestPacketData);
         OnceOnPacket<TResponseData>(data => taskCompletionSource.SetResult(data));
+        cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
 
         _pauseRequestsCount--;
 
