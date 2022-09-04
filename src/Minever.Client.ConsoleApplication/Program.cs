@@ -5,20 +5,21 @@ using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 using System.Diagnostics;
 
-const string ServerAddress = "localhost";
-const ushort ServerPort = 52812;
+const string Hostname = "localhost";
+const ushort Port = 51090;
 
 ConcurrentConsole.ForegroundColor = ConsoleColor.Magenta;
 
 using var loggerFactory = LoggerFactory.Create(builder =>
 {
     builder
-        .SetMinimumLevel(LogLevel.Error)
+        .SetMinimumLevel(LogLevel.Information)
         .AddConsole();
 });
 
-//var (status, ping) = await MinecraftClient.PingServerAsync("play.paradise-city.ir", 25565, loggerFactory);//.WaitAsync(TimeSpan.FromSeconds(5));
-//Debugger.Break();
+//var (status, ping) = await MinecraftClient.PingServerAsync("play.paradise-city.ir", 25565, loggerFactory);
+var (status, ping) = await MinecraftClient.PingServerAsync("mc.musteryworld.ru", 25565, loggerFactory);
+Debugger.Break();
 
 var protocol = new JavaProtocol0();
 var timeout = TimeSpan.FromSeconds(15);
@@ -70,9 +71,9 @@ client.OnPacket<SpawnExperienceOrb>(orb =>
 });
 client.OnPacket<Disconnect>(disconnectInfo => ConcurrentConsole.WriteLine($"Disconneted. Reason: {disconnectInfo.Reason}."));
 
-await client.ConnectAsync(ServerAddress, ServerPort, new CancellationTokenSource(timeout).Token);
+await client.ConnectAsync(Hostname, Port, new CancellationTokenSource(timeout).Token);
 
-var handshake = new Handshake(client.Protocol.Version, ServerAddress, ServerPort, HandshakeNextState.Login);
+var handshake = new Handshake(client.Protocol.Version, Hostname, Port, HandshakeNextState.Login);
 client.SendPacket(handshake);
 
 var loginRequest = await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23"), new CancellationTokenSource(timeout).Token);
