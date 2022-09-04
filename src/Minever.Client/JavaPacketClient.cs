@@ -15,11 +15,11 @@ public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet,
 public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 {
     private readonly TcpClient _tcpClient = new();
+    private readonly ILogger<JavaPacketClient> _logger;
     private volatile int _pauseRequestsCount = 0;
     private CancellationTokenSource? _listenCancellationSource;
     private Task? _listenTask;
     private MinecraftWriter? _writer;
-    private ILogger<JavaPacketClient> _logger;
 
     public event PacketReceivedHandler<object>? PacketReceived;
     public event Action? Disconnected;
