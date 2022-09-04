@@ -15,7 +15,7 @@ public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet,
 public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 {
     private readonly TcpClient _tcpClient = new();
-    private bool _isListeningPaused = true;
+    private volatile int _pauseRequestsCount = 0;
     private CancellationTokenSource? _listenCancellationSource;
     private Task? _listenTask;
     private MinecraftWriter? _writer;
@@ -48,7 +48,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
             if (_listenCancellationSource!.IsCancellationRequested)
                 break;
 
-            if (!_isListeningPaused && stream.DataAvailable)
+            if (stream.DataAvailable && _pauseRequestsCount == 0)
             {
                 int packetLength;
 
@@ -91,7 +91,6 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 
                 if (packet is not null)
                 {
-                    // TODO: replace this with adding the packet to a packets queue and invoking PacketReceived in the right order in new loop-method
                     Task.Run(() => PacketReceived?.Invoke(packet, DateTime.Now, context));
                     ConnectionState = Protocol.GetNewState(packet.Data, context);
                 }
@@ -108,7 +107,6 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 
         _writer                   = new(_tcpClient.GetStream());
         _listenCancellationSource = new();
-        _isListeningPaused        = false;
         _listenTask               = Task.Run(ListenStream, _listenCancellationSource.Token);
     }
 
@@ -116,8 +114,6 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
     {
         if (!IsConnected)
             return;
-                
-        _isListeningPaused = true;
 
         if (PacketReceived is not null)
         {
@@ -220,10 +216,14 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
     public async Task<ReceivedPacketInfo<TResponseData>> WaitPacketAsync<TResponseData>()
         where TResponseData : notnull
     {
+        _pauseRequestsCount++;
+
         var taskCompletionSource = new TaskCompletionSource<ReceivedPacketInfo<TResponseData>>();
 
         OnceOnPacket<TResponseData>((packet, receivedDateTime, context) =>
             taskCompletionSource.SetResult(new(packet, receivedDateTime, context)));
+        
+        _pauseRequestsCount--;
 
         return await taskCompletionSource.Task;
     }
@@ -233,16 +233,16 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
     {
         ArgumentNullException.ThrowIfNull(requestPacketData);
 
-        var taskCompletionSource = new TaskCompletionSource<ReceivedPacketInfo<TResponseData>>();
+        _pauseRequestsCount++;
 
-        _isListeningPaused = true;
+        var taskCompletionSource = new TaskCompletionSource<ReceivedPacketInfo<TResponseData>>();
 
         SendPacket(requestPacketData);
 
         OnceOnPacket<TResponseData>((packet, receivedDateTime, context) =>
             taskCompletionSource.SetResult(new(packet, receivedDateTime, context)));
-        
-        _isListeningPaused = false;
+
+        _pauseRequestsCount--;
 
         var responsePacket = await taskCompletionSource.Task;
 
