@@ -10,7 +10,7 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
     private readonly ILogger<MinecraftClient> _logger;
     private readonly JavaPacketClient _packetClient;
 
-    public static async Task<(ServerStatus Status, TimeSpan Delay)> PingServerAsync(
+    public static async Task<(ServerStatus Status, TimeSpan Ping)> PingServerAsync(
         string serverAddress, ushort serverPort, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(serverAddress);
@@ -21,15 +21,15 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
         var handshake = new Handshake(client.Protocol.Version, serverAddress, serverPort, HandshakeNextState.Status);
         client.SendPacket(handshake);
 
-        var statusResponse = await client.SendRequestAsync<ServerStatus>(new ServerStatusRequest());
-        var status         = statusResponse.Packet.Data;
-        var delayResponse  = await client.SendRequestAsync<Ping>(new Ping(DateTime.Now));
-        var delay          = delayResponse.Packet.Data.CalculateDelay(delayResponse.ReceivedDateTime);
+        var status       = await client.SendRequestAsync<ServerStatus>(new ServerStatusRequest());
+        var pingRequest  = new Ping(DateTime.Now);
+        var pingResponse = await client.SendRequestAsync<Ping>(pingRequest);
+        var ping         = pingResponse.CalculateDelay(DateTime.Now);
 
-        return (status, delay);
+        return (status, ping);
     }
 
-    public static async Task<(ServerStatus Status, TimeSpan Delay)> PingServerAsync(string serverAddress, ushort serverPort) =>
+    public static async Task<(ServerStatus Status, TimeSpan Ping)> PingServerAsync(string serverAddress, ushort serverPort) =>
         await PingServerAsync(serverAddress, serverPort, NullLoggerFactory.Instance);
 
     public MinecraftClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
@@ -48,10 +48,8 @@ public class MinecraftClient : IAsyncDisposable, IDisposable
     }
 
     public async Task DisconnectAsync() => await _packetClient.DisconnectAsync();
-    
-    public void Disconnect() => _packetClient.Disconnect();
 
     public async ValueTask DisposeAsync() => await DisconnectAsync();
 
-    void IDisposable.Dispose() => Disconnect();
+    void IDisposable.Dispose() => ((IDisposable)_packetClient).Dispose();
 }
