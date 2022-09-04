@@ -4,13 +4,10 @@ using Minever.Networking.IO;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
 using Microsoft.Extensions.Logging;
-using System.Net.Sockets;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Net.Sockets;
 
 namespace Minever.Client;
-
-public delegate void PacketReceivedHandler<TData>(MinecraftPacket<TData> packet, DateTime dateTime, PacketContext context)
-    where TData : notnull;
 
 public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 {
@@ -23,7 +20,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 
     private volatile int _pauseRequestsCount = 0;
 
-    public event PacketReceivedHandler<object>? PacketReceived;
+    public event Action<object>? PacketReceived;
     public event Action? Disconnected;
 
     public JavaProtocol Protocol { get; }
@@ -93,7 +90,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 
                 if (packet is not null)
                 {
-                    Task.Run(() => PacketReceived?.Invoke(packet, DateTime.Now, context));
+                    Task.Run(() => PacketReceived?.Invoke(packet));
                     ConnectionState = Protocol.GetNewState(packet.Data, context);
                 }
             }
@@ -119,7 +116,7 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         if (PacketReceived is not null)
         {
             foreach (var handler in PacketReceived.GetInvocationList())
-                PacketReceived -= (handler as PacketReceivedHandler<object>);
+                PacketReceived -= (handler as Action<object>);
         }
 
         _listenCancellationSource?.Cancel();
@@ -136,15 +133,15 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
 
     void IDisposable.Dispose() => DisconnectAsync().GetAwaiter().GetResult();
 
-    public PacketReceivedHandler<object> OnPacket<TData>(PacketReceivedHandler<TData> action)
+    public Action<object> OnPacket<TData>(Action<TData> action)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        PacketReceivedHandler<object> handler = (packet, dateTime, context) =>
+        Action<object> handler = data =>
         {
-            if (packet.Data is TData)
-                action((MinecraftPacket<TData>)packet, dateTime, context);
+            if (data is TData tData)
+                action(tData);
         };
 
         PacketReceived += handler;
@@ -152,50 +149,18 @@ public sealed class JavaPacketClient : IDisposable, IAsyncDisposable
         return handler;
     }
 
-    public PacketReceivedHandler<object> OnPacket<TData>(Action<TData> action)
-        where TData : notnull
-    {
-        ArgumentNullException.ThrowIfNull(action);
-
-        return OnPacket<TData>((packet, _, _) => action(packet.Data));
-    }
-
-    public PacketReceivedHandler<object> OnPacket<TData>(Action<TData, DateTime> action)
-        where TData : notnull
-    {
-        ArgumentNullException.ThrowIfNull(action);
-
-        return OnPacket<TData>((packet, receivedDateTime, _) => action(packet.Data, receivedDateTime));
-    }
-
-    public void OnceOnPacket<TData>(PacketReceivedHandler<TData> action)
-        where TData : notnull
-    {
-        ArgumentNullException.ThrowIfNull(action);
-
-        PacketReceivedHandler<object>? handler = null;
-
-        handler = OnPacket<TData>((packet, dateTime, context) =>
-        {
-            PacketReceived -= handler;
-            action(packet, dateTime, context);
-        });
-    }
-
     public void OnceOnPacket<TData>(Action<TData> action)
         where TData : notnull
     {
         ArgumentNullException.ThrowIfNull(action);
 
-        OnceOnPacket<TData>((packet, _, _) => action(packet.Data));
-    }
+        Action<object> handler = null!;
 
-    public void OnceOnPacket<TData>(Action<TData, DateTime> action)
-        where TData : notnull
-    {
-        ArgumentNullException.ThrowIfNull(action);
-
-        OnceOnPacket<TData>((packet, receivedDateTime, _) => action(packet.Data, receivedDateTime));
+        handler = OnPacket<TData>(data =>
+        {
+            PacketReceived -= handler;
+            action(data);
+        });
     }
 
     public void SendPacket(object packetData)
