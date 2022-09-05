@@ -6,7 +6,6 @@ using Minever.Networking.Protocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Net.Sockets;
-using Microsoft.Extensions.Options;
 
 namespace Minever.Client;
 
