@@ -6,6 +6,7 @@ using Minever.Networking.Protocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Net.Sockets;
+using Microsoft.Extensions.Options;
 
 namespace Minever.Client;
 
@@ -104,26 +105,17 @@ public sealed class JavaPacketClient : IPacketClient
         await _tcpClient.ConnectAsync(host, port, cancellationToken);
         _logger.LogInformation("Connection established.");
 
-        _writer = new(_tcpClient.GetStream());
+        _writer     = new(_tcpClient.GetStream());
         _listenTask = Task.Run(ListenStream, _listenCancellationSource.Token);
     }
 
-    public async ValueTask DisconnectAsync()
+    public async Task DisconnectAsync()
     {
         if (!IsConnected)
             return;
 
-        if (PacketReceived is not null)
-        {
-            foreach (var handler in PacketReceived.GetInvocationList())
-                PacketReceived -= (handler as Action<object>);
-        }
-
-        _listenCancellationSource?.Cancel();
-
-        if (_listenTask is not null)
-            await _listenTask;
-
+        _listenCancellationSource.Cancel();
+        await _listenTask!;
         _tcpClient.Close();
         _logger.LogInformation("Disconnected.");
         Disconnected?.Invoke();
