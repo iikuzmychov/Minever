@@ -17,7 +17,7 @@ In development. Many things need to be done. Library architecture, also, still i
 
 ### Bedrok Edition
 
-No one version are supported now.
+*No one version are supported now.*
 
 ## Solution structure
 
