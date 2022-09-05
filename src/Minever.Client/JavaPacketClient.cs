@@ -177,14 +177,14 @@ public sealed class JavaPacketClient : IPacketClient
         ConnectionState = Protocol.GetNewState(packet.Data, context);
     }
 
-    public async Task<TResponseData> WaitPacketAsync<TResponseData>(CancellationToken cancellationToken = default)
-        where TResponseData : notnull
+    public async Task<TData> WaitPacketAsync<TData>(CancellationToken cancellationToken = default)
+        where TData : notnull
     {
         _pauseRequestsCount++;
 
-        var taskCompletionSource = new TaskCompletionSource<TResponseData>();
+        var taskCompletionSource = new TaskCompletionSource<TData>();
 
-        OnceOnPacket<TResponseData>(data => taskCompletionSource.SetResult(data));
+        OnceOnPacket<TData>(data => taskCompletionSource.SetResult(data));
         cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
 
         _pauseRequestsCount--;
