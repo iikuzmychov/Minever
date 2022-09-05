@@ -20,6 +20,7 @@ public sealed class JavaPacketClient : IPacketClient
     private MinecraftWriter? _writer;
 
     private volatile int _pauseRequestsCount = 0;
+    private bool isDisposed = false;
 
     public event Action<object>? PacketReceived;
     public event Action? Disconnected;
@@ -102,6 +103,9 @@ public sealed class JavaPacketClient : IPacketClient
     {
         ArgumentNullException.ThrowIfNull(host);
 
+        if (isDisposed)
+            throw new ObjectDisposedException(GetType().FullName);
+
         await _tcpClient.ConnectAsync(host, port, cancellationToken);
         _logger.LogInformation("Connection established.");
 
@@ -117,6 +121,9 @@ public sealed class JavaPacketClient : IPacketClient
         _listenCancellationSource.Cancel();
         await _listenTask!;
         _tcpClient.Close();
+
+        isDisposed = true;
+
         _logger.LogInformation("Disconnected.");
         Disconnected?.Invoke();
     }
@@ -159,6 +166,9 @@ public sealed class JavaPacketClient : IPacketClient
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
+        if (isDisposed)
+            throw new ObjectDisposedException(GetType().FullName);
+
         var context  = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
         var packetId = Protocol.GetPacketId(packetData.GetType(), context);
         var packet   = new MinecraftPacket<object>(packetId, packetData);
@@ -172,6 +182,9 @@ public sealed class JavaPacketClient : IPacketClient
     public async Task<TData> WaitPacketAsync<TData>(CancellationToken cancellationToken = default)
         where TData : notnull
     {
+        if (isDisposed)
+            throw new ObjectDisposedException(GetType().FullName);
+
         _pauseRequestsCount++;
 
         var taskCompletionSource = new TaskCompletionSource<TData>();
@@ -189,6 +202,9 @@ public sealed class JavaPacketClient : IPacketClient
         where TResponseData : notnull
     {
         ArgumentNullException.ThrowIfNull(requestPacketData);
+
+        if (isDisposed)
+            throw new ObjectDisposedException(GetType().FullName);
 
         _pauseRequestsCount++;
 
