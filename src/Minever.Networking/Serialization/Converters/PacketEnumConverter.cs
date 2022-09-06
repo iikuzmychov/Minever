@@ -14,7 +14,7 @@ public class PacketEnumConverter<TEnum, TValue> : PacketConverter<TEnum>
         _valueConverter = valueConverter ?? throw new ArgumentNullException(nameof(valueConverter));
     }
 
-    public PacketEnumConverter() : this(PacketSerializer.GetTypeConverter(typeof(TValue))) { }
+    public PacketEnumConverter() : this(PacketSerializer.GetConverter(typeof(TValue))) { }
 
     public override TEnum Read(MinecraftReader reader)
     {

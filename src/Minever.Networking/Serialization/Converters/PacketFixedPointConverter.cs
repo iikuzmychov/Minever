@@ -8,7 +8,7 @@ namespace Minever.Networking.Serialization;
 public class PacketFixedPointConverter<T> : PacketConverter<double>
     where T : notnull
 {
-    private readonly PacketConverter _typeConverter = PacketSerializer.GetTypeConverter(typeof(T));
+    private readonly PacketConverter _typeConverter = PacketSerializer.GetConverter(typeof(T));
 
     public override double Read(MinecraftReader reader)
     {

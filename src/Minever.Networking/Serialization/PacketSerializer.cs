@@ -8,11 +8,11 @@ namespace Minever.Networking.Serialization;
 
 public static class PacketSerializer
 {
-    public static PacketConverter GetTypeConverter(Type type)
+    public static PacketConverter GetConverter(Type typeToConvert)
     {
-        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(typeToConvert);
 
-        var typeConverterAttribute = type.GetCustomAttribute<PacketConverterAttribute>();
+        var typeConverterAttribute = typeToConvert.GetCustomAttribute<PacketConverterAttribute>();
 
         if (typeConverterAttribute is not null)
             return (PacketConverter)Activator.CreateInstance(typeConverterAttribute.ConverterType)!;
@@ -27,7 +27,7 @@ public static class PacketSerializer
         if (propertyConverterAttribute is not null)
             return (PacketConverter)Activator.CreateInstance(propertyConverterAttribute.ConverterType)!;
         else
-            return GetTypeConverter(property.PropertyType);
+            return GetConverter(property.PropertyType);
     }
 
     private static IOrderedEnumerable<PropertyInfo> GetSerializableProperties(Type packetDataType) =>

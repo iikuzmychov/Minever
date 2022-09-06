@@ -4,7 +4,7 @@ namespace Minever.Networking.Serialization;
 
 public class PacketTimeSpanFromToMinecraftTicksConverter<TSeconds> : PacketConverter<TimeSpan>
 {
-    private readonly PacketConverter _secondsConverter = PacketSerializer.GetTypeConverter(typeof(TSeconds));
+    private readonly PacketConverter _secondsConverter = PacketSerializer.GetConverter(typeof(TSeconds));
 
     public override TimeSpan Read(MinecraftReader reader)
     {

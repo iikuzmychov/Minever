@@ -16,7 +16,7 @@ public class PacketPrefixedArrayConverter<TPrefix, TElement> : PacketConverter<T
     }
 
     public PacketPrefixedArrayConverter()
-        : this(PacketSerializer.GetTypeConverter(typeof(TPrefix)), PacketSerializer.GetTypeConverter(typeof(TElement))) { }
+        : this(PacketSerializer.GetConverter(typeof(TPrefix)), PacketSerializer.GetConverter(typeof(TElement))) { }
 
     public override TElement[] Read(MinecraftReader reader)
     {
