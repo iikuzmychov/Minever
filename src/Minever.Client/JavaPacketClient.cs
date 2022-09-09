@@ -6,6 +6,7 @@ using Minever.Networking.Protocols;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Net.Sockets;
+using Minever.Networking.Serialization;
 
 namespace Minever.Client;
 
@@ -172,10 +173,14 @@ public sealed class JavaPacketClient : IPacketClient
         var packetId = Protocol.GetPacketId(packetData.GetType(), context);
         var packet   = new MinecraftPacket<object>(packetId, packetData);
 
-        _writer!.WritePacket(packet);
+        _pauseRequestsCount++;
+
+        PacketSerializer.Serialize(packet, _writer!);
         _logger.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
 
         ConnectionState = Protocol.GetNewState(packet.Data, context);
+
+        _pauseRequestsCount--;
     }
 
     public async Task<TData> WaitPacketAsync<TData>(CancellationToken cancellationToken = default)
