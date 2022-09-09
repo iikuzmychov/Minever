@@ -79,62 +79,6 @@ public class MinecraftWriter : BinaryWriter, IAsyncDisposable, IDisposable
         Write(position.Z);
     }
 
-    /*private static byte[] GetPacketDataBytes<TData>(TData packetData)
-    {
-        var packetProperties = packetData!
-            .GetType()
-            .GetProperties()
-            .Where(propertyInfo => propertyInfo.GetCustomAttribute<PacketIgnoreAttribute>() is null)
-            .Select(propertyInfo => new
-            {
-                Info = propertyInfo,
-                Order = propertyInfo.GetCustomAttribute<PacketPropertyOrderAttribute>()?.Order ?? int.MaxValue,
-                propertyInfo.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType,
-            })
-            .OrderBy(property => property.Order);
-
-        using var memoryStream = new MemoryStream();
-        using var writer = new MinecraftWriter(memoryStream);
-
-        foreach (var property in packetProperties)
-        {
-            PacketConverter converter;
-
-            if (property.ConverterType is null)
-            {
-                var propertyTypeConverterType = property.Info.PropertyType.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType;
-
-                if (propertyTypeConverterType is not null)
-                    converter = (PacketConverter)Activator.CreateInstance(propertyTypeConverterType)!;
-                else
-                    converter = DefaultPacketConverter.Shared;
-            }
-            else
-            {
-                converter = (PacketConverter)Activator.CreateInstance(property.ConverterType)!;
-            }
-
-            var propertyValue = property.Info.GetValue(packetData)!;
-
-            converter.Write(propertyValue, writer);
-        }
-
-        return memoryStream.ToArray();
-    }*/
-
-    /*public void WritePacket(int packetId, object packetData)
-    {
-        ArgumentNullException.ThrowIfNull(packetData);
-
-        var idBytes = packetId.Get7BitEncodedInt32Bytes();
-        var dataBytes = GetPacketDataBytes(packetData);
-        var packetLength = idBytes.Length + dataBytes.Length;
-
-        Write7BitEncodedInt(packetLength);
-        Write(idBytes);
-        Write(dataBytes);
-    }*/
-
     /*public void WritePacket(int packetId, object packetData, int compressingThreshold)
     {
         ArgumentNullException.ThrowIfNull(packetData);
@@ -176,15 +120,4 @@ public class MinecraftWriter : BinaryWriter, IAsyncDisposable, IDisposable
             Write(compressedBytes);
         }
     }*/
-
-    public void WritePacket<TData>(MinecraftPacket<TData> packet)
-        where TData : notnull
-    {
-        ArgumentNullException.ThrowIfNull(packet);
-
-        var packetBytes = PacketSerializer.Serialize(packet);
-
-        Write7BitEncodedInt(packetBytes.Length);
-        Write(packetBytes);
-    }
 }
