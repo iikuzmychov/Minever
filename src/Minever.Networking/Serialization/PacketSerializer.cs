@@ -87,8 +87,10 @@ public static class PacketSerializer
         ArgumentNullException.ThrowIfNull(packet);
         ArgumentNullException.ThrowIfNull(writer);
 
-        writer.Write7BitEncodedInt(packet.Id);
-        SerializeData(packet.Data, writer);
+        var packetBytes = Serialize(packet);
+
+        writer.Write7BitEncodedInt(packetBytes.Length);
+        writer.Write(packetBytes);
     }
 
     public static object DeserializeData(MinecraftReader reader, Type packetDataType)
