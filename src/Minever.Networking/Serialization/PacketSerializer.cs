@@ -2,6 +2,7 @@
 using Minever.Networking.IO;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
+using System.IO;
 using System.Reflection;
 
 namespace Minever.Networking.Serialization;
@@ -65,7 +66,7 @@ public static class PacketSerializer
                 converter.Write(writer, propertyValue);
             }
         }
-    }
+    }    
 
     public static byte[] Serialize<TData>(MinecraftPacket<TData> packet)
         where TData : notnull
@@ -79,6 +80,16 @@ public static class PacketSerializer
         SerializeData(packet.Data, writer);
         
         return memoryStream.ToArray();
+    }
+
+    public static void Serialize<TData>(MinecraftPacket<TData> packet, MinecraftWriter writer)
+         where TData : notnull
+    {
+        ArgumentNullException.ThrowIfNull(packet);
+        ArgumentNullException.ThrowIfNull(writer);
+
+        writer.Write7BitEncodedInt(packet.Id);
+        SerializeData(packet.Data, writer);
     }
 
     public static object DeserializeData(MinecraftReader reader, Type packetDataType)
