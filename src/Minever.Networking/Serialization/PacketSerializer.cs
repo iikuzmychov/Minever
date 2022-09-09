@@ -2,7 +2,6 @@
 using Minever.Networking.IO;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
-using System.IO;
 using System.Reflection;
 
 namespace Minever.Networking.Serialization;
