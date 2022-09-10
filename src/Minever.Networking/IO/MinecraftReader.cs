@@ -1,7 +1,4 @@
 ﻿using Minever.Networking.DataTypes;
-using Minever.Networking.Packets;
-using Minever.Networking.Serialization;
-using Minever.Networking.Protocols;
 using System.Buffers.Binary;
 
 namespace Minever.Networking.IO;
@@ -47,48 +44,6 @@ public class MinecraftReader : BinaryReader, IDisposable
 
         return new(x, y, z);
     }
-
-    /*private object ReadPacketData(int dataLength, Type targetType)
-    {
-        var packet = Activator.CreateInstance(targetType)!;
-
-        var packetProperties = packet!
-            .GetType()
-            .GetProperties()
-            .Where(propertyInfo => propertyInfo.GetCustomAttribute<PacketIgnoreAttribute>() is null)
-            .Select(propertyInfo => new
-            {
-                Info = propertyInfo,
-                Order = propertyInfo.GetCustomAttribute<PacketPropertyOrderAttribute>()?.Order ?? int.MaxValue,
-                propertyInfo.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType,
-            })
-            .OrderBy(property => property.Order);
-
-        foreach (var property in packetProperties)
-        {
-            PacketConverter converter;
-
-            if (property.ConverterType is null)
-            {
-                var propertyTypeConverterType = property.Info.PropertyType.GetCustomAttribute<PacketConverterAttribute>()?.ConverterType;
-
-                if (propertyTypeConverterType is not null)
-                    converter = (PacketConverter)Activator.CreateInstance(propertyTypeConverterType)!;
-                else
-                    converter = DefaultPacketConverter.Shared;
-            }
-            else
-            {
-                converter = (PacketConverter)Activator.CreateInstance(property.ConverterType)!;
-            }
-
-            var value = converter.Read(this, property.Info.PropertyType);
-
-            property.Info.SetValue(packet, value);
-        }
-
-        return packet;
-    }*/
 
     /*public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext packetContext,
         MinecraftProtocol protocol, bool isCompressed = false)
@@ -143,16 +98,3 @@ public class MinecraftReader : BinaryReader, IDisposable
 
         return packet;
     }*/
-
-    public MinecraftPacket<object> ReadPacket(int packetLength, PacketContext context, JavaProtocol protocol)
-    {
-        if (packetLength <= 0)
-            throw new ArgumentOutOfRangeException(nameof(packetLength));
-
-        ArgumentNullException.ThrowIfNull(protocol);
-
-        var packetBytes = ReadBytes(packetLength);
-
-        return PacketSerializer.Deserialize(packetBytes, context, protocol);
-    }
-}
