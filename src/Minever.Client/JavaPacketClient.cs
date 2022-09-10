@@ -70,7 +70,7 @@ public sealed class JavaPacketClient : IPacketClient
 
                 try
                 {
-                    packet = reader.ReadPacket(packetLength, context, Protocol);
+                    packet = PacketSerializer.Deserialize(reader, packetLength, context, Protocol);
 
                     _logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
                 }
