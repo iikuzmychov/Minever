@@ -98,3 +98,4 @@ public class MinecraftReader : BinaryReader, IDisposable
 
         return packet;
     }*/
+}
