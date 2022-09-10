@@ -17,6 +17,7 @@ public sealed class JavaPacketClient : IPacketClient
 
     private readonly CancellationTokenSource _listenCancellationSource = new();
     private Task? _listenTask;
+    private MinecraftReader? _reader;
     private MinecraftWriter? _writer;
 
     private volatile int _pauseRequestsCount = 0;
@@ -42,7 +43,7 @@ public sealed class JavaPacketClient : IPacketClient
     private void ListenStream()
     {
         using var stream = _tcpClient.GetStream();
-        using var reader = new MinecraftReader(stream);
+        _reader          = new MinecraftReader(stream);
 
         while (true)
         {
@@ -55,7 +56,7 @@ public sealed class JavaPacketClient : IPacketClient
 
                 try
                 {
-                    packetLength = reader.Read7BitEncodedInt();
+                    packetLength = _reader.Read7BitEncodedInt();
                 }
                 catch (Exception exception)
                 {
@@ -70,7 +71,7 @@ public sealed class JavaPacketClient : IPacketClient
 
                 try
                 {
-                    packet = PacketSerializer.Deserialize(reader, packetLength, context, Protocol);
+                    packet = PacketSerializer.Deserialize(_reader, packetLength, context, Protocol);
 
                     _logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
                 }
@@ -122,6 +123,8 @@ public sealed class JavaPacketClient : IPacketClient
 
         _listenCancellationSource.Cancel();
         await _listenTask!;
+
+        _reader?.Dispose();
         _tcpClient.Close();
 
         if (_writer is not null)
