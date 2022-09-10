@@ -153,4 +153,18 @@ public static class PacketSerializer
 
         return packet;
     }
+
+    public static MinecraftPacket<object> Deserialize(MinecraftReader reader,
+        int packetLength, PacketContext context, JavaProtocol protocol)
+    {
+        ArgumentNullException.ThrowIfNull(reader);
+        ArgumentNullException.ThrowIfNull(protocol);
+
+        if (packetLength <= 0)
+            throw new ArgumentOutOfRangeException(nameof(packetLength));
+
+        var packetBytes = reader.ReadBytes(packetLength);
+
+        return Deserialize(packetBytes, context, protocol);
+    }
 }
