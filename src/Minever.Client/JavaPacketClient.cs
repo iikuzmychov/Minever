@@ -115,14 +115,17 @@ public sealed class JavaPacketClient : IPacketClient
 
     public async Task DisconnectAsync()
     {
-        if (!IsConnected)
+        if (isDisposed)
             return;
+        
+        isDisposed = true;
 
         _listenCancellationSource.Cancel();
         await _listenTask!;
         _tcpClient.Close();
 
-        isDisposed = true;
+        if (_writer is not null)
+            await _writer.DisposeAsync();
 
         _logger.LogInformation("Disconnected.");
         Disconnected?.Invoke();
