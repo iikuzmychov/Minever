@@ -20,7 +20,7 @@ public sealed class JavaPacketClient : IPacketClient
     private MinecraftReader? _reader;
     private MinecraftWriter? _writer;
 
-    private bool isDisposed = false;
+    private bool _isDisposed = false;
     private readonly object _lock = new();
 
     public event Action<object>? PacketReceived;
@@ -107,7 +107,7 @@ public sealed class JavaPacketClient : IPacketClient
     {
         ArgumentNullException.ThrowIfNull(host);
 
-        if (isDisposed)
+        if (_isDisposed)
             throw new ObjectDisposedException(GetType().FullName);
 
         await _tcpClient.ConnectAsync(host, port, cancellationToken);
@@ -119,10 +119,10 @@ public sealed class JavaPacketClient : IPacketClient
 
     public async Task DisconnectAsync()
     {
-        if (isDisposed)
+        if (_isDisposed)
             return;
         
-        isDisposed = true;
+        _isDisposed = true;
 
         _listenCancellationSource.Cancel();
         await _listenTask!;
@@ -175,7 +175,7 @@ public sealed class JavaPacketClient : IPacketClient
     {
         ArgumentNullException.ThrowIfNull(packetData);
 
-        if (isDisposed)
+        if (_isDisposed)
             throw new ObjectDisposedException(GetType().FullName);
 
         var context  = new PacketContext(PacketDirection.ClientToServer, ConnectionState);
@@ -194,7 +194,7 @@ public sealed class JavaPacketClient : IPacketClient
     public async Task<TData> WaitPacketAsync<TData>(CancellationToken cancellationToken = default)
         where TData : notnull
     {
-        if (isDisposed)
+        if (_isDisposed)
             throw new ObjectDisposedException(GetType().FullName);
 
         TaskCompletionSource<TData> taskCompletionSource;
@@ -216,7 +216,7 @@ public sealed class JavaPacketClient : IPacketClient
     {
         ArgumentNullException.ThrowIfNull(requestPacketData);
 
-        if (isDisposed)
+        if (_isDisposed)
             throw new ObjectDisposedException(GetType().FullName);
 
         TaskCompletionSource<TResponseData> taskCompletionSource;
