@@ -1,12 +1,12 @@
-﻿using Minever.Networking;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
+using Minever.Networking;
 using Minever.Networking.Exceptions;
 using Minever.Networking.IO;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using System.Net.Sockets;
 using Minever.Networking.Serialization;
+using System.Net.Sockets;
 
 namespace Minever.Client;
 
@@ -27,8 +27,8 @@ public sealed class JavaPacketClient : IPacketClient
     public event Action? Disconnected;
 
     public JavaProtocol Protocol { get; }
-    public bool IsConnected => _tcpClient.Connected;
     public ConnectionState ConnectionState { get; private set; } = ConnectionState.Handshake;
+    public bool IsConnected => _tcpClient.Connected;
 
     public JavaPacketClient(JavaProtocol protocol, ILoggerFactory loggerFactory)
     {
