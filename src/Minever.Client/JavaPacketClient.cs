@@ -74,7 +74,8 @@ public sealed class JavaPacketClient : IPacketClient
                     {
                         packet = PacketSerializer.Deserialize(reader, packetLength, context, Protocol);
 
-                        _logger.LogDebug($"Packet {packet?.Data.GetType().Name} was received (0x{packet?.Id:X2}, {context.ConnectionState} state).");
+                        if (packet is not null)
+                            _logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
                     }
                     catch (NotSupportedPacketException exception)
                     {
