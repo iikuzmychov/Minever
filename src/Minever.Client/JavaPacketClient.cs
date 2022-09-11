@@ -20,8 +20,8 @@ public sealed class JavaPacketClient : IPacketClient
     private MinecraftReader? _reader;
     private MinecraftWriter? _writer;
 
-    private volatile int _pauseRequestsCount = 0;
     private bool isDisposed = false;
+    private readonly object _lock = new();
 
     public event Action<object>? PacketReceived;
     public event Action? Disconnected;
@@ -50,51 +50,54 @@ public sealed class JavaPacketClient : IPacketClient
             if (_listenCancellationSource!.IsCancellationRequested)
                 break;
 
-            if (stream.DataAvailable && _pauseRequestsCount == 0)
+            if (stream.DataAvailable)
             {
-                int packetLength;
-
-                try
+                lock (_lock)
                 {
-                    packetLength = _reader.Read7BitEncodedInt();
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogCritical(exception, $"Error while reading packet length.");
-                    Task.Run(DisconnectAsync);
+                    int packetLength;
 
-                    return;
-                }
+                    try
+                    {
+                        packetLength = _reader.Read7BitEncodedInt();
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.LogCritical(exception, $"Error while reading packet length.");
+                        Task.Run(DisconnectAsync);
 
-                var context = new PacketContext(PacketDirection.ServerToClient, ConnectionState);
-                var packet  = (MinecraftPacket<object>?)null;
+                        return;
+                    }
 
-                try
-                {
-                    packet = PacketSerializer.Deserialize(_reader, packetLength, context, Protocol);
+                    var context = new PacketContext(PacketDirection.ServerToClient, ConnectionState);
+                    var packet  = (MinecraftPacket<object>?)null;
 
-                    _logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
-                }
-                catch (NotSupportedPacketException exception)
-                {
-                    _logger.LogWarning(exception.Message);
-                }
-                catch (PacketDeserializationException exception)
-                {
-                    _logger.LogWarning(exception.Message);
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogCritical(exception, $"Error while reading packet.");
-                    Task.Run(DisconnectAsync);
+                    try
+                    {
+                        packet = PacketSerializer.Deserialize(_reader, packetLength, context, Protocol);
 
-                    return;
-                }
+                        _logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
+                    }
+                    catch (NotSupportedPacketException exception)
+                    {
+                        _logger.LogWarning(exception.Message);
+                    }
+                    catch (PacketDeserializationException exception)
+                    {
+                        _logger.LogWarning(exception.Message);
+                    }
+                    catch (Exception exception)
+                    {
+                        _logger.LogCritical(exception, $"Error while reading packet.");
+                        Task.Run(DisconnectAsync);
 
-                if (packet is not null)
-                {
-                    Task.Run(() => PacketReceived?.Invoke(packet.Data));
-                    ConnectionState = Protocol.GetNewState(packet.Data, context);
+                        return;
+                    }
+
+                    if (packet is not null)
+                    {
+                        Task.Run(() => PacketReceived?.Invoke(packet.Data));
+                        ConnectionState = Protocol.GetNewState(packet.Data, context);
+                    }
                 }
             }
         }
@@ -179,14 +182,13 @@ public sealed class JavaPacketClient : IPacketClient
         var packetId = Protocol.GetPacketId(packetData.GetType(), context);
         var packet   = new MinecraftPacket<object>(packetId, packetData);
 
-        _pauseRequestsCount++;
+        lock (_lock)
+        {
+            PacketSerializer.Serialize(packet, _writer!);
+            _logger.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
 
-        PacketSerializer.Serialize(packet, _writer!);
-        _logger.LogDebug($"Packet {packet.Data.GetType().Name} (0x{packetId:X2}, {context.ConnectionState} state) was sended.");
-
-        ConnectionState = Protocol.GetNewState(packet.Data, context);
-
-        _pauseRequestsCount--;
+            ConnectionState = Protocol.GetNewState(packet.Data, context);
+        }
     }
 
     public async Task<TData> WaitPacketAsync<TData>(CancellationToken cancellationToken = default)
@@ -195,14 +197,15 @@ public sealed class JavaPacketClient : IPacketClient
         if (isDisposed)
             throw new ObjectDisposedException(GetType().FullName);
 
-        _pauseRequestsCount++;
+        TaskCompletionSource<TData> taskCompletionSource;
 
-        var taskCompletionSource = new TaskCompletionSource<TData>();
+        lock (_lock)
+        {
+            taskCompletionSource = new TaskCompletionSource<TData>();
 
-        OnceOnPacket<TData>(data => taskCompletionSource.SetResult(data));
-        cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
-
-        _pauseRequestsCount--;
+            OnceOnPacket<TData>(data => taskCompletionSource.SetResult(data));
+            cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
+        }
 
         return await taskCompletionSource.Task;
     }
@@ -216,15 +219,16 @@ public sealed class JavaPacketClient : IPacketClient
         if (isDisposed)
             throw new ObjectDisposedException(GetType().FullName);
 
-        _pauseRequestsCount++;
+        TaskCompletionSource<TResponseData> taskCompletionSource;
 
-        var taskCompletionSource = new TaskCompletionSource<TResponseData>();
+        lock (_lock)
+        {
+            taskCompletionSource = new TaskCompletionSource<TResponseData>();
 
-        cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
-        SendPacket(requestPacketData);
-        OnceOnPacket<TResponseData>(data => taskCompletionSource.SetResult(data));
-
-        _pauseRequestsCount--;
+            cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
+            SendPacket(requestPacketData);
+            OnceOnPacket<TResponseData>(data => taskCompletionSource.SetResult(data));
+        }
 
         var responsePacket = await taskCompletionSource.Task;
 
