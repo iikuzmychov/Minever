@@ -1,4 +1,8 @@
-﻿using Minever.Networking.Exceptions;
+﻿// when many packages that the protocol should support are not yet implemented and added to it,
+// many exceptions of the type NotSupportedPacketException are thrown that greatly slow down debugging
+#define DONT_THROW_NOT_SUPPORTED_PACKET_EXCEPTION
+
+using Minever.Networking.Exceptions;
 using Minever.Networking.IO;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
@@ -141,7 +145,12 @@ public static class PacketSerializer
         if (!protocol.IsPacketSupported(packetId, context))
         {
             var packetDataBytes = reader.ReadBytes(packetDataLength);
+
+#if DEBUG && DONT_THROW_NOT_SUPPORTED_PACKET_EXCEPTION
+            return null!;
+#else
             throw new NotSupportedPacketException(new(packetId, packetDataBytes), context);
+#endif
         }
 
         var packetDataType = protocol.GetPacketDataType(packetId, context);
