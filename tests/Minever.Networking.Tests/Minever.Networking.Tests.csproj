@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Minever.Networking\Minever.Networking.csproj" />
+    <ProjectReference Include="..\..\src\Minever.Networking\Minever.Networking.csproj" />
   </ItemGroup>
 
 </Project>
