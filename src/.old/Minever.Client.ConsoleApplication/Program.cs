@@ -3,10 +3,9 @@ using Minever.Client;
 using Minever.Client.ConsoleApplication;
 using Minever.Networking.Packets;
 using Minever.Networking.Protocols;
-using System.Diagnostics;
 
-const string ServerAddress = "localhost";
-const ushort ServerPort = 52812;
+const string Host = "localhost";
+const ushort Port = 50311;
 
 ConcurrentConsole.ForegroundColor = ConsoleColor.Magenta;
 
@@ -17,11 +16,8 @@ using var loggerFactory = LoggerFactory.Create(builder =>
         .AddConsole();
 });
 
-//var (status, ping) = await MinecraftClient.PingServerAsync("play.paradise-city.ir", 25565, loggerFactory);//.WaitAsync(TimeSpan.FromSeconds(5));
-//Debugger.Break();
-
 var protocol = new JavaProtocol0();
-var timeout = TimeSpan.FromSeconds(15);
+var timeout  = TimeSpan.FromSeconds(50);
 
 await using var client = new JavaPacketClient(protocol, loggerFactory);
 client.OnPacket<KeepAlive>(keepAlive => client.SendPacket(keepAlive));
@@ -70,16 +66,16 @@ client.OnPacket<SpawnExperienceOrb>(orb =>
 });
 client.OnPacket<Disconnect>(disconnectInfo => ConcurrentConsole.WriteLine($"Disconneted. Reason: {disconnectInfo.Reason}."));
 
-await client.ConnectAsync(ServerAddress, ServerPort, new CancellationTokenSource(timeout).Token);
+await client.ConnectAsync(Host, Port, new CancellationTokenSource(timeout).Token);
 
-var handshake = new Handshake(client.Protocol.Version, ServerAddress, ServerPort, HandshakeNextState.Login);
+var handshake = new Handshake(client.Protocol.Version, Host, Port, HandshakeNextState.Login);
 client.SendPacket(handshake);
 
-var loginRequest = await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23"), new CancellationTokenSource(timeout).Token);
-ConcurrentConsole.WriteLine($"Login success! {loginRequest.Name} ({loginRequest.Uuid}).");
+var loginResponse = await client.SendRequestAsync<LoginSuccess>(new LoginStart("KuzCode23"), new CancellationTokenSource(timeout).Token);
+ConcurrentConsole.WriteLine($"Login success! {loginResponse.Name} ({loginResponse.Uuid}).");
 
 await Task.Delay(TimeSpan.FromSeconds(1));
-client.SendPacket(new ClientToServerChatMessage(@"раз"));
+client.SendPacket(new ClientToServerChatMessage(@"раз")); // client.Chat.SendMessage("раз");
 await Task.Delay(TimeSpan.FromSeconds(1));
 client.SendPacket(new ClientToServerChatMessage(@"два"));
 await Task.Delay(TimeSpan.FromSeconds(1));
@@ -87,4 +83,4 @@ client.SendPacket(new ClientToServerChatMessage(@"три"));
 await Task.Delay(TimeSpan.FromSeconds(1));
 client.SendPacket(new ClientToServerChatMessage(@"/setblock ~0 ~5 ~0 minecraft:grass"));
 
-while (Console.ReadKey(true).Key != ConsoleKey.Spacebar) ;
+while (Console.ReadKey(true).Key != ConsoleKey.Spacebar);

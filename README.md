@@ -2,43 +2,34 @@
 
 # Minever
 
-Miniver is an open-source .NET library primarily aimed at supporting various versions of Minecraft Java Edition & Bedrock Edition and providing tools for creating bots and client applications.
+... is an **open-source .NET library** designed to support various versions of **Minecraft Java & Bedrock** editions and provides tools for building bots and client applications.
 
-## Current state
+## State
 
-In development. Many things need to be done. Library architecture, also, still in development.
+In draft. Many things need to be considered.
 
-## Supported versions
+## Supported Minecraft versions
 ### Java Edition
 
-| Minecraft versions | Protocol version | State            |
-| ------------------ | ---------------- | ---------------- |
-| 13w41b             | 0                | *In development* |
+| Version | Protocol version | State |
+| --- | --- | --- |
+| 1.7.10 | 5 | *In development* |
 
 ### Bedrok Edition
 
-*No one version are supported now.*
+*Currently no version supported :(*
 
-## Solution structure
+## Projects
 
-### Class libraries
-
-| Project | Description |
-| ------- | ----------- |
-| Minever.Networking | The core project. It contains an implementation of packages, protocols, packet serializer, writer, reader etc. |
-| Minever.Client | It contains Minecraft clients implementation (low-level packet clients and high-level MinecraftClient). |
-
-### Tests
-
-| Project | Description |
-| ------- | ----------- |
-| Minever.Tests.Networking | Tests for Minever.Networking. |
-
-### Console applications
-
-| Project | Description |
-| ------- | ----------- |
-| Minever.ConsoleApplication | The console project for debuging Minever.Client. |
+| Project name | Meaning |
+| --- | --- |
+| Minever.Core | Minecraft client core |
+| Minever.X.Core<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minever.Java.Core*<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minever.Bedrock.Core* | Minecraft "X Edition" client core<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minecraft "Java Edition" client core*<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minecraft "Bedrock Edition" client core*<br> |
+| Minever.X.Protocols.Vy<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minever.Java.Protocols.V5* | Minecraft "X Edition" client for protocol version `y`<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minecraft "Java Edition" client for version protocol `5`* |
+| Minever.X.Universal<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minever.Java.Universal*<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minever.Bedrock.Universal* | Minecraft "X Edition" client for any version<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minecraft "Java Edition" client for any version*<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minecraft "Bedrock Edition" client for any version*<br> |
+| Minever.Universal | Minecraft client for both Java and Bedrock editions |
+| Minever.Console | Minecraft console client *(will be moved to separate repository)* |
+<!--| Minever.X.Va.Vb.Vc<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minever.Java.V1.V7.V10* | Minecraft "X Edition" client for version `a.b.c`<br>&nbsp;&nbsp;&nbsp;&nbsp;*Minecraft "Java Edition" client for version `1.7.10`* |-->
 
 ## License
 
