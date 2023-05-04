@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\Minever.LowLevel\src\Java\Protocols\Minever.LowLevel.Java.Protocols.V5\Minever.LowLevel.Java.Protocols.V5.csproj" />
+    <ProjectReference Include="..\..\Minever.Java.Core\Minever.Java.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,4 @@
+
+[submodule "src/Minever.Data/src/Minever.Data/minecraft-data"]
+	path = src/Minever.Data/src/Minever.Data/minecraft-data
+	url = https://github.com/PrismarineJS/minecraft-data

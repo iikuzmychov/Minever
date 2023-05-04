@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33530.505
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.LowLevel.Core", "src\Minever.LowLevel.Core\Minever.LowLevel.Core.csproj", "{12F38FC9-08E8-4338-96A6-85DEDFC067AD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Java", "Java", "{BA4AE8F2-1DD2-4717-9CF9-AC45CB36C1CD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bedrock", "Bedrock", "{B0F064BA-51E8-41A7-961A-852FFA62A97C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protocols", "Protocols", "{91C70AA5-ED65-4574-81D3-B8712AAA3396}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.LowLevel.Java.Core", "src\Java\Minever.LowLevel.Java.Core\Minever.LowLevel.Java.Core.csproj", "{B62A4789-D389-46AB-BFF4-2873FF2AFB58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minever.LowLevel.Java.Protocols.V5", "src\Java\Protocols\Minever.LowLevel.Java.Protocols.V5\Minever.LowLevel.Java.Protocols.V5.csproj", "{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{12F38FC9-08E8-4338-96A6-85DEDFC067AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12F38FC9-08E8-4338-96A6-85DEDFC067AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12F38FC9-08E8-4338-96A6-85DEDFC067AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12F38FC9-08E8-4338-96A6-85DEDFC067AD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B62A4789-D389-46AB-BFF4-2873FF2AFB58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B62A4789-D389-46AB-BFF4-2873FF2AFB58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B62A4789-D389-46AB-BFF4-2873FF2AFB58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B62A4789-D389-46AB-BFF4-2873FF2AFB58}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{91C70AA5-ED65-4574-81D3-B8712AAA3396} = {BA4AE8F2-1DD2-4717-9CF9-AC45CB36C1CD}
+		{B62A4789-D389-46AB-BFF4-2873FF2AFB58} = {BA4AE8F2-1DD2-4717-9CF9-AC45CB36C1CD}
+		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF} = {91C70AA5-ED65-4574-81D3-B8712AAA3396}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {832E3221-8763-4EF8-AA4B-D6FE356014AB}
+	EndGlobalSection
+EndGlobal
