@@ -34,6 +34,7 @@ public class PacketEnumConverter<TEnum, TValue> : PacketConverter<TEnum>
     }
 }
 
+// todo: rename to PacketEnumConverter<>
 public sealed class EnumPacketConverter<TEnum, TValue, TValueConverter> : PacketEnumConverter<TEnum, TValue>
     where TEnum : Enum
     where TValue : notnull
