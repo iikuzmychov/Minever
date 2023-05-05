@@ -4,7 +4,7 @@
 
 # Minever
 
-An **ppen-source .NET library** designed to support various versions of **Minecraft Java & Bedrock** editions and provides tools for building bots and client applications.
+Open-source .NET library designed to support various versions of **Minecraft Java & Bedrock** editions and provides tools for building bots and client applications.
 
 ## State
 
