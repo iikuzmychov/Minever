@@ -1,8 +1,10 @@
 [![License](https://img.shields.io/github/license/iiKuzmychov/Minever)](https://github.com/iiKuzmychov/Minever/blob/master/LICENSE.md)
 
+![Banner](./img/banner.svg)
+
 # Minever
 
-... is an **open-source .NET library** designed to support various versions of **Minecraft Java & Bedrock** editions and provides tools for building bots and client applications.
+An **ppen-source .NET library** designed to support various versions of **Minecraft Java & Bedrock** editions and provides tools for building bots and client applications.
 
 ## State
 
