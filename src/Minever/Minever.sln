@@ -19,11 +19,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.Bedrock.Core", "src
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protocols", "Protocols", "{165CFCC9-D0D5-4D27-B355-892CDA52BA44}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".files", ".files", "{F326DA71-4271-4001-A9E3-39846871A1B6}"
-	ProjectSection(SolutionItems) = preProject
-		README.md = README.md
-	EndProjectSection
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.Universal", "src\Minever.Universal\Minever.Universal.csproj", "{0C479774-CB2E-4697-A37A-C067A781CAA4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.Java.Core", "src\Java\Minever.Java.Core\Minever.Java.Core.csproj", "{867EA8AB-C1FC-454A-9590-BA44CC782B68}"

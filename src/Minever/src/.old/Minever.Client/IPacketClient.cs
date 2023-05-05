@@ -1,4 +1,6 @@
-﻿public interface IPacketClient : IDisposable, IAsyncDisposable
+﻿// todo: namespace
+
+public interface IPacketClient : IDisposable, IAsyncDisposable
 {
     public event Action? Disconnected;
     public event Action<object>? PacketReceived;
