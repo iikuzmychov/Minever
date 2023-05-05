@@ -1,10 +1,10 @@
-﻿using Minever.LowLevel.Java.Core;
+using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5.Packets;
 using System.Collections.ObjectModel;
 
 namespace Minever.LowLevel.Java.Protocols.V5;
 
-public class JavaProtocol5 : JavaProtocolBase
+public sealed class JavaProtocol5 : JavaProtocolBase
 {
     private static readonly ReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> _packets;
 
