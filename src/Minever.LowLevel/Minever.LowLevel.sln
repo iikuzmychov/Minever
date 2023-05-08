@@ -13,7 +13,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Protocols", "Protocols", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.LowLevel.Java.Core", "src\Java\Minever.LowLevel.Java.Core\Minever.LowLevel.Java.Core.csproj", "{B62A4789-D389-46AB-BFF4-2873FF2AFB58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minever.LowLevel.Java.Protocols.V5", "src\Java\Protocols\Minever.LowLevel.Java.Protocols.V5\Minever.LowLevel.Java.Protocols.V5.csproj", "{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Minever.LowLevel.Java.Protocols.V5", "src\Java\Protocols\Minever.LowLevel.Java.Protocols.V5\Minever.LowLevel.Java.Protocols.V5.csproj", "{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F28767D4-85CC-4470-A254-7E3206431286}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{04A5BA09-67F2-4832-ADCC-D351C66F3B58}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minever.LowLevel.IntegrationTests", "tests\Minever.LowLevel.IntegrationTests\Minever.LowLevel.IntegrationTests.csproj", "{4F140F55-A98E-4D77-A2EE-49D188C02D1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,14 +39,22 @@ Global
 		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F140F55-A98E-4D77-A2EE-49D188C02D1C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F140F55-A98E-4D77-A2EE-49D188C02D1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F140F55-A98E-4D77-A2EE-49D188C02D1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F140F55-A98E-4D77-A2EE-49D188C02D1C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
+		{12F38FC9-08E8-4338-96A6-85DEDFC067AD} = {F28767D4-85CC-4470-A254-7E3206431286}
+		{BA4AE8F2-1DD2-4717-9CF9-AC45CB36C1CD} = {F28767D4-85CC-4470-A254-7E3206431286}
+		{B0F064BA-51E8-41A7-961A-852FFA62A97C} = {F28767D4-85CC-4470-A254-7E3206431286}
 		{91C70AA5-ED65-4574-81D3-B8712AAA3396} = {BA4AE8F2-1DD2-4717-9CF9-AC45CB36C1CD}
 		{B62A4789-D389-46AB-BFF4-2873FF2AFB58} = {BA4AE8F2-1DD2-4717-9CF9-AC45CB36C1CD}
 		{4A14CE9A-0ED6-4A58-B6B7-D0E9D02BBDBF} = {91C70AA5-ED65-4574-81D3-B8712AAA3396}
+		{4F140F55-A98E-4D77-A2EE-49D188C02D1C} = {04A5BA09-67F2-4832-ADCC-D351C66F3B58}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {832E3221-8763-4EF8-AA4B-D6FE356014AB}

@@ -3,10 +3,8 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Minever.LowLevel.Core;
 using Minever.LowLevel.Core.IO;
 using Minever.LowLevel.Java.Core.Packets.Serialization;
-using System.Net.Http.Headers;
+using System;
 using System.Net.Sockets;
-using System.Reflection.Metadata;
-using System.Security.Principal;
 
 namespace Minever.LowLevel.Java.Core;
 
@@ -98,7 +96,7 @@ public sealed class JavaProtocolClient : IProtocolClient
     {
         ArgumentNullException.ThrowIfNull(handler);
 
-        Action<object, DateTime> internalHandler = (packet, dateTime) =>
+        Action<object, DateTime> actualHandler = (packet, dateTime) =>
         {
             if (packet.GetType() == typeof(TPacket))
             {
@@ -106,9 +104,53 @@ public sealed class JavaProtocolClient : IProtocolClient
             }
         };
 
+        PacketReceived += actualHandler;
+
+        return actualHandler;
+    }
+
+    public void OnceOnPacket<TPacket>(Action<TPacket, DateTime> handler)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+
+        Action<object, DateTime> actualHandler = null!;
+
+        actualHandler = OnPacket<TPacket>((packet, dateTime) =>
+        {
+            PacketReceived -= actualHandler;
+            handler(packet, dateTime);
+        });
+    }
+
+    // todo: (TPacket Packet, DateTime DateTime) -> TPacket ???
+    public async Task<(TPacket Packet, DateTime DateTime)> WaitPacketAsync<TPacket>(CancellationToken cancellationToken = default)
+    {
+        var taskCompletionSource = new TaskCompletionSource<(TPacket Packet, DateTime DateTime)>(cancellationToken);        
+        OnceOnPacket<TPacket>((packet, dateTime) => taskCompletionSource.SetResult((packet, dateTime)));
+        
+        return await taskCompletionSource.Task;
+    }
+
+    // todo: refactor/remove
+    public Task<Action<object, DateTime>> OnPacketAsync<TPacket>(Func<TPacket, DateTime, Task> asyncHandler)
+    {
+        ArgumentNullException.ThrowIfNull(asyncHandler);
+
+        Action<object, DateTime> internalHandler = null!;
+        var tcs = new TaskCompletionSource<Action<object, DateTime>>();
+        
+        internalHandler = async (packet, dateTime) =>
+        {
+            if (packet.GetType() == typeof(TPacket))
+            {
+                await asyncHandler((TPacket)packet, dateTime);
+                tcs.SetResult(internalHandler);
+            }
+        };
+
         PacketReceived += internalHandler;
 
-        return internalHandler;
+        return tcs.Task;
     }
 
     public async ValueTask DisconnectAsync()
@@ -119,10 +161,10 @@ public sealed class JavaProtocolClient : IProtocolClient
         }
 
         _isDisposed = true;
-        _listeningTaskCts.Cancel();
         
         if (_listeningTask is not null)
         {
+            _listeningTaskCts.Cancel();
             await _listeningTask;
         }
 
@@ -149,7 +191,10 @@ public sealed class JavaProtocolClient : IProtocolClient
 
         while (true)
         {
-            _listeningTaskCts.Token.ThrowIfCancellationRequested();
+            if (_listeningTaskCts.Token.IsCancellationRequested)
+            {
+                return;
+            }
 
             if (stream.DataAvailable)
             {

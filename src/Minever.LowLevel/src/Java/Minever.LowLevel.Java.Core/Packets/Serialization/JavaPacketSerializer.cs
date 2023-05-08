@@ -34,11 +34,13 @@ public static class JavaPacketSerializer
 
         // todo: protocol.IsPacketSupported ???
 
-        var id    = protocol.GetPacketId(packet.GetType(), context);
-        var bytes = PacketSerializer.Serialize(packet);
-        
+        var id           = protocol.GetPacketId(packet.GetType(), context);
+        var bytes        = PacketSerializer.Serialize(packet);
+        var idLength     = EncodingHelper.GetVarIntBytesLength(id);
+        var packetLength = idLength + bytes.Length;
+
+        writer.WriteVarInt(packetLength);
         writer.WriteVarInt(id);
-        writer.WriteVarInt(bytes.Length);
         writer.Write(bytes);
     }
 

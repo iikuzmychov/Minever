@@ -87,7 +87,7 @@ public sealed class JavaProtocol5 : JavaProtocolBase
     {
         ArgumentNullException.ThrowIfNull(packet);
 
-        if (IsPacketSupported(packet, context))
+        if (!IsPacketSupported(packet, context))
         {
             throw new NotSupportedException($"The packet of type {packet.GetType()} is not supported by the protocol for specified context.");
         }

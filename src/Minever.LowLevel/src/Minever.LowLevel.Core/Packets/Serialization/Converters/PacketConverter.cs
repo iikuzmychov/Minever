@@ -10,7 +10,7 @@ public abstract class PacketConverter
     {
         ArgumentNullException.ThrowIfNull(typeToConvert);
 
-        var converterAttribute = typeToConvert.GetCustomAttributes(typeof(PacketConverterAttribute<>));
+        var converterAttribute = typeToConvert.GetCustomAttribute(typeof(PacketConverterAttribute<>));
 
         if (converterAttribute is null)
         {
@@ -26,7 +26,7 @@ public abstract class PacketConverter
     {
         ArgumentNullException.ThrowIfNull(property);
 
-        var converterAttribute = property.GetCustomAttributes(typeof(PacketConverterAttribute<>));
+        var converterAttribute = property.GetCustomAttribute(typeof(PacketConverterAttribute<>));
 
         if (converterAttribute is null)
         {
