@@ -3,6 +3,7 @@ using DotNet.Testcontainers.Containers;
 using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5;
 using Minever.LowLevel.Java.Protocols.V5.Packets;
+using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using Xunit.Abstractions;
 
@@ -37,33 +38,26 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
     }
 
     /// <summary>
-    /// Scenario:
+    /// Test scenario:
     /// <code>
-    /// C ----Handshake(status)----&gt; S <br/>
-    /// C ---ServerStatusRequest---&gt; S <br/>
-    /// C &lt;------ServerStatus------- S <br/>
+    /// C ----Handshake(status)---&gt; S <br/>
+    /// <br/>
+    /// C ---ServerStatusRequest--&gt; S <br/>
+    /// C &lt;------ServerStatus------ S <br/>
     /// </code>
     /// </summary>
     [Fact]
     public async Task Should_GetServerStatus()
     {
         // Arrange
-        using var connectionCancellationTokenSource       = new CancellationTokenSource();
-        using var waitServerStatusCancellationTokenSource = new CancellationTokenSource();
-
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
         // Act
-        var serverStatusTask = client.WaitForPacketAsync<ServerStatus>(waitServerStatusCancellationTokenSource.Token);
-
-        connectionCancellationTokenSource.CancelAfter(millisecondsDelay: 1000);
-        await client.ConnectAsync("localhost", Port, connectionCancellationTokenSource.Token);
-
+        await client.ConnectAsync("localhost", Port, new CancellationTokenSource(millisecondsDelay: 1000).Token);
+        
         client.SendPacket(new Handshake() { NextConnectionState = HandshakeNextConnectionState.Status });
-        client.SendPacket(new ServerStatusRequest());
-        waitServerStatusCancellationTokenSource.CancelAfter(millisecondsDelay: 1000);
+        var (serverStatus, _) = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(millisecondsDelay: 1000).Token);
 
-        var (serverStatus, _) = await serverStatusTask;
         await client.DisconnectAsync();
 
         // Assert
@@ -83,6 +77,7 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
     /// Test scenario:
     /// <code>
     /// C ----Handshake(status)---&gt; S <br/>
+    /// <br/>
     /// C ---ServerStatusRequest--&gt; S <br/>
     /// C &lt;------ServerStatus------ S <br/>
     /// <br/>
@@ -94,32 +89,21 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
     public async Task Should_GetPing()
     {
         // Arrange
-        using var connectionCancellationTokenSource       = new CancellationTokenSource();
-        using var waitServerStatusCancellationTokenSource = new CancellationTokenSource();
-        using var waitPingCancellationTokenSource         = new CancellationTokenSource();
-
+        var pingRequest = Ping.FromDateTime(new DateTime(2023, 01, 01));
+        
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
         // Act
-        var serverStatusTask = client.WaitForPacketAsync<ServerStatus>(waitServerStatusCancellationTokenSource.Token);
-        var pingTask         = client.WaitForPacketAsync<Ping>(waitPingCancellationTokenSource.Token);
-
-        connectionCancellationTokenSource.CancelAfter(millisecondsDelay: 1000);
-        await client.ConnectAsync("localhost", Port, connectionCancellationTokenSource.Token);
-
-        client.SendPacket(new Handshake() { NextConnectionState = HandshakeNextConnectionState.Status });
-        client.SendPacket(new ServerStatusRequest());
-
-        waitServerStatusCancellationTokenSource.CancelAfter(millisecondsDelay: 1000);
-        _ = await serverStatusTask;
+        await client.ConnectAsync("localhost", Port, new CancellationTokenSource(millisecondsDelay: 1000).Token);
         
-        client.SendPacket(Ping.FromDateTime(DateTime.Now));
-        waitPingCancellationTokenSource.CancelAfter(millisecondsDelay: 1000);
+        client.SendPacket(new Handshake() { NextConnectionState = HandshakeNextConnectionState.Status });
+        _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(millisecondsDelay: 1000).Token);
 
-        var (ping, _) = await pingTask;
+        var (pingResponse, _) = await client.GetPacketAsync<Ping>(pingRequest, new CancellationTokenSource(millisecondsDelay: 1000).Token);
+
         await client.DisconnectAsync();
 
         // Assert
-        Assert.NotEqual(0, ping.Payload);
+        Assert.Equal(pingRequest.Payload, pingResponse.Payload);
     }
 }

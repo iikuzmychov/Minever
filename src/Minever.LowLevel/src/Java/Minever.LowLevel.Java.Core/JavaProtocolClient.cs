@@ -75,20 +75,13 @@ public sealed class JavaProtocolClient : IProtocolClient
         {
             lock (_lock) // todo: is it needed ???
             {
-                Send();
+                SendPacketInternal(packet);
                 ConnectionState = nextState;
             }
         }
         else
         {
-            Send();
-        }
-
-        void Send() // awful method
-        {
-            JavaPacketSerializer.Serialize(_writer, packet, Protocol, context);
-            //_logger.LogDebug($"Packet {packet.GetType().Name} (0x{packetId:X2}, {ConnectionState} state) sended");
-            _logger.LogDebug($"Packet {packet.GetType().Name} ({ConnectionState} state) sended");
+            SendPacketInternal(packet);
         }
     }
 
@@ -123,12 +116,27 @@ public sealed class JavaProtocolClient : IProtocolClient
     }
 
     // todo: (TPacket Packet, DateTime DateTime) -> TPacket ???
-    public async Task<(TPacket Packet, DateTime DateTime)> WaitPacketAsync<TPacket>(CancellationToken cancellationToken = default)
+    public async Task<(TPacket Packet, DateTime DateTime)> WaitForPacketAsync<TPacket>(CancellationToken cancellationToken = default)
     {
         var taskCompletionSource = new TaskCompletionSource<(TPacket Packet, DateTime DateTime)>(cancellationToken);        
         OnceOnPacket<TPacket>((packet, dateTime) => taskCompletionSource.SetResult((packet, dateTime)));
         
         return await taskCompletionSource.Task;
+    }
+
+    public async Task<(TResponsePacket Packet, DateTime DateTime)> GetPacketAsync<TResponsePacket>(object requestPacket, CancellationToken cancellationToken = default)
+    {
+        Protocol.ThrowIfPacketIsNotSupported(requestPacket, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
+
+        Task<(TResponsePacket Packet, DateTime DateTime)> responsePacketTask;
+
+        lock (_lock)
+        {
+            SendPacketInternal(requestPacket);
+            responsePacketTask = WaitForPacketAsync<TResponsePacket>(cancellationToken);
+        }
+
+        return await responsePacketTask;
     }
 
     // todo: refactor/remove
@@ -248,5 +256,13 @@ public sealed class JavaProtocolClient : IProtocolClient
                 }
             }
         }
+    }
+
+    // todo: rename to SendPacketPrivate/SendPacketCore ???
+    private void SendPacketInternal(object packet)
+    {
+        JavaPacketSerializer.Serialize(_writer!, packet, Protocol, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
+        //_logger.LogDebug($"Packet {packet.GetType().Name} (0x{packetId:X2}, {ConnectionState} state) sended");
+        _logger.LogDebug($"Packet {packet.GetType().Name} ({ConnectionState} state) sended");
     }
 }
