@@ -1,4 +1,6 @@
-﻿internal static class EncodingHelper
+﻿
+// todo: where is namespace? 
+internal static class EncodingHelper
 {
     public static int GetVarIntBytesLength(int value)
     {
