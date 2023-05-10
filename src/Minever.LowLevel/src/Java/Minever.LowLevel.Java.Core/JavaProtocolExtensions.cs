@@ -1,5 +1,6 @@
 ﻿namespace Minever.LowLevel.Java.Core;
 
+// todo: move to Extensions folder
 public static class JavaProtocolExtensions
 {
     public static void ThrowIfPacketIsNotSupported(this IJavaProtocol protocol, object packet, JavaPacketContext context)
