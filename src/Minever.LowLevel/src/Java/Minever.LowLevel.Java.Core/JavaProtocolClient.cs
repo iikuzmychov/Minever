@@ -40,12 +40,6 @@ public sealed class JavaProtocolClient : IProtocolClient
         _logger  = logger ?? NullLogger<JavaProtocolClient>.Instance;
     }
 
-    public static ValueTask<(IServerStatus Info, TimeSpan Ping)> PingAsync(
-        string host, int port = 25565, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
     public async ValueTask ConnectAsync(string host, int port = 25565, CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(host);

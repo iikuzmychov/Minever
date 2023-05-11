@@ -4,8 +4,7 @@ namespace Minever.LowLevel.Java.Core;
 
 public abstract class JavaProtocolBase : IJavaProtocol
 {
-    // todo: change ReadOnlyDictionary to IReadOnlyDictionary
-    protected abstract ReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets { get; }
+    protected abstract IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets { get; }
 
     public abstract int Version { get; }
 

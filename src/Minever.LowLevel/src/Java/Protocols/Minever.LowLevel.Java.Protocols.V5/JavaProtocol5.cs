@@ -8,7 +8,7 @@ public sealed class JavaProtocol5 : JavaProtocolBase
 {
     private static readonly ReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> _packets;
 
-    protected override ReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets => _packets;
+    protected override IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets => _packets;
    
     public override int Version => 5;
 

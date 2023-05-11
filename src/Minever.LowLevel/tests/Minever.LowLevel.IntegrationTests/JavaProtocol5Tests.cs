@@ -3,9 +3,6 @@ using DotNet.Testcontainers.Containers;
 using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5;
 using Minever.LowLevel.Java.Protocols.V5.Packets;
-using System.ComponentModel.DataAnnotations;
-using System.Text.RegularExpressions;
-using Xunit.Abstractions;
 
 namespace Minever.LowLevel.IntegrationTests;
 

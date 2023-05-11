@@ -4,6 +4,7 @@ using Minever.LowLevel.Java.Core.Utils;
 
 namespace Minever.LowLevel.Java.Core.Packets.Serialization;
 
+// todo: movo to Minever.LowLevel.Java.Core.Serialization ???
 public static class JavaPacketSerializer
 {
     public static byte[] Serialize(object packet, IJavaProtocol protocol, JavaPacketContext context)

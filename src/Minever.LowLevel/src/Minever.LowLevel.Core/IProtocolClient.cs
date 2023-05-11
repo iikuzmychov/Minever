@@ -5,10 +5,6 @@ public interface IProtocolClient : IPacketTransceiver, IAsyncDisposable, IDispos
 {
     public bool IsConnected { get; }
 
-    // todo: remove
-    public abstract static ValueTask<(IServerStatus Info, TimeSpan Ping)> PingAsync(
-        string host, int port, CancellationToken cancellationToken = default);
-
     public ValueTask ConnectAsync(string host, int port, CancellationToken cancellationToken = default);
 
     public ValueTask DisconnectAsync();

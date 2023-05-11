@@ -2,7 +2,6 @@
 
 namespace Minever.LowLevel.Core.Packets.Serialization.Converters;
 
-// todo: add PacketLengthPrefixedByteArrayConverter ???
 public class PacketLengthPrefixedArrayConverter<TPrefix, TElement> : PacketConverter<TElement[]>
     where TPrefix : notnull
     where TElement : notnull
