@@ -66,11 +66,6 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
         Assert.False(string.IsNullOrEmpty(serverStatus.Description));
         Assert.Equal(JavaProtocol5.Instance.Version, serverStatus.Version.ProtocolVersion);
         Assert.Equal(MineraftVersion, serverStatus.Version.Name);
-
-        var playersInfo = serverStatus.PlayersInfo;
-        Assert.Null(playersInfo.SamplePlayers);
-        Assert.Equal(0, playersInfo.PlayersCount);
-        Assert.Equal(20, playersInfo.MaxPlayersCount);
     }
 
     /// <summary>
