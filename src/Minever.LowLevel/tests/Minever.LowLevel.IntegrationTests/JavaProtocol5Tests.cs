@@ -40,7 +40,7 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
     /// <summary>
     /// Test scenario:
     /// <code>
-    /// C ----Handshake(status)---&gt; S <br/>
+    /// C ----Handshake(Status)---&gt; S <br/>
     /// <br/>
     /// C ---ServerStatusRequest--&gt; S <br/>
     /// C &lt;------ServerStatus------ S <br/>
@@ -76,7 +76,7 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
     /// <summary>
     /// Test scenario:
     /// <code>
-    /// C ----Handshake(status)---&gt; S <br/>
+    /// C ----Handshake(Status)---&gt; S <br/>
     /// <br/>
     /// C ---ServerStatusRequest--&gt; S <br/>
     /// C &lt;------ServerStatus------ S <br/>

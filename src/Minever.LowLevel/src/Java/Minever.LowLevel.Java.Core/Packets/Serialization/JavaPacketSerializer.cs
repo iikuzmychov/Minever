@@ -1,5 +1,6 @@
 ﻿using Minever.LowLevel.Core.IO;
 using Minever.LowLevel.Core.Packets.Serialization;
+using Minever.LowLevel.Java.Core.Utils;
 
 namespace Minever.LowLevel.Java.Core.Packets.Serialization;
 

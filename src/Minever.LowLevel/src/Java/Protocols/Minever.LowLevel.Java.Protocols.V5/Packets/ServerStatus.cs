@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 
 [PacketConverter<PacketJsonDataConverter>]
-public sealed record ServerStatus : IServerInfo
+public sealed record ServerStatus : IServerStatus
 {
     private MinecraftVersion _version = new();
     private ServerPlayersInfo _playersInfo = new();
@@ -21,7 +21,7 @@ public sealed record ServerStatus : IServerInfo
         init => _version = value ?? throw new ArgumentNullException(nameof(value));
     }
 
-    int IServerInfo.ProtocolVersion => Version.ProtocolVersion;
+    int IServerStatus.ProtocolVersion => Version.ProtocolVersion;
 
     [JsonPropertyName("players")]
     public ServerPlayersInfo PlayersInfo

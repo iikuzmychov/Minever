@@ -36,7 +36,7 @@ public sealed class JavaProtocol5 : JavaProtocolBase
                 new(JavaConnectionState.Status, PacketDirection.ToServer),
                 new BidirectionalDictionary<int, Type>()
                 {
-                    { 0x00, typeof(ServerStatusRequest) },
+                    { 0x00, typeof(ServerInfoRequest) },
                     { 0x01, typeof(Ping) }
                 }.AsReadOnly()
             },
@@ -44,7 +44,7 @@ public sealed class JavaProtocol5 : JavaProtocolBase
                 new(JavaConnectionState.Status, PacketDirection.FromServer),
                 new BidirectionalDictionary<int, Type>()
                 {
-                    { 0x00, typeof(ServerStatus) },
+                    { 0x00, typeof(ServerInfo) },
                     { 0x01, typeof(Ping) }
                 }.AsReadOnly()
             },

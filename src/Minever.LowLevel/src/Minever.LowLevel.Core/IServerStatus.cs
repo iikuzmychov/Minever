@@ -1,6 +1,6 @@
 ﻿namespace Minever.LowLevel.Core;
 
-public interface IServerInfo
+public interface IServerStatus
 {
     public int ProtocolVersion { get; }
 }

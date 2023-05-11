@@ -1,5 +1,5 @@
-﻿
-// todo: where is namespace? 
+﻿namespace Minever.LowLevel.Java.Core.Utils;
+
 internal static class EncodingHelper
 {
     public static int GetVarIntBytesLength(int value)

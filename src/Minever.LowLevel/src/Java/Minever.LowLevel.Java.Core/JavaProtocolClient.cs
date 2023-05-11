@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Minever.LowLevel.Core;
 using Minever.LowLevel.Core.IO;
+using Minever.LowLevel.Java.Core.Extensions;
 using Minever.LowLevel.Java.Core.Packets.Serialization;
 using System;
 using System.Net.Sockets;
@@ -39,7 +40,7 @@ public sealed class JavaProtocolClient : IProtocolClient
         _logger  = logger ?? NullLogger<JavaProtocolClient>.Instance;
     }
 
-    public static ValueTask<(IServerInfo Info, TimeSpan Ping)> PingAsync(
+    public static ValueTask<(IServerStatus Info, TimeSpan Ping)> PingAsync(
         string host, int port = 25565, CancellationToken cancellationToken = default)
     {
         throw new NotImplementedException();
