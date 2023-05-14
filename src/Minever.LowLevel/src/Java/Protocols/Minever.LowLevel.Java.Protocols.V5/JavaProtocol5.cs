@@ -1,4 +1,5 @@
 using Minever.LowLevel.Java.Core;
+using Minever.LowLevel.Java.Protocols.V5.Extensions;
 using Minever.LowLevel.Java.Protocols.V5.Packets;
 using System.Collections.ObjectModel;
 

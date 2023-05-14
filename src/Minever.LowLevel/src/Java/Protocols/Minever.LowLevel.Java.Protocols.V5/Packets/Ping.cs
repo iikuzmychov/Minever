@@ -1,5 +1,4 @@
 ﻿using Minever.LowLevel.Core.Packets.Serialization.Attributes;
-using System;
 
 namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 

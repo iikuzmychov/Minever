@@ -5,9 +5,9 @@ namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 
 public sealed record Handshake
 {
-    private const int MaxHostLength = 255; // todo: is it needed?
+    //private const int MaxHostLength = 255; // todo: is it needed?
 
-    private string _host = default!;
+    private string _host = string.Empty;
 
     [PacketPropertyOrder(1)]
     [PacketConverter<PacketVarIntConverter>]
@@ -16,15 +16,15 @@ public sealed record Handshake
     [PacketPropertyOrder(2)]
     public string Host
     {
-        get => _host ??= string.Empty;
+        get => _host;
         init
         {
             ArgumentNullException.ThrowIfNull(value);
 
-            if (value.Length > MaxHostLength)
-            {
-                throw new ArgumentOutOfRangeException(nameof(value), $"Server address length greater {MaxHostLength}.");
-            }
+            //if (value.Length > MaxHostLength)
+            //{
+            //    throw new ArgumentOutOfRangeException(nameof(value), $"Server address length greater {MaxHostLength}.");
+            //}
 
             _host = value;
         }
