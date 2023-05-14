@@ -48,6 +48,7 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
     {
         // Arrange
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
+        client.Disconnected += occuredException => Assert.Null(occuredException);
 
         // Act
         await client.ConnectAsync("localhost", Port, new CancellationTokenSource(millisecondsDelay: 1000).Token);
@@ -84,6 +85,7 @@ public partial class JavaProtocol5Tests : IAsyncLifetime
         var pingRequest = Ping.FromDateTime(new DateTime(2023, 01, 01));
         
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
+        client.Disconnected += occuredException => Assert.Null(occuredException);
 
         // Act
         await client.ConnectAsync("localhost", Port, new CancellationTokenSource(millisecondsDelay: 1000).Token);

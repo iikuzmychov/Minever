@@ -28,11 +28,12 @@ public sealed class JavaProtocolClient : IProtocolClient
     public JavaConnectionState ConnectionState { get; private set; } = JavaConnectionState.Disconnected;
     public bool IsConnected => _tcpClient.Connected;
 
-    public event Action<object, DateTime> PacketReceived
+    public event Action<object, DateTime>? PacketReceived
     {
         add => _packetReceived += value;
         remove => _packetReceived -= value;
     }
+    public event Action<Exception?>? Disconnected; // todo: replace with custom delegate ???
 
     public JavaProtocolClient(IJavaProtocol protocol, ILogger<JavaProtocolClient>? logger = null)
     {
@@ -156,15 +157,24 @@ public sealed class JavaProtocolClient : IProtocolClient
         return tcs.Task;
     }
 
-    public async ValueTask DisconnectAsync()
+    public async ValueTask DisconnectAsync() => await DisconnectAsync(null);
+
+    void IDisposable.Dispose() => DisconnectAsync().GetAwaiter().GetResult();
+
+    async ValueTask IAsyncDisposable.DisposeAsync() => await DisconnectAsync();
+    
+    private async ValueTask DisconnectAsync(Exception? occuredException)
     {
-        if (_isDisposed)
+        lock (_lock)
         {
-            return;
+            if (_isDisposed)
+            {
+                return;
+            }
+
+            _isDisposed = true;
         }
 
-        _isDisposed = true;
-        
         if (_listeningTask is not null)
         {
             _listeningTaskCts.Cancel();
@@ -179,13 +189,10 @@ public sealed class JavaProtocolClient : IProtocolClient
         }
 
         ConnectionState = JavaConnectionState.Disconnected;
+        
         _logger.LogInformation("Disconnected.");
-        //Disconnected?.Invoke();
+        Disconnected?.Invoke(occuredException);
     }
-
-    void IDisposable.Dispose() => DisconnectAsync().GetAwaiter().GetResult();
-
-    async ValueTask IAsyncDisposable.DisposeAsync() => await DisconnectAsync();
 
     private void StartListening()
     {
@@ -213,7 +220,7 @@ public sealed class JavaProtocolClient : IProtocolClient
                     catch (Exception exception)
                     {
                         _logger.LogCritical(exception, $"Error while reading packet length.");
-                        Task.Run(DisconnectAsync);
+                        Task.Run(() => DisconnectAsync(exception));
 
                         return;
                     }
