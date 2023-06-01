@@ -1,5 +1,4 @@
 ﻿using Minever.LowLevel.Core.Packets.Serialization.Attributes;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Minever.Networking.Packets;
 
