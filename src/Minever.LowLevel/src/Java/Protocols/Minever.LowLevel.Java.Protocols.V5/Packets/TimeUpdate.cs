@@ -5,7 +5,7 @@ namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 public sealed record TimeUpdate
 {
     private readonly long _worldAge; // todo: do we need this ???
-    private readonly long _dayTime;
+    private readonly long _dayTime; // todo: do we need this ???
 
     [PacketPropertyOrder(1)]
     public required long WorldAge

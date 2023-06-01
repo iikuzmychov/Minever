@@ -17,14 +17,4 @@ public sealed record ChatMessageFromServer
 
     [PacketPropertyOrder(1)]
     public required string Text { get; init; }
-
-    private ChatMessageFromServer()
-    {
-    }
-
-    [SetsRequiredMembers]
-    public ChatMessageFromServer(string text)
-    {
-        Text = text;
-    }
 }
