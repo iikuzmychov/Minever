@@ -90,4 +90,39 @@ public class JavaProtocol5Tests : TestsBase
         // Assert
         Assert.Equal(pingRequest.Payload, pingResponse.Payload);
     }
+
+    /// <summary>
+    /// Test scenario:
+    /// <code>
+    /// C ---Handshake(Login)--&gt; S <br/>
+    /// <br/>
+    /// C ------LoginStart-----&gt; S <br/>
+    /// C &lt;----LoginSuccess----- S <br/>
+    /// </code>
+    /// </summary>
+    [Fact]
+    public async Task Should_Login()
+    {
+        // Arrange
+        var handshake = new Handshake()
+        {
+            ProtocolVersion = JavaProtocol5.Instance.Version,
+            NextConnectionState = HandshakeNextConnectionState.Login,
+        };
+
+        var loginStart = new LoginStart() { Name = "player" };
+
+        await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
+
+        // Act
+        await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
+
+        client.SendPacket(handshake);
+        var (loginSuccess, _) = await client.GetPacketAsync<LoginSuccess>(loginStart, new CancellationTokenSource(DefaultTimeout).Token);
+
+        await client.DisconnectAsync();
+
+        // Assert
+        Assert.Equal(loginStart.Name, loginSuccess.Name);
+    }
 }

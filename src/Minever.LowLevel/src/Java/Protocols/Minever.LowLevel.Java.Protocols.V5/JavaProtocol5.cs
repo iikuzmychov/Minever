@@ -53,14 +53,14 @@ public sealed class JavaProtocol5 : JavaProtocolBase
                 new(JavaConnectionState.Login, PacketDirection.ToServer),
                 new BidirectionalDictionary<int, Type>()
                 {
-
+                    { 0x00, typeof(LoginStart) }
                 }.AsReadOnly()
             },
             {
                 new(JavaConnectionState.Login, PacketDirection.FromServer),
                 new BidirectionalDictionary<int, Type>()
                 {
-
+                    { 0x02, typeof(LoginSuccess) }
                 }.AsReadOnly()
             },
             {
