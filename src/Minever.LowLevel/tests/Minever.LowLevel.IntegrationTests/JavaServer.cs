@@ -8,6 +8,7 @@ public abstract class JavaServer : IAsyncLifetime
     private readonly IContainer _javaServerContainer;
     
     public int Port => 25565;
+    public string Host => _javaServerContainer.Hostname;
     public abstract string Version { get; } // todo: rename to VersionName ???
 
     public JavaServer()
@@ -18,9 +19,10 @@ public abstract class JavaServer : IAsyncLifetime
             .WithEnvironment("VERSION", Version)
             .WithEnvironment("EULA", "TRUE")
             .WithEnvironment("ONLINE_MODE", "FALSE")
-            .WithPortBinding(Port)
+            .WithEnvironment("ENABLE_RCON", "FALSE")
+            .WithEnvironment("ENABLE_AUTOPAUSE", "FALSE")
+            .WithPortBinding(Port, Port)
             .WithExposedPort(Port)
-            .WithCommand("-d -it")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
             .WithCleanUp(true)
             .Build();

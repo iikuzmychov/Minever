@@ -31,7 +31,7 @@ public class JavaProtocol5Tests : TestsBase
         client.Disconnected += exception => Assert.Null(exception);
 
         // Act
-        await client.ConnectAsync("localhost", _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
+        await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
         
         client.SendPacket(new Handshake() { NextConnectionState = HandshakeNextConnectionState.Status });
         var (serverStatus, _) = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(DefaultTimeout).Token);
@@ -68,7 +68,7 @@ public class JavaProtocol5Tests : TestsBase
         client.Disconnected += exception => Assert.Null(exception);
 
         // Act
-        await client.ConnectAsync("localhost", _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
+        await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
         
         client.SendPacket(new Handshake() { NextConnectionState = HandshakeNextConnectionState.Status });
         _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(DefaultTimeout).Token);
