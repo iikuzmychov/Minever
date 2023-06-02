@@ -4,7 +4,6 @@ using Minever.LowLevel.Core;
 using Minever.LowLevel.Core.IO;
 using Minever.LowLevel.Java.Core.Extensions;
 using Minever.LowLevel.Java.Core.Packets.Serialization;
-using System;
 using System.Net.Sockets;
 
 namespace Minever.LowLevel.Java.Core;
@@ -163,7 +162,7 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     async ValueTask IAsyncDisposable.DisposeAsync() => await DisconnectAsync();
     
-    private async ValueTask DisconnectAsync(Exception? occuredException)
+    private async ValueTask DisconnectAsync(Exception? exception)
     {
         lock (_lock)
         {
@@ -191,7 +190,7 @@ public sealed class JavaProtocolClient : IProtocolClient
         ConnectionState = JavaConnectionState.Disconnected;
         
         _logger.LogInformation("Disconnected.");
-        Disconnected?.Invoke(occuredException);
+        Disconnected?.Invoke(exception);
     }
 
     private void StartListening()
@@ -248,7 +247,7 @@ public sealed class JavaProtocolClient : IProtocolClient
                     catch (Exception exception)
                     {
                         _logger.LogCritical(exception, $"Error while reading packet.");
-                        Task.Run(DisconnectAsync);
+                        Task.Run(() => DisconnectAsync(exception));
 
                         return;
                     }
