@@ -27,12 +27,18 @@ public class JavaProtocol5Tests : TestsBase
     public async Task Should_GetServerStatus()
     {
         // Arrange
+        var handshake = new Handshake()
+        {
+            ProtocolVersion = JavaProtocol5.Instance.Version,
+            NextConnectionState = HandshakeNextConnectionState.Status,
+        };
+
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
         // Act
         await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
         
-        client.SendPacket(new Handshake() { NextConnectionState = HandshakeNextConnectionState.Status });
+        client.SendPacket(handshake);
         var (serverStatus, _) = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(DefaultTimeout).Token);
 
         await client.DisconnectAsync();
@@ -61,6 +67,12 @@ public class JavaProtocol5Tests : TestsBase
     public async Task Should_GetPing()
     {
         // Arrange
+        var handshake = new Handshake()
+        {
+            ProtocolVersion = JavaProtocol5.Instance.Version,
+            NextConnectionState = HandshakeNextConnectionState.Status,
+        };
+
         var pingRequest = Ping.FromDateTime(new DateTime(2023, 01, 01));
         
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
@@ -68,7 +80,7 @@ public class JavaProtocol5Tests : TestsBase
         // Act
         await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
         
-        client.SendPacket(new Handshake() { NextConnectionState = HandshakeNextConnectionState.Status });
+        client.SendPacket(handshake);
         _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(DefaultTimeout).Token);
 
         var (pingResponse, _) = await client.GetPacketAsync<Ping>(pingRequest, new CancellationTokenSource(DefaultTimeout).Token);

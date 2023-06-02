@@ -11,7 +11,7 @@ public sealed record Handshake
 
     [PacketPropertyOrder(1)]
     [PacketConverter<PacketVarIntConverter>]
-    public int ProtocolVersion { get; init; }
+    public required int ProtocolVersion { get; init; }
 
     [PacketPropertyOrder(2)]
     public string Host
