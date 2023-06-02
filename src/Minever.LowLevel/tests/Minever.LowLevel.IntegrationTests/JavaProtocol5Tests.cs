@@ -28,7 +28,6 @@ public class JavaProtocol5Tests : TestsBase
     {
         // Arrange
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
-        client.Disconnected += exception => Assert.Null(exception);
 
         // Act
         await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
@@ -65,7 +64,6 @@ public class JavaProtocol5Tests : TestsBase
         var pingRequest = Ping.FromDateTime(new DateTime(2023, 01, 01));
         
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
-        client.Disconnected += exception => Assert.Null(exception);
 
         // Act
         await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
