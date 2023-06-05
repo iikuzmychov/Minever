@@ -59,8 +59,8 @@ public class JavaProtocol5Tests : TestsBase
     /// C ---ServerStatusRequest--&gt; S <br/>
     /// C &lt;------ServerStatus------ S <br/>
     /// <br/>
-    /// C -----------Ping---------&gt; S <br/>
-    /// C &lt;----------Ping---------- S <br/>
+    /// C -------PingToServer-----&gt; S <br/>
+    /// C &lt;-----PingFromServer----- S <br/>
     /// </code>
     /// </summary>
     [Fact]
@@ -73,7 +73,7 @@ public class JavaProtocol5Tests : TestsBase
             NextConnectionState = HandshakeNextConnectionState.Status,
         };
 
-        var pingRequest = Ping.FromDateTime(new DateTime(2023, 01, 01));
+        var pingToServer = PingToServer.FromDateTime(new DateTime(2023, 01, 01));
         
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
@@ -83,12 +83,12 @@ public class JavaProtocol5Tests : TestsBase
         client.SendPacket(handshake);
         _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(DefaultTimeout).Token);
 
-        var (pingResponse, _) = await client.GetPacketAsync<Ping>(pingRequest, new CancellationTokenSource(DefaultTimeout).Token);
+        var (pingFromServer, _) = await client.GetPacketAsync<PingFromServer>(pingToServer, new CancellationTokenSource(DefaultTimeout).Token);
 
         await client.DisconnectAsync();
 
         // Assert
-        Assert.Equal(pingRequest.Payload, pingResponse.Payload);
+        Assert.Equal(pingToServer.Payload, pingFromServer.Payload);
     }
 
     /// <summary>

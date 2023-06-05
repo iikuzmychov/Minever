@@ -1,8 +1,10 @@
 ﻿using Minever.LowLevel.Core.Packets.Serialization.Attributes;
 using Minever.LowLevel.Core.Packets.Serialization.Converters;
+using Minever.LowLevel.Java.Core;
 
 namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 
+[JavaPacket<JavaProtocol5>(0x00, JavaConnectionState.Handshake, PacketDirection.ToServer)]
 public sealed record Handshake
 {
     //private const int MaxHostLength = 255; // todo: is it needed?

@@ -2,11 +2,13 @@
 using Minever.LowLevel.Core.Packets.Serialization.Attributes;
 using Minever.LowLevel.Core.Packets.Serialization.Converters;
 using Minever.LowLevel.Core.Packets.Serialization.Converters.Json;
+using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5.Types;
 using System.Text.Json.Serialization;
 
 namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 
+[JavaPacket<JavaProtocol5>(0x00, JavaConnectionState.Status, PacketDirection.FromServer)]
 [PacketConverter<PacketJsonDataConverter>]
 public sealed record ServerStatus : IServerStatus
 {

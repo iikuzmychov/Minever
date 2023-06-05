@@ -10,6 +10,7 @@ namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 /// <br/>
 /// See <see href="https://wiki.vg/index.php?title=Protocol&amp;oldid=6003#Login_Success">Login/Clientbound/LoginSuccess</see> on wiki.vg.
 /// </summary>
+[JavaPacket<JavaProtocol5>(0x02, JavaConnectionState.Login, PacketDirection.FromServer)]
 public sealed record LoginSuccess
 {
     private string _name = default!;

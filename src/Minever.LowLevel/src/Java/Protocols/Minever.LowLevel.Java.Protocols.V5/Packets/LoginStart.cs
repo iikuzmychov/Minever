@@ -10,6 +10,7 @@ namespace Minever.LowLevel.Java.Protocols.V5.Packets;
 /// <br/>
 /// See <see href="https://wiki.vg/index.php?title=Protocol&amp;oldid=6003#Login_Start">Login/Serverbound/LoginStart</see> on wiki.vg.
 /// </summary>
+[JavaPacket<JavaProtocol5>(0x00, JavaConnectionState.Login, PacketDirection.ToServer)]
 public sealed record LoginStart
 {
     private readonly string _name = string.Empty;

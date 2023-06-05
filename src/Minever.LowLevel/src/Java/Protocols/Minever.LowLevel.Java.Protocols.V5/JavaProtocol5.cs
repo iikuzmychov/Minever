@@ -7,7 +7,7 @@ namespace Minever.LowLevel.Java.Protocols.V5;
 
 public sealed class JavaProtocol5 : JavaProtocolBase
 {
-    private static readonly ReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> _packets;
+    private static readonly IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> _packets;
 
     protected override IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets => _packets;
    
@@ -17,67 +17,7 @@ public sealed class JavaProtocol5 : JavaProtocolBase
 
     static JavaProtocol5()
     {
-        _packets = new Dictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>>()
-        {
-            {
-                new(JavaConnectionState.Handshake, PacketDirection.ToServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-                    { 0x00, typeof(Handshake) }
-                }.AsReadOnly()
-            },
-            {
-                new(JavaConnectionState.Handshake, PacketDirection.FromServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-                    // none
-                }.AsReadOnly()
-            },
-            {
-                new(JavaConnectionState.Status, PacketDirection.ToServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-                    { 0x00, typeof(ServerStatusRequest) },
-                    { 0x01, typeof(Ping) }
-                }.AsReadOnly()
-            },
-            {
-                new(JavaConnectionState.Status, PacketDirection.FromServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-                    { 0x00, typeof(ServerStatus) },
-                    { 0x01, typeof(Ping) }
-                }.AsReadOnly()
-            },
-            {
-                new(JavaConnectionState.Login, PacketDirection.ToServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-                    { 0x00, typeof(LoginStart) }
-                }.AsReadOnly()
-            },
-            {
-                new(JavaConnectionState.Login, PacketDirection.FromServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-                    { 0x02, typeof(LoginSuccess) }
-                }.AsReadOnly()
-            },
-            {
-                new(JavaConnectionState.Play, PacketDirection.ToServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-                    { 0x01, typeof(ChatMessageToServer) }
-                }.AsReadOnly()
-            },
-            {
-                new(JavaConnectionState.Play, PacketDirection.FromServer),
-                new BidirectionalDictionary<int, Type>()
-                {
-
-                }.AsReadOnly()
-            },
-        }.AsReadOnly();
+        _packets = FindPacketsInAssembly<JavaProtocol5>();
     }
 
     private JavaProtocol5()
