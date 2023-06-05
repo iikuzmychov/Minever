@@ -14,8 +14,8 @@ public abstract class JavaServer : IAsyncLifetime
     public JavaServer()
     {
         _javaServerContainer = new ContainerBuilder()
-            .WithName("minecraft_java_server")
             .WithImage("itzg/minecraft-server")
+            .WithName($"minever-java-server-{Guid.NewGuid()}")
             .WithEnvironment("VERSION", Version)
             .WithEnvironment("EULA", "TRUE")
             .WithEnvironment("ONLINE_MODE", "FALSE")
