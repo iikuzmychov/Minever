@@ -5,7 +5,7 @@ using Minever.LowLevel.Java.Protocols.V5.Packets;
 namespace Minever.LowLevel.IntegrationTests;
 
 [Collection(nameof(JavaServer1_7_10Collection))]
-public class JavaProtocol5Tests : TestsBase
+public class JavaProtocol5Tests : TestBase
 {
     private readonly JavaServer1_7_10 _server;
 

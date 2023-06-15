@@ -1,6 +1,6 @@
 ﻿namespace Minever.LowLevel.IntegrationTests;
 
-public abstract class TestsBase : IDisposable
+public abstract class TestBase : IDisposable
 {
     private readonly List<CancellationTokenSource> _cancellationTokenSources = new();
 
