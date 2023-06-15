@@ -73,8 +73,8 @@ public class JavaProtocol5Tests : TestBase
             NextConnectionState = HandshakeNextConnectionState.Status,
         };
 
-        var pingToServer = PingToServer.FromDateTime(DateTime.Now);
-        
+        var pingToServer = PingToServer.FromDateTime(DateTime.Now); // todo: create it before GetPacketAsync<PingFromServer> & check delay
+
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
         // Act
