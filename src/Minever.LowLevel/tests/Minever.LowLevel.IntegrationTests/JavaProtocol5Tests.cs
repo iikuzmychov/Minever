@@ -73,7 +73,7 @@ public class JavaProtocol5Tests : TestBase
             NextConnectionState = HandshakeNextConnectionState.Status,
         };
 
-        var pingToServer = PingToServer.FromDateTime(new DateTime(2023, 01, 01));
+        var pingToServer = PingToServer.FromDateTime(DateTime.Now);
         
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
