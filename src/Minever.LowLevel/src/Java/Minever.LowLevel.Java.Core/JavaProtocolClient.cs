@@ -113,8 +113,10 @@ public sealed class JavaProtocolClient : IProtocolClient
     // todo: (TPacket Packet, DateTime DateTime) -> TPacket ???
     public async Task<(TPacket Packet, DateTime DateTime)> WaitForPacketAsync<TPacket>(CancellationToken cancellationToken = default)
     {
-        var taskCompletionSource = new TaskCompletionSource<(TPacket Packet, DateTime DateTime)>(cancellationToken);        
-        OnceOnPacket<TPacket>((packet, dateTime) => taskCompletionSource.SetResult((packet, dateTime)));
+        var taskCompletionSource = new TaskCompletionSource<(TPacket Packet, DateTime DateTime)>();
+        cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
+
+        OnceOnPacket<TPacket>((packet, dateTime) => taskCompletionSource.TrySetResult((packet, dateTime)));
         
         return await taskCompletionSource.Task;
     }
