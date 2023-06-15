@@ -121,7 +121,6 @@ public sealed class JavaProtocolClient : IProtocolClient
         return await taskCompletionSource.Task;
     }
 
-    // todo: taks cancellation has no effect
     public async Task<(TResponsePacket Packet, DateTime DateTime)> GetPacketAsync<TResponsePacket>(object requestPacket, CancellationToken cancellationToken = default)
     {
         Protocol.ThrowIfPacketIsNotSupported(requestPacket, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
