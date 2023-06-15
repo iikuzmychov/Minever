@@ -36,10 +36,10 @@ public class JavaProtocol5Tests : TestsBase
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
         // Act
-        await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
+        await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
         
         client.SendPacket(handshake);
-        var (serverStatus, _) = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(DefaultTimeout).Token);
+        var (serverStatus, _) = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
 
         await client.DisconnectAsync();
 
@@ -78,12 +78,12 @@ public class JavaProtocol5Tests : TestsBase
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
         // Act
-        await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
+        await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
         
         client.SendPacket(handshake);
-        _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), new CancellationTokenSource(DefaultTimeout).Token);
+        _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
 
-        var (pingFromServer, _) = await client.GetPacketAsync<PingFromServer>(pingToServer, new CancellationTokenSource(DefaultTimeout).Token);
+        var (pingFromServer, _) = await client.GetPacketAsync<PingFromServer>(pingToServer, CreateDefaultTimeoutCancellationToken());
 
         await client.DisconnectAsync();
 
@@ -115,10 +115,10 @@ public class JavaProtocol5Tests : TestsBase
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
 
         // Act
-        await client.ConnectAsync(_server.Host, _server.Port, new CancellationTokenSource(DefaultTimeout).Token);
+        await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
 
         client.SendPacket(handshake);
-        var (loginSuccess, _) = await client.GetPacketAsync<LoginSuccess>(loginStart, new CancellationTokenSource(DefaultTimeout).Token);
+        var (loginSuccess, _) = await client.GetPacketAsync<LoginSuccess>(loginStart, CreateDefaultTimeoutCancellationToken());
 
         await client.DisconnectAsync();
 
