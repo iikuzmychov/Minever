@@ -15,7 +15,7 @@ public class PacketLengthPrefixedArrayConverter<TPrefix, TElement> : PacketConve
 
     public PacketLengthPrefixedArrayConverter(PacketConverter prefixConverter, PacketConverter elementConverter)
     {
-        _prefixConverter = prefixConverter ?? throw new ArgumentNullException(nameof(prefixConverter));
+        _prefixConverter  = prefixConverter ?? throw new ArgumentNullException(nameof(prefixConverter));
         _elementConverter = elementConverter ?? throw new ArgumentNullException(nameof(elementConverter));
     }
 
