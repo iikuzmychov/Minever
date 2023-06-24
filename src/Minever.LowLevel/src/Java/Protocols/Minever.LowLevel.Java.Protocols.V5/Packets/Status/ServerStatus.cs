@@ -6,7 +6,7 @@ using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5.Types;
 using System.Text.Json.Serialization;
 
-namespace Minever.LowLevel.Java.Protocols.V5.Packets;
+namespace Minever.LowLevel.Java.Protocols.V5.Packets.Status;
 
 [JavaPacket<JavaProtocol5>(0x00, JavaConnectionState.Status, PacketDirection.FromServer)]
 [PacketConverter<PacketJsonDataConverter>]

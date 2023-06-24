@@ -1,7 +1,7 @@
 ﻿using Minever.LowLevel.Core.Packets.Serialization.Attributes;
 using Minever.LowLevel.Java.Core;
 
-namespace Minever.LowLevel.Java.Protocols.V5.Packets;
+namespace Minever.LowLevel.Java.Protocols.V5.Packets.Status;
 
 [JavaPacket<JavaProtocol5>(0x01, JavaConnectionState.Status, PacketDirection.FromServer)]
 public sealed record PingFromServer

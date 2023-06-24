@@ -1,6 +1,8 @@
 using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5;
-using Minever.LowLevel.Java.Protocols.V5.Packets;
+using Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
+using Minever.LowLevel.Java.Protocols.V5.Packets.Login;
+using Minever.LowLevel.Java.Protocols.V5.Packets.Status;
 
 namespace Minever.LowLevel.IntegrationTests;
 

@@ -1,5 +1,5 @@
 ﻿using Minever.LowLevel.Java.Core;
-using Minever.LowLevel.Java.Protocols.V5.Packets;
+using Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
 
 namespace Minever.LowLevel.Java.Protocols.V5.Extensions;
 

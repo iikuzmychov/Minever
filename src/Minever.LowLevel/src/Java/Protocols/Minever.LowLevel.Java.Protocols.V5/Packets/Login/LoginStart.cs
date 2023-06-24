@@ -1,7 +1,7 @@
 ﻿using Minever.LowLevel.Core.Packets.Serialization.Attributes;
 using Minever.LowLevel.Java.Core;
 
-namespace Minever.LowLevel.Java.Protocols.V5.Packets;
+namespace Minever.LowLevel.Java.Protocols.V5.Packets.Login;
 
 /// <summary>
 /// Id: 0x00 <br/>

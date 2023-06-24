@@ -1,7 +1,7 @@
 ﻿using Minever.LowLevel.Core.Packets.Serialization.Attributes;
 using Minever.LowLevel.Core.Packets.Serialization.Converters;
 
-namespace Minever.LowLevel.Java.Protocols.V5.Packets;
+namespace Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
 
 [PacketConverter<PacketEnumConverter<HandshakeNextConnectionState, int, PacketVarIntConverter>>]
 public enum HandshakeNextConnectionState

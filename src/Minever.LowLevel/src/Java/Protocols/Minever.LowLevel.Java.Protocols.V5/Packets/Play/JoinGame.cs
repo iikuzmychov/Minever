@@ -2,7 +2,7 @@
 using Minever.LowLevel.Core.Packets.Serialization.Converters;
 using Minever.LowLevel.Java.Protocols.V5.Enums;
 
-namespace Minever.LowLevel.Java.Protocols.V5.Packets;
+namespace Minever.LowLevel.Java.Protocols.V5.Packets.Play;
 
 public sealed record JoinGame
 {

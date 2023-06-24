@@ -1,6 +1,6 @@
 ﻿using Minever.LowLevel.Core.Packets.Serialization.Attributes;
 
-namespace Minever.LowLevel.Java.Protocols.V5.Packets;
+namespace Minever.LowLevel.Java.Protocols.V5.Packets.Play;
 
 public sealed record ChatMessageToServer
 {

@@ -2,7 +2,7 @@
 using Minever.LowLevel.Core.Packets.Serialization.Converters;
 using Minever.LowLevel.Java.Core;
 
-namespace Minever.LowLevel.Java.Protocols.V5.Packets;
+namespace Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
 
 [JavaPacket<JavaProtocol5>(0x00, JavaConnectionState.Handshake, PacketDirection.ToServer)]
 public sealed record Handshake
