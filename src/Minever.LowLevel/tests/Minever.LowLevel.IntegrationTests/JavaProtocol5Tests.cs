@@ -1,8 +1,11 @@
+using Microsoft.Extensions.Logging;
 using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Login;
+using Minever.LowLevel.Java.Protocols.V5.Packets.Play;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Status;
+using Xunit.Abstractions;
 
 namespace Minever.LowLevel.IntegrationTests;
 
@@ -11,7 +14,7 @@ public class JavaProtocol5Tests : TestBase
 {
     private readonly JavaServer1_7_10 _server;
 
-    public JavaProtocol5Tests(JavaServer1_7_10 server)
+    public JavaProtocol5Tests(JavaServer1_7_10 server, ITestOutputHelper output) : base(output)
     {
         _server = server;
     }
@@ -31,11 +34,11 @@ public class JavaProtocol5Tests : TestBase
         // Arrange
         var handshake = new Handshake()
         {
-            ProtocolVersion = JavaProtocol5.Instance.Version,
+            ProtocolVersion     = JavaProtocol5.Instance.Version,
             NextConnectionState = HandshakeNextConnectionState.Status,
         };
 
-        await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
+        await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
 
         // Act
         await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
@@ -71,13 +74,13 @@ public class JavaProtocol5Tests : TestBase
         // Arrange
         var handshake = new Handshake()
         {
-            ProtocolVersion = JavaProtocol5.Instance.Version,
+            ProtocolVersion     = JavaProtocol5.Instance.Version,
             NextConnectionState = HandshakeNextConnectionState.Status,
         };
 
         var pingToServer = PingToServer.FromDateTime(DateTime.Now); // todo: create it before GetPacketAsync<PingFromServer> & check delay
 
-        await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
+        await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
 
         // Act
         await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
@@ -108,13 +111,13 @@ public class JavaProtocol5Tests : TestBase
         // Arrange
         var handshake = new Handshake()
         {
-            ProtocolVersion = JavaProtocol5.Instance.Version,
+            ProtocolVersion     = JavaProtocol5.Instance.Version,
             NextConnectionState = HandshakeNextConnectionState.Login,
         };
 
         var loginStart = new LoginStart() { Name = "player" };
 
-        await using var client = new JavaProtocolClient(JavaProtocol5.Instance);
+        await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
 
         // Act
         await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());

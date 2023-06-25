@@ -1,10 +1,24 @@
-﻿namespace Minever.LowLevel.IntegrationTests;
+﻿using Microsoft.Extensions.Logging;
+using Minever.LowLevel.Java.Core;
+using Xunit.Abstractions;
+
+namespace Minever.LowLevel.IntegrationTests;
 
 public abstract class TestBase : IDisposable
 {
     private readonly List<CancellationTokenSource> _cancellationTokenSources = new();
 
+    protected ILogger<JavaProtocolClient> ClientLogger { get; }
     protected virtual TimeSpan DefaultTimeout => TimeSpan.FromSeconds(1);
+
+    public TestBase(ITestOutputHelper output)
+    {
+        ClientLogger = LoggerFactory
+            .Create(builder => builder
+                .SetMinimumLevel(LogLevel.Trace)
+                .AddProvider(new XunitLoggerProvider(output)))
+            .CreateLogger<JavaProtocolClient>();
+    }
 
     public virtual void Dispose()
     {

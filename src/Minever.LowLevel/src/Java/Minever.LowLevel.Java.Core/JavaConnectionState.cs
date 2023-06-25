@@ -8,3 +8,17 @@ public enum JavaConnectionState
     Login,
     Play
 }
+
+public static class JavaConnectionStateExtensions
+{
+    public static string ToString4(this JavaConnectionState connectionState)
+        => connectionState switch
+        {
+            JavaConnectionState.Handshake => "HAND",
+            JavaConnectionState.Status    => "STAT",
+            JavaConnectionState.Login     => "LGIN",
+            JavaConnectionState.Play      => "PLAY",
+
+            _ => throw new NotSupportedException()
+        };
+}

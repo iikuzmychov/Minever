@@ -236,7 +236,7 @@ public sealed class JavaProtocolClient : IProtocolClient
                         packet = JavaPacketSerializer.Deserialize(packetBytes, Protocol, context);
 
                         //_logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
-                        _logger.LogDebug($"Packet {packet.GetType().Name} was received (state: {context.ConnectionState}).");
+                        _logger.LogDebug($"[{ConnectionState.ToString4()}] Packet {packet.GetType().Name} was received.");
                     }
                     //catch (NotSupportedPacketException exception)
                     //{
@@ -266,6 +266,6 @@ public sealed class JavaProtocolClient : IProtocolClient
     {
         JavaPacketSerializer.Serialize(_writer!, packet, Protocol, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
         //_logger.LogDebug($"Packet {packet.GetType().Name} (0x{packetId:X2}, {ConnectionState} state) sended");
-        _logger.LogDebug($"Packet {packet.GetType().Name} ({ConnectionState} state) sended");
+        _logger.LogDebug($"[{ConnectionState.ToString4()}] Packet {packet.GetType().Name} was sent.");
     }
 }
