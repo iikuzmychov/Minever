@@ -47,9 +47,9 @@ public sealed class JavaProtocolClient : IProtocolClient
         /*if (_isDisposed)
             throw new ObjectDisposedException(GetType().FullName);*/
 
-        _logger.LogInformation($"Connecting to {host}:{port}");
+        _logger.LogInformation($"Connecting to {host}:{port}.");
         await _tcpClient.ConnectAsync(host, port, cancellationToken);
-        _logger.LogInformation($"Connected to {host}:{port}");
+        _logger.LogInformation($"Connected to {host}:{port}.");
 
         ConnectionState = JavaConnectionState.Handshake;
         _writer         = new(_tcpClient.GetStream());
