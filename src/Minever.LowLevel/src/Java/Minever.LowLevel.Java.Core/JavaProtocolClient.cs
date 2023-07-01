@@ -238,10 +238,11 @@ public sealed class JavaProtocolClient : IProtocolClient
                         //_logger.LogDebug($"Packet {packet.Data.GetType().Name} was received (0x{packet.Id:X2}, {context.ConnectionState} state).");
                         _logger.LogDebug($"[{ConnectionState.ToString4()}] Packet {packet.GetType().Name} was received.");
                     }
-                    //catch (NotSupportedPacketException exception)
-                    //{
-                    //    _logger.LogWarning(exception.Message);
-                    //}
+                    catch (NotSupportedException exception) // todo: change to NotSupportedPacketException
+                    {
+                        _logger.LogWarning(exception.Message);
+                        return;
+                    }
                     //catch (PacketDeserializationException exception)
                     //{
                     //    _logger.LogWarning(exception.Message);
