@@ -3,6 +3,11 @@ using Minever.LowLevel.Core.Packets.Serialization.Converters;
 
 namespace Minever.LowLevel.Java.Protocols.V5.Packets.Play;
 
+// TODO: looks like it isn't the best idea to have a base abstract class
+// for PluginMessageFromServer and PluginMessageToServer because we can call
+// client.WaitForPacketAsync<PluginMessage> or a similar one by mistake and we will have no compile time errors.
+// Of course we also have no compile-time errors for the other "wrong" classes,
+// but they can be POTENTIALLY acceptable, unlike abstract ones.
 public abstract record PluginMessage
 {
     private readonly string _channel = default!;
