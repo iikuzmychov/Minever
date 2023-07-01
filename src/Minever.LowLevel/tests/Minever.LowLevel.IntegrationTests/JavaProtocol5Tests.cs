@@ -41,7 +41,7 @@ public class JavaProtocol5Tests : TestBase
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
 
         // Act
-        await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
+        await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
         
         client.SendPacket(handshake);
         var (serverStatus, _) = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
@@ -83,7 +83,7 @@ public class JavaProtocol5Tests : TestBase
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
 
         // Act
-        await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
+        await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
         
         client.SendPacket(handshake);
         _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
@@ -120,7 +120,7 @@ public class JavaProtocol5Tests : TestBase
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
 
         // Act
-        await client.ConnectAsync(_server.Host, _server.Port, CreateDefaultTimeoutCancellationToken());
+        await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
 
         client.SendPacket(handshake);
         var (loginSuccess, _) = await client.GetPacketAsync<LoginSuccess>(loginStart, CreateDefaultTimeoutCancellationToken());
