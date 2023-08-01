@@ -44,7 +44,7 @@ public class JavaProtocol5Tests : TestBase
         await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
         
         client.SendPacket(handshake);
-        var (serverStatus, _) = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
+        var serverStatus = await client.GetPacketAsync < ServerStatus >(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
 
         await client.DisconnectAsync();
 
@@ -88,7 +88,7 @@ public class JavaProtocol5Tests : TestBase
         client.SendPacket(handshake);
         _ = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
 
-        var (pingFromServer, _) = await client.GetPacketAsync<PingFromServer>(pingToServer, CreateDefaultTimeoutCancellationToken());
+        var pingFromServer = await client.GetPacketAsync<PingFromServer>(pingToServer, CreateDefaultTimeoutCancellationToken());
 
         await client.DisconnectAsync();
 
@@ -123,7 +123,7 @@ public class JavaProtocol5Tests : TestBase
         await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
 
         client.SendPacket(handshake);
-        var (loginSuccess, _) = await client.GetPacketAsync<LoginSuccess>(loginStart, CreateDefaultTimeoutCancellationToken());
+        var loginSuccess = await client.GetPacketAsync<LoginSuccess>(loginStart, CreateDefaultTimeoutCancellationToken());
 
         await client.DisconnectAsync();
 

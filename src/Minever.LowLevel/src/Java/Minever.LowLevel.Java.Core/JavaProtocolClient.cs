@@ -18,16 +18,17 @@ public sealed class JavaProtocolClient : IProtocolClient
     private MinecraftWriter? _writer;
     private Task? _listeningTask;
     private readonly CancellationTokenSource _listeningTaskCts = new();
-    private event Action<object, DateTime>? _packetReceived;
+    private event Action<object>? _packetReceived;
     
     public IJavaProtocol Protocol { get; }
     IProtocol IPacketTransceiver.Protocol => Protocol;
+
     // todo: Disconnected -> None ???
     // todo: Disconnected -> null ???
     public JavaConnectionState ConnectionState { get; private set; } = JavaConnectionState.Disconnected;
     public bool IsConnected => _tcpClient.Connected;
 
-    public event Action<object, DateTime>? PacketReceived
+    public event Action<object>? PacketReceived
     {
         add => _packetReceived += value;
         remove => _packetReceived -= value;
@@ -80,15 +81,15 @@ public sealed class JavaProtocolClient : IProtocolClient
         }
     }
 
-    public Action<object, DateTime> OnPacket<TPacket>(Action<TPacket, DateTime> handler)
+    public Action<object> OnPacket<TPacket>(Action<TPacket> handler)
     {
         ArgumentNullException.ThrowIfNull(handler);
 
-        Action<object, DateTime> actualHandler = (packet, dateTime) =>
+        Action<object> actualHandler = packet =>
         {
             if (packet.GetType() == typeof(TPacket))
             {
-                handler((TPacket)packet, dateTime);
+                handler((TPacket)packet);
             }
         };
 
@@ -97,35 +98,34 @@ public sealed class JavaProtocolClient : IProtocolClient
         return actualHandler;
     }
 
-    public void OnceOnPacket<TPacket>(Action<TPacket, DateTime> handler)
+    public void OnceOnPacket<TPacket>(Action<TPacket> handler)
     {
         ArgumentNullException.ThrowIfNull(handler);
 
-        Action<object, DateTime> actualHandler = null!;
+        Action<object> actualHandler = null!;
 
-        actualHandler = OnPacket<TPacket>((packet, dateTime) =>
+        actualHandler = OnPacket<TPacket>(packet =>
         {
             PacketReceived -= actualHandler;
-            handler(packet, dateTime);
+            handler(packet);
         });
     }
 
-    // todo: (TPacket Packet, DateTime DateTime) -> TPacket ???
-    public async Task<(TPacket Packet, DateTime DateTime)> WaitForPacketAsync<TPacket>(CancellationToken cancellationToken = default)
+    public async Task<TPacket> WaitForPacketAsync<TPacket>(CancellationToken cancellationToken = default)
     {
-        var taskCompletionSource = new TaskCompletionSource<(TPacket Packet, DateTime DateTime)>();
+        var taskCompletionSource = new TaskCompletionSource<TPacket>();
         cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
 
-        OnceOnPacket<TPacket>((packet, dateTime) => taskCompletionSource.TrySetResult((packet, dateTime)));
+        OnceOnPacket<TPacket>(packet => taskCompletionSource.TrySetResult(packet));
         
         return await taskCompletionSource.Task;
     }
 
-    public async Task<(TResponsePacket Packet, DateTime DateTime)> GetPacketAsync<TResponsePacket>(object requestPacket, CancellationToken cancellationToken = default)
+    public async Task<TResponsePacket> GetPacketAsync<TResponsePacket>(object requestPacket, CancellationToken cancellationToken = default)
     {
         Protocol.ThrowIfPacketIsNotSupported(requestPacket, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
 
-        Task<(TResponsePacket Packet, DateTime DateTime)> responsePacketTask;
+        Task<TResponsePacket> responsePacketTask;
 
         lock (_lock)
         {
@@ -137,18 +137,18 @@ public sealed class JavaProtocolClient : IProtocolClient
     }
 
     // todo: refactor/remove
-    public Task<Action<object, DateTime>> OnPacketAsync<TPacket>(Func<TPacket, DateTime, Task> asyncHandler)
+    public Task<Action<object>> OnPacketAsync<TPacket>(Func<TPacket, Task> asyncHandler)
     {
         ArgumentNullException.ThrowIfNull(asyncHandler);
 
-        Action<object, DateTime> internalHandler = null!;
-        var tcs = new TaskCompletionSource<Action<object, DateTime>>();
+        Action<object> internalHandler = null!;
+        var tcs = new TaskCompletionSource<Action<object>>();
         
-        internalHandler = async (packet, dateTime) =>
+        internalHandler = async packet =>
         {
             if (packet.GetType() == typeof(TPacket))
             {
-                await asyncHandler((TPacket)packet, dateTime);
+                await asyncHandler((TPacket)packet);
                 tcs.SetResult(internalHandler);
             }
         };
@@ -255,7 +255,7 @@ public sealed class JavaProtocolClient : IProtocolClient
                         return;
                     }
 
-                    Task.Run(() => _packetReceived?.Invoke(packet, DateTime.Now));
+                    Task.Run(() => _packetReceived?.Invoke(packet));
                     ConnectionState = Protocol.GetNextConnectionState(packet, context);
                 }
             }
