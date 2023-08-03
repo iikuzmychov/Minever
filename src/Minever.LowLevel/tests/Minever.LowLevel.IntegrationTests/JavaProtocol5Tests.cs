@@ -175,4 +175,46 @@ public class JavaProtocol5Tests : TestBase
         Assert.Equal("MC|Brand", pluginMessage.Channel);
         // todo: Assert.Equal("vanilla", pluginMessage.Data.Name);
     }
+
+    /// <summary>
+    /// Test scenario:
+    /// <code>
+    /// C -------Handshake(Login)-----&gt; S <br/>
+    /// <br/>
+    /// C ----------LoginStart--------&gt; S <br/>
+    /// C &lt;--------LoginSuccess-------- S <br/>
+    /// C &lt;-------SpawnPosition-------- S
+    /// </code>
+    /// </summary>
+    [Fact]
+    public async Task Should_GetSpawnPosition()
+    {
+        // Arrange
+        var handshake = new Handshake()
+        {
+            ProtocolVersion = JavaProtocol5.Instance.Version,
+            NextConnectionState = HandshakeNextConnectionState.Login,
+        };
+
+        var loginStart = new LoginStart()
+        {
+            Name = "player"
+        };
+
+        await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
+
+        // Act
+        await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
+
+        client.SendPacket(handshake);
+        _ = await client.GetPacketAsync<LoginSuccess>(loginStart, CreateDefaultTimeoutCancellationToken());
+
+        // todo: waiting should be started once LoginSuccess is received (the current call doesn't guarantee that awaiting will be started before the server processes the next packet)
+        var spawnPosition = await client.WaitForPacketAsync<SpawnPosition>(CreateDefaultTimeoutCancellationToken());
+
+        await client.DisconnectAsync();
+
+        // Assert
+        Assert.NotEqual(default, spawnPosition.Value);
+    }
 }
