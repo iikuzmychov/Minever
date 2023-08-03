@@ -8,6 +8,7 @@ namespace Minever.LowLevel.Java.Protocols.V5.Packets.Play;
 // client.WaitForPacketAsync<PluginMessage> or a similar one by mistake and we will have no compile time errors.
 // Of course we also have no compile-time errors for the other "wrong" classes,
 // but they can be POTENTIALLY acceptable, unlike abstract ones.
+// TODO 2: make data strong typed
 public abstract record PluginMessage
 {
     private readonly string _channel = default!;
