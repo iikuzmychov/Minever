@@ -28,6 +28,7 @@ public sealed class JavaProtocolClient : IProtocolClient
     public JavaConnectionState ConnectionState { get; private set; } = JavaConnectionState.Disconnected;
     public bool IsConnected => _tcpClient.Connected;
 
+    // todo: use IObserver from System.Reactive
     public event Action<object>? PacketReceived
     {
         add => _packetReceived += value;
