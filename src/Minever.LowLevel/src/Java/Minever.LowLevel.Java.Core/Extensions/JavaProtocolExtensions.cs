@@ -2,7 +2,7 @@
 
 public static class JavaProtocolExtensions
 {
-    public static void ThrowIfPacketIsNotSupported(this IJavaProtocol protocol, object packet, JavaPacketContext context)
+    public static void EnsureSupportedPacket(this IJavaProtocol protocol, object packet, JavaPacketContext context)
     {
         ArgumentNullException.ThrowIfNull(protocol);
         ArgumentNullException.ThrowIfNull(packet);

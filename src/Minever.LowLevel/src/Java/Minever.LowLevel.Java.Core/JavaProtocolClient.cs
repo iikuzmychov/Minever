@@ -124,7 +124,7 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     public async Task<TResponsePacket> GetPacketAsync<TResponsePacket>(object requestPacket, CancellationToken cancellationToken = default)
     {
-        Protocol.ThrowIfPacketIsNotSupported(requestPacket, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
+        Protocol.EnsureSupportedPacket(requestPacket, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
 
         Task<TResponsePacket> responsePacketTask;
 
