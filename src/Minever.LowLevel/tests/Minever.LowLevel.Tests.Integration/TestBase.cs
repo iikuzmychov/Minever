@@ -2,7 +2,7 @@
 using Minever.LowLevel.Java.Core;
 using Xunit.Abstractions;
 
-namespace Minever.LowLevel.IntegrationTests;
+namespace Minever.LowLevel.Tests.Integration;
 
 public abstract class TestBase : IDisposable
 {

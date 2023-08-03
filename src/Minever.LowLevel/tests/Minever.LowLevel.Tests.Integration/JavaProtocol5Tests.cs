@@ -6,7 +6,7 @@ using Minever.LowLevel.Java.Protocols.V5.Packets.Play;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Status;
 using Xunit.Abstractions;
 
-namespace Minever.LowLevel.IntegrationTests;
+namespace Minever.LowLevel.Tests.Integration;
 
 public class JavaProtocol5Tests : TestBase, IClassFixture<JavaServer1_7_10>
 {

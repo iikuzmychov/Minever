@@ -1,7 +1,7 @@
 ﻿using DotNet.Testcontainers.Builders;
 using DotNet.Testcontainers.Containers;
 
-namespace Minever.LowLevel.IntegrationTests;
+namespace Minever.LowLevel.Tests.Integration;
 
 public abstract class JavaServer : IAsyncLifetime
 {

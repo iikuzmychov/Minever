@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace Minever.LowLevel.IntegrationTests;
+namespace Minever.LowLevel.Tests.Integration;
 public class XunitLogger : ILogger
 {
     private readonly string _categoryName;

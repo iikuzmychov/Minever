@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F28767D4-85C
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{04A5BA09-67F2-4832-ADCC-D351C66F3B58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minever.LowLevel.IntegrationTests", "tests\Minever.LowLevel.IntegrationTests\Minever.LowLevel.IntegrationTests.csproj", "{4F140F55-A98E-4D77-A2EE-49D188C02D1C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Minever.LowLevel.Tests.Integration", "tests\Minever.LowLevel.Tests.Integration\Minever.LowLevel.Tests.Integration.csproj", "{4F140F55-A98E-4D77-A2EE-49D188C02D1C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

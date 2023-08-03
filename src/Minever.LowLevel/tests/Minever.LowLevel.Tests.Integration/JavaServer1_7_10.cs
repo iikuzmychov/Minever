@@ -1,4 +1,4 @@
-﻿namespace Minever.LowLevel.IntegrationTests;
+﻿namespace Minever.LowLevel.Tests.Integration;
 
 public class JavaServer1_7_10 : JavaServer
 {
