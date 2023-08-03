@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Logging;
 using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
@@ -34,7 +33,7 @@ public class JavaProtocol5Tests : TestBase
         // Arrange
         var handshake = new Handshake()
         {
-            ProtocolVersion     = JavaProtocol5.Instance.Version,
+            ProtocolVersion = JavaProtocol5.Instance.Version,
             NextConnectionState = HandshakeNextConnectionState.Status,
         };
 
@@ -44,7 +43,7 @@ public class JavaProtocol5Tests : TestBase
         await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
         
         client.SendPacket(handshake);
-        var serverStatus = await client.GetPacketAsync < ServerStatus >(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
+        var serverStatus = await client.GetPacketAsync<ServerStatus>(new ServerStatusRequest(), CreateDefaultTimeoutCancellationToken());
 
         await client.DisconnectAsync();
 
@@ -74,7 +73,7 @@ public class JavaProtocol5Tests : TestBase
         // Arrange
         var handshake = new Handshake()
         {
-            ProtocolVersion     = JavaProtocol5.Instance.Version,
+            ProtocolVersion = JavaProtocol5.Instance.Version,
             NextConnectionState = HandshakeNextConnectionState.Status,
         };
 
@@ -111,11 +110,14 @@ public class JavaProtocol5Tests : TestBase
         // Arrange
         var handshake = new Handshake()
         {
-            ProtocolVersion     = JavaProtocol5.Instance.Version,
+            ProtocolVersion = JavaProtocol5.Instance.Version,
             NextConnectionState = HandshakeNextConnectionState.Login,
         };
 
-        var loginStart = new LoginStart() { Name = "player" };
+        var loginStart = new LoginStart()
+        {
+            Name = "player"
+        };
 
         await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
 
