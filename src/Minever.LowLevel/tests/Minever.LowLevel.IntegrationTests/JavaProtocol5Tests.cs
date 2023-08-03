@@ -21,10 +21,10 @@ public class JavaProtocol5Tests : TestBase
     /// <summary>
     /// Test scenario:
     /// <code>
-    /// C ----Handshake(Status)---&gt; S <br/>
+    /// C ----Handshake(Status)---&gt; S<br/>
     /// <br/>
-    /// C ---ServerStatusRequest--&gt; S <br/>
-    /// C &lt;------ServerStatus------ S <br/>
+    /// C ---ServerStatusRequest--&gt; S<br/>
+    /// C &lt;------ServerStatus------ S
     /// </code>
     /// </summary>
     [Fact]
@@ -58,13 +58,13 @@ public class JavaProtocol5Tests : TestBase
     /// <summary>
     /// Test scenario:
     /// <code>
-    /// C ----Handshake(Status)---&gt; S <br/>
+    /// C ----Handshake(Status)---&gt; S<br/>
     /// <br/>
-    /// C ---ServerStatusRequest--&gt; S <br/>
-    /// C &lt;------ServerStatus------ S <br/>
+    /// C ---ServerStatusRequest--&gt; S<br/>
+    /// C &lt;------ServerStatus------ S<br/>
     /// <br/>
-    /// C -------PingToServer-----&gt; S <br/>
-    /// C &lt;-----PingFromServer----- S <br/>
+    /// C -------PingToServer-----&gt; S<br/>
+    /// C &lt;-----PingFromServer----- S
     /// </code>
     /// </summary>
     [Fact]
@@ -98,10 +98,10 @@ public class JavaProtocol5Tests : TestBase
     /// <summary>
     /// Test scenario:
     /// <code>
-    /// C ---Handshake(Login)--&gt; S <br/>
+    /// C ---Handshake(Login)--&gt; S<br/>
     /// <br/>
-    /// C ------LoginStart-----&gt; S <br/>
-    /// C &lt;----LoginSuccess----- S <br/>
+    /// C ------LoginStart-----&gt; S<br/>
+    /// C &lt;----LoginSuccess----- S
     /// </code>
     /// </summary>
     [Fact]
