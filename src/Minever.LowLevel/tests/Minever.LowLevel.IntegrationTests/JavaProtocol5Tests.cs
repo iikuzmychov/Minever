@@ -8,8 +8,7 @@ using Xunit.Abstractions;
 
 namespace Minever.LowLevel.IntegrationTests;
 
-[Collection(nameof(JavaServer1_7_10Collection))]
-public class JavaProtocol5Tests : TestBase
+public class JavaProtocol5Tests : TestBase, IClassFixture<JavaServer1_7_10>
 {
     private readonly JavaServer1_7_10 _server;
 
