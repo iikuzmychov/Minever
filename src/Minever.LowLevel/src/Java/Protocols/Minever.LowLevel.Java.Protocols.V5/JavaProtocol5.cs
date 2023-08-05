@@ -10,15 +10,14 @@ public sealed class JavaProtocol5 : JavaProtocolBase
 {
     private static readonly IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> _packets;
 
-    protected override IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets => _packets;
-   
-    public override int Version => 5;
-
     public static JavaProtocol5 Instance { get; } = new();
+
+    public override int Version => 5;
+    public override IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets => _packets;
 
     static JavaProtocol5()
     {
-        _packets = FindPacketsInAssembly<JavaProtocol5>();
+        _packets = FindPacketsInAssembly<JavaProtocol5>(typeof(JavaProtocol5).Assembly);
     }
 
     private JavaProtocol5()

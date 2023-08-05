@@ -1,19 +1,20 @@
 ﻿using Minever.LowLevel.Java.Core.Extensions;
 using System.Collections.Immutable;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace Minever.LowLevel.Java.Core;
 
 public abstract class JavaProtocolBase : IJavaProtocol
 {
-    protected abstract IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets { get; }
-
     public abstract int Version { get; }
+    public abstract IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets { get; }
 
-    protected static IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> FindPacketsInAssembly<TProtocol>()
+    protected static IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> FindPacketsInAssembly<TProtocol>(Assembly assembly)
         where TProtocol : IJavaProtocol
     {
-        var assembly    = typeof(TProtocol).Assembly;
+        ArgumentNullException.ThrowIfNull(assembly);
+
         var packetTypes = assembly.GetTypes().Where(static type => type.GetCustomAttributes(false).OfType<JavaPacketAttribute<TProtocol>>().Any());
         
         return packetTypes
@@ -53,6 +54,7 @@ public abstract class JavaProtocolBase : IJavaProtocol
     public bool IsPacketSupported(object packet, JavaPacketContext context)
     {
         ArgumentNullException.ThrowIfNull(packet);
+
         return Packets.TryGetValue(context, out var packets) && packets.ContainsValue(packet.GetType());
     }
 
