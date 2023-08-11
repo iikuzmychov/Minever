@@ -1,6 +1,5 @@
 ﻿using Minever.LowLevel.Java.Core.Extensions;
 using System.Collections.Immutable;
-using System.Collections.ObjectModel;
 using System.Reflection;
 
 namespace Minever.LowLevel.Java.Core;
@@ -8,9 +7,9 @@ namespace Minever.LowLevel.Java.Core;
 public abstract class JavaProtocolBase : IJavaProtocol
 {
     public abstract int Version { get; }
-    public abstract IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets { get; }
+    public abstract IReadOnlyDictionary<JavaPacketContext, IReadOnlyBidirectionalDictionary<int, Type>> Packets { get; }
 
-    protected static IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> FindPacketsInAssembly<TProtocol>(Assembly assembly)
+    protected static IReadOnlyDictionary<JavaPacketContext, IReadOnlyBidirectionalDictionary<int, Type>> FindPacketsInAssembly<TProtocol>(Assembly assembly)
         where TProtocol : IJavaProtocol
     {
         ArgumentNullException.ThrowIfNull(assembly);

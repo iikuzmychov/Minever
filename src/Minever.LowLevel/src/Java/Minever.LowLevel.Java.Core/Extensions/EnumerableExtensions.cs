@@ -5,7 +5,7 @@ namespace Minever.LowLevel.Java.Core.Extensions;
 // todo: make it part of BidirectionalDictionary package
 internal static class EnumerableExtensions
 {
-    public static ReadOnlyBidirectionalDictionary<TKey, TValue> ToReadOnlyBidirectionalDictionary<TSource, TKey, TValue>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TValue> elementSelector)
+    public static IReadOnlyBidirectionalDictionary<TKey, TValue> ToReadOnlyBidirectionalDictionary<TSource, TKey, TValue>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector, Func<TSource, TValue> elementSelector)
         where TKey : notnull
         where TValue : notnull
     {
