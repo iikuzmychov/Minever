@@ -8,12 +8,12 @@ namespace Minever.LowLevel.Java.Protocols.V5;
 
 public sealed class JavaProtocol5 : JavaProtocolBase
 {
-    private static readonly IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> _packets;
+    private static readonly IReadOnlyDictionary<JavaPacketContext, IReadOnlyBidirectionalDictionary<int, Type>> _packets;
 
     public static JavaProtocol5 Instance { get; } = new();
 
     public override int Version => 5;
-    public override IReadOnlyDictionary<JavaPacketContext, ReadOnlyBidirectionalDictionary<int, Type>> Packets => _packets;
+    public override IReadOnlyDictionary<JavaPacketContext, IReadOnlyBidirectionalDictionary<int, Type>> Packets => _packets;
 
     static JavaProtocol5()
     {
