@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Diagnostics;
 
 namespace Minever.LowLevel.Java.Core.Extensions;
 
@@ -9,7 +9,13 @@ internal static class EnumerableExtensions
         where TKey : notnull
         where TValue : notnull
     {
-        var bidirectionalDictionary = new BidirectionalDictionary<TKey, TValue>();
+        Debug.Assert(source is not null);
+        Debug.Assert(keySelector is not null);
+        Debug.Assert(elementSelector is not null);
+
+        var bidirectionalDictionary = source.TryGetNonEnumeratedCount(out var count)
+            ? new BidirectionalDictionary<TKey, TValue>(count)
+            : new BidirectionalDictionary<TKey, TValue>();
 
         foreach (var item in source)
         {
