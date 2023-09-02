@@ -2,7 +2,6 @@ using Minever.LowLevel.Java.Core;
 using Minever.LowLevel.Java.Protocols.V5.Extensions;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Login;
-using System.Collections.ObjectModel;
 
 namespace Minever.LowLevel.Java.Protocols.V5;
 
