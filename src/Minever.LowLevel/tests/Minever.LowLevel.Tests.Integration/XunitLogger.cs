@@ -4,17 +4,12 @@ using Xunit.Abstractions;
 namespace Minever.LowLevel.Tests.Integration;
 public class XunitLogger : ILogger
 {
-    private readonly string _categoryName;
     private readonly ITestOutputHelper _output;
 
-    public XunitLogger(string categoryName, ITestOutputHelper output)
+    public XunitLogger(ITestOutputHelper output)
     {
-        _categoryName = categoryName;
-        _output       = output;
+        _output = output;
     }
-
-    public IDisposable? BeginScope<TState>(TState state) where TState : notnull
-        => null!;
 
     public bool IsEnabled(LogLevel logLevel) => true;
 
@@ -24,19 +19,18 @@ public class XunitLogger : ILogger
 
         var logLevelString = logLevel switch
         {
-            LogLevel.Critical     => "CRIT",
-            LogLevel.Error        => "EROR",
-            LogLevel.Warning      => "WARN",
-            LogLevel.Information  => "INFO",
-            LogLevel.Debug        => "DEBG",
-            LogLevel.Trace        => "TRCE",
+            LogLevel.Critical    => "CRIT",
+            LogLevel.Error       => "EROR",
+            LogLevel.Warning     => "WARN",
+            LogLevel.Information => "INFO",
+            LogLevel.Debug       => "DEBG",
+            LogLevel.Trace       => "TRCE",
             
             _ => throw new NotSupportedException()
         };
 
-        // todo: do we need category name ???
-        //_output.WriteLine($"{_categoryName}:");
         _output.WriteLine($"[{logLevelString}] {message}");
-        //_output.WriteLine(string.Empty);
     }
+
+    IDisposable? ILogger.BeginScope<TState>(TState state) => null!;
 }
