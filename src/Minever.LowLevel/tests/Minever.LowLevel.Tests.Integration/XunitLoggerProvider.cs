@@ -12,7 +12,7 @@ public class XunitLoggerProvider : ILoggerProvider
         _output = output;
     }
 
-    public ILogger CreateLogger(string categoryName) => new XunitLogger(categoryName, _output);
+    public ILogger CreateLogger(string categoryName) => new XunitLogger(_output);
 
     public void Dispose()
     {
