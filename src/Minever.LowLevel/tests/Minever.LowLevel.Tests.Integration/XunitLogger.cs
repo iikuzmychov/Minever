@@ -2,6 +2,7 @@
 using Xunit.Abstractions;
 
 namespace Minever.LowLevel.Tests.Integration;
+
 public class XunitLogger : ILogger
 {
     private readonly ITestOutputHelper _output;
