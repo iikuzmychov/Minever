@@ -138,29 +138,6 @@ public sealed class JavaProtocolClient : IProtocolClient
         return await responsePacketTask;
     }
 
-    // todo: refactor/remove
-    public Task<Action<object>> OnPacketAsync<TPacket>(Func<TPacket, Task> asyncHandler)
-    {
-        EnsureNotDisposed();
-        ArgumentNullException.ThrowIfNull(asyncHandler);
-
-        Action<object> internalHandler = null!;
-        var tcs = new TaskCompletionSource<Action<object>>();
-        
-        internalHandler = async packet =>
-        {
-            if (packet.GetType() == typeof(TPacket))
-            {
-                await asyncHandler((TPacket)packet);
-                tcs.SetResult(internalHandler);
-            }
-        };
-
-        PacketReceived += internalHandler;
-
-        return tcs.Task;
-    }
-
     public async ValueTask DisconnectAsync() => await DisconnectAsync(null);
 
     void IDisposable.Dispose() => DisconnectAsync().GetAwaiter().GetResult();
