@@ -14,7 +14,8 @@ public class XunitLoggerProvider : ILoggerProvider
 
     public ILogger CreateLogger(string categoryName) => new XunitLogger(_output);
 
-    public void Dispose()
+    void IDisposable.Dispose()
     {
+        // nothing to dispose
     }
 }
