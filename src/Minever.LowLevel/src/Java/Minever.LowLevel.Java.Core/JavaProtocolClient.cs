@@ -44,10 +44,8 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     public async ValueTask ConnectAsync(string host, int port = 25565, CancellationToken cancellationToken = default)
     {
+        EnsureNotDisposed();
         ArgumentException.ThrowIfNullOrEmpty(host);
-
-        /*if (_isDisposed)
-            throw new ObjectDisposedException(GetType().FullName);*/
 
         _logger.LogInformation($"Connecting to {host}:{port}.");
         await _tcpClient.ConnectAsync(host, port, cancellationToken);
@@ -60,10 +58,8 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     public void SendPacket(object packet)
     {
+        EnsureNotDisposed();
         ArgumentNullException.ThrowIfNull(packet);
-
-        /*if (_isDisposed)
-            throw new ObjectDisposedException(GetType().FullName);*/
 
         var context   = new JavaPacketContext(ConnectionState, PacketDirection.ToServer);
         var nextState = Protocol.GetNextConnectionState(packet, context);
@@ -84,6 +80,7 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     public Action<object> OnPacket<TPacket>(Action<TPacket> handler)
     {
+        EnsureNotDisposed();
         ArgumentNullException.ThrowIfNull(handler);
 
         Action<object> actualHandler = packet =>
@@ -101,6 +98,7 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     public void OnceOnPacket<TPacket>(Action<TPacket> handler)
     {
+        EnsureNotDisposed();
         ArgumentNullException.ThrowIfNull(handler);
 
         Action<object> actualHandler = null!;
@@ -114,6 +112,8 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     public async Task<TPacket> WaitForPacketAsync<TPacket>(CancellationToken cancellationToken = default)
     {
+        EnsureNotDisposed();
+
         var taskCompletionSource = new TaskCompletionSource<TPacket>();
         cancellationToken.Register(() => taskCompletionSource.TrySetCanceled());
 
@@ -124,6 +124,7 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     public async Task<TResponsePacket> GetPacketAsync<TResponsePacket>(object requestPacket, CancellationToken cancellationToken = default)
     {
+        EnsureNotDisposed();
         Protocol.EnsureSupportedPacket(requestPacket, new JavaPacketContext(ConnectionState, PacketDirection.ToServer));
 
         Task<TResponsePacket> responsePacketTask;
@@ -140,6 +141,7 @@ public sealed class JavaProtocolClient : IProtocolClient
     // todo: refactor/remove
     public Task<Action<object>> OnPacketAsync<TPacket>(Func<TPacket, Task> asyncHandler)
     {
+        EnsureNotDisposed();
         ArgumentNullException.ThrowIfNull(asyncHandler);
 
         Action<object> internalHandler = null!;
@@ -165,6 +167,14 @@ public sealed class JavaProtocolClient : IProtocolClient
 
     async ValueTask IAsyncDisposable.DisposeAsync() => await DisconnectAsync();
     
+    private void EnsureNotDisposed()
+    {
+        if (_isDisposed)
+        {
+            throw new ObjectDisposedException(GetType().FullName);
+        }
+    }
+
     private async ValueTask DisconnectAsync(Exception? exception)
     {
         lock (_lock)
