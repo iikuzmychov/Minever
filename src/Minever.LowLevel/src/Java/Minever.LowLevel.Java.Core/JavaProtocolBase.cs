@@ -46,7 +46,7 @@ public abstract class JavaProtocolBase : IJavaProtocol
         }
         catch (KeyNotFoundException exception)
         {
-            throw new NotSupportedException($"The packet with id {id} is not supported by the protocol for specified context.", exception);
+            throw new NotSupportedException($"The packet with id 0x{id:x} is not supported by the protocol for specified context.", exception);
         }
     }
 
