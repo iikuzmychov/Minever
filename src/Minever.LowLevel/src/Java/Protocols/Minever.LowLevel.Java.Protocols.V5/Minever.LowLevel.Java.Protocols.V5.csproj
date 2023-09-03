@@ -10,5 +10,4 @@
     <ProjectReference Include="..\..\Minever.LowLevel.Java.Core\Minever.LowLevel.Java.Core.csproj" />
   </ItemGroup>
 
-
 </Project>
