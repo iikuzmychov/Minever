@@ -3,6 +3,7 @@ using Minever.LowLevel.Java.Protocols.V5;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Login;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Play;
+using Minever.LowLevel.Java.Protocols.V5.Packets.Play.PlayerAbilities;
 using Minever.LowLevel.Java.Protocols.V5.Packets.Status;
 using Xunit.Abstractions;
 
@@ -215,5 +216,48 @@ public class JavaProtocol5Tests : TestBase, IClassFixture<JavaServer1_7_10>
 
         // Assert
         Assert.NotEqual(default, spawnPosition.Value);
+    }
+    
+    /// <summary>
+    /// Test scenario:
+    /// <code>
+    /// C -------Handshake(Login)-----&gt; S <br/>
+    /// <br/>
+    /// C ----------LoginStart--------&gt; S <br/>
+    /// C &lt;--------LoginSuccess-------- S <br/>
+    /// C &lt;-------PlayerAbilities------ S
+    /// </code>
+    /// </summary>
+    [Fact]
+    public async Task Should_GetPlayerAbilities()
+    {
+        // Arrange
+        var handshake = new Handshake()
+        {
+            ProtocolVersion = JavaProtocol5.Instance.Version,
+            NextConnectionState = HandshakeNextConnectionState.Login,
+        };
+
+        var loginStart = new LoginStart()
+        {
+            Name = "player"
+        };
+
+        await using var client = new JavaProtocolClient(JavaProtocol5.Instance, ClientLogger);
+
+        // Act
+        await client.ConnectAsync(_server.Host, _server.GetPort(), CreateDefaultTimeoutCancellationToken());
+
+        client.SendPacket(handshake);
+        _ = await client.GetPacketAsync<LoginSuccess>(loginStart, CreateDefaultTimeoutCancellationToken());
+
+        // todo: waiting should be started  once LoginSuccess is received (the current call doesn't guarantee that awaiting will be started before the server processes the next packet)
+        var playerAbilities = await client.WaitForPacketAsync<PlayerAbilities>(CreateDefaultTimeoutCancellationToken());
+
+        await client.DisconnectAsync();
+
+        // Assert
+        Assert.True(playerAbilities.FlyingSpeed > 0);
+        Assert.True(playerAbilities.WalkingSpeed > 0);
     }
 }
