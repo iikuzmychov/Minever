@@ -14,7 +14,7 @@ public abstract class TestBase : IDisposable
     public TestBase(ITestOutputHelper output)
     {
         ClientLogger = LoggerFactory
-            .Create(builder => builder
+            .Create(options => options
                 .SetMinimumLevel(LogLevel.Trace)
                 .AddProvider(new XunitLoggerProvider(output)))
             .CreateLogger<JavaProtocolClient>();
