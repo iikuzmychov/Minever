@@ -30,7 +30,14 @@ public class XunitLogger : ILogger
             _ => throw new NotSupportedException()
         };
 
-        _output.WriteLine($"[{logLevelString}] {message}");
+        if (exception is null)
+        {
+            _output.WriteLine($"[{logLevelString}] {message}");
+        }
+        else
+        {
+            _output.WriteLine($"[{logLevelString}] {message} {exception}");
+        }
     }
 
     IDisposable? ILogger.BeginScope<TState>(TState state) => null!;
