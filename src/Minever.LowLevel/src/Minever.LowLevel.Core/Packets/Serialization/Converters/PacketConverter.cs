@@ -51,26 +51,22 @@ public abstract class PacketConverter<T> : PacketConverter
     public override bool CanConvert(Type type)
     {
         ArgumentNullException.ThrowIfNull(type);
-        return typeof(T) == type;
+
+        return type.IsAssignableFrom(typeof(T));
     }
-
-    public abstract T Read(MinecraftReader reader);
-
+    
     public sealed override object Read(MinecraftReader reader, Type targetType)
     {
         ArgumentNullException.ThrowIfNull(reader);
         ArgumentNullException.ThrowIfNull(targetType);
 
-        // todo:
-        //if (targetType != typeof(T)) // is?
-        //{
-        //    throw new ArgumentException("Target type ");
-        //}
+        if (targetType.IsAssignableFrom(typeof(T)))
+        {
+            throw new ArgumentException($"{typeof(T)} is not assignable from {targetType}");
+        }
 
         return Read(reader);
     }
-
-    public abstract void Write(MinecraftWriter writer, T value);
 
     public sealed override void Write(MinecraftWriter writer, object value)
     {
@@ -79,4 +75,8 @@ public abstract class PacketConverter<T> : PacketConverter
 
         Write(writer, (T)value);
     }
+
+    public abstract T Read(MinecraftReader reader);
+
+    public abstract void Write(MinecraftWriter writer, T value);
 }
