@@ -60,7 +60,7 @@ public abstract class PacketConverter<T> : PacketConverter
         ArgumentNullException.ThrowIfNull(reader);
         ArgumentNullException.ThrowIfNull(targetType);
 
-        if (targetType.IsAssignableFrom(typeof(T)))
+        if (!targetType.IsAssignableFrom(typeof(T)))
         {
             throw new ArgumentException($"{typeof(T)} is not assignable from {targetType}");
         }
