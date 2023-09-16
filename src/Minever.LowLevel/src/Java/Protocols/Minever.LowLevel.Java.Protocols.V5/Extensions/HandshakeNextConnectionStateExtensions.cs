@@ -9,7 +9,7 @@ public static class HandshakeNextConnectionStateExtensions
         => state switch
         {
             HandshakeNextConnectionState.Status => JavaConnectionState.Status,
-            HandshakeNextConnectionState.Login => JavaConnectionState.Login,
+            HandshakeNextConnectionState.Login  => JavaConnectionState.Login,
 
             _ => throw new ArgumentOutOfRangeException(nameof(state))
         };
