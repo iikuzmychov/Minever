@@ -4,6 +4,13 @@ using Minever.LowLevel.Java.Core;
 
 namespace Minever.LowLevel.Java.Protocols.V5.Packets.Handshake;
 
+/// <summary>
+/// Id: 0x00 <br/>
+/// State: <see cref="JavaConnectionState.Handshake"/> <br/>
+/// Direction: <see cref="PacketDirection.ToServer"/> <br/>
+/// <br/>
+/// See <see href="https://wiki.vg/index.php?title=Protocol&amp;oldid=6003#Handshake">Handshake/Serverbound/Handshake</see> on wiki.vg.
+/// </summary>
 [JavaPacket<JavaProtocol5>(0x00, JavaConnectionState.Handshake, PacketDirection.ToServer)]
 public sealed record Handshake
 {
