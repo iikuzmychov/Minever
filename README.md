@@ -4,11 +4,10 @@
 
 # Minever
 
-Open-source .NET library designed to support various versions of **Minecraft Java & Bedrock** editions that provides tools for building bots and client applications.
+> **Warning**
+> The current project is still in development and it isn't ready for use yet.
 
-## State
-
-In draft. Many things need to be considered.
+Open-source .NET library designed to support various versions of **Minecraft Java & Bedrock** editions which provides tools for building bots and client applications.
 
 ## License
 
