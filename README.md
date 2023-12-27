@@ -2,10 +2,10 @@
 
 ![Banner](./img/banner.svg)
 
-# Minever
+> [!WARNING]
+> Minever is still in development and it isn't ready for use yet.
 
-> **Warning**
-> The current project is still in development and it isn't ready for use yet.
+# Minever
 
 Open-source .NET library designed to support various versions of **Minecraft Java & Bedrock** editions which provides tools for building bots and client applications.
 
