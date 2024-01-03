@@ -5,6 +5,8 @@ namespace Minever.LowLevel.Tests.Integration;
 
 public abstract class JavaServer : IAsyncLifetime
 {
+    private const int DefaultPort = 25565;
+
     private readonly IContainer _javaServerContainer;
     
     public string Host => _javaServerContainer.Hostname;
@@ -20,7 +22,7 @@ public abstract class JavaServer : IAsyncLifetime
             .WithEnvironment("ONLINE_MODE", "FALSE")
             .WithEnvironment("ENABLE_RCON", "FALSE")
             .WithEnvironment("ENABLE_AUTOPAUSE", "FALSE")
-            .WithPortBinding(25565, assignRandomHostPort: true)
+            .WithPortBinding(DefaultPort, assignRandomHostPort: true)
             .WithWaitStrategy(Wait.ForUnixContainer().UntilContainerIsHealthy())
             .WithCleanUp(true)
             .Build();
